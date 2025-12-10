@@ -53,7 +53,7 @@ public class RobotContainer {
         //puts auto chooser on smartdashboard for selection
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        dashboard = new DashboardPublisher(drivetrain);
+        dashboard = new DashboardPublisher(drivetrain, autoChooser);
 
         configureBindings();
     }

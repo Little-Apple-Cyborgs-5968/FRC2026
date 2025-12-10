@@ -4,17 +4,20 @@
 
 package frc.robot;
 
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-
 
 /**
  * Handles all SmartDashboard/Shuffleboard visualizations.
@@ -22,11 +25,17 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
  */
 public class DashboardPublisher {
     private final Field2d m_field = new Field2d();
+    private final Field2d m_autoPreviewField = new Field2d();
     private final CommandSwerveDrivetrain m_drivetrain;
+    private final SendableChooser<Command> m_autoChooser;
+    private String m_lastAutoName = "";
 
-    public DashboardPublisher(CommandSwerveDrivetrain drivetrain) {
+    public DashboardPublisher(CommandSwerveDrivetrain drivetrain, SendableChooser<Command> autoChooser) {
         m_drivetrain = drivetrain;
-        SmartDashboard.putData("Field", m_field);
+        m_autoChooser = autoChooser;
+        
+        SmartDashboard.putData("Robot Field", m_field);
+        SmartDashboard.putData("Auto Preview", m_autoPreviewField);
         
         // Subscribe to PathPlanner's active path
         configurePathPlannerLogging();
@@ -39,28 +48,76 @@ public class DashboardPublisher {
             m_field.getObject("activePath").setPoses(poses);
         });
 
-        // com.pathplanner.lib.util.PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
-        //     m_field.getObject("targetPose").setPoses(List.of(pose));
-        // });
-
         com.pathplanner.lib.util.PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
-            // Optional: shows where PathPlanner thinks the robot is
-            // m_field.getObject("ppCurrentPose").setPoses(List.of(pose));
+            // Intentionally empty - using drivetrain odometry
         });
     }
 
     /** Call this every robot periodic cycle */
     public void update() {
         m_field.setRobotPose(m_drivetrain.getState().Pose);
+        
+        // Update auto preview if selection changed
+        updateAutoPreview();
+    }
+
+    /** Updates the auto preview field when a new auto is selected */
+    private void updateAutoPreview() {
+        String currentAutoName = m_autoChooser.getSelected() != null 
+            ? m_autoChooser.getSelected().getName() 
+            : "";
+        
+        // Only update if the selection changed
+        if (!currentAutoName.equals(m_lastAutoName)) {
+            m_lastAutoName = currentAutoName;
+            displayAutoPath(currentAutoName);
+        }
+    }
+
+    /** Displays all paths for a given auto name */
+    private void displayAutoPath(String autoName) {
+        // Clear previous paths
+        for (int i = 0; i < 10; i++) {
+            m_autoPreviewField.getObject("path" + i).setPoses(List.of());
+        }
+        
+        if (autoName.isEmpty()) {
+            return;
+        }
+
+        try {
+            // Get all path names from the auto
+            List<PathPlannerPath> paths = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+            
+            // Display each path with a different object name
+            for (int i = 0; i < paths.size(); i++) {
+                PathPlannerPath path = paths.get(i);
+                List<Pose2d> poses = path.getPathPoses();
+                m_autoPreviewField.getObject("path" + i).setPoses(poses);
+            }
+            
+            // Show starting pose as robot position
+            if (!paths.isEmpty() && !paths.get(0).getPathPoses().isEmpty()) {
+                m_autoPreviewField.setRobotPose(paths.get(0).getPathPoses().get(0));
+            }
+            
+        } catch (Exception e) {
+            System.out.println("Could not load auto preview for: " + autoName);
+        }
     }
 
     /** Display a WPILib trajectory on the field */
-    public void showTrajectory(Trajectory trajectory) {
+    public void showTrajectory(edu.wpi.first.math.trajectory.Trajectory trajectory) {
         m_field.getObject("trajectory").setTrajectory(trajectory);
     }
 
-    /** Display a PathPlanner path on the field */
-    public void showPathPlannerPath(PathPlannerPath path) {
-        m_field.getObject("pathPlannerPath").setPoses(path.getPathPoses());
+    /** Display a list of poses as a path */
+    public void showPath(String name, List<Pose2d> poses) {
+        m_field.getObject(name).setPoses(poses);
+    }
+
+    /** Clear a displayed path */
+    public void clearPath(String name) {
+        m_field.getObject(name).setPoses(List.of());
     }
 }
