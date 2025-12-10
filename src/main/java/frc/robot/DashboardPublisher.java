@@ -13,6 +13,9 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -39,6 +42,9 @@ public class DashboardPublisher {
         
         // Subscribe to PathPlanner's active path
         configurePathPlannerLogging();
+
+        // Initialize swerve drive widget
+        initSwerveDriveWidget();
     }
 
     /** Sets up PathPlanner to automatically log paths to our Field2d */
@@ -119,5 +125,54 @@ public class DashboardPublisher {
     /** Clear a displayed path */
     public void clearPath(String name) {
         m_field.getObject(name).setPoses(List.of());
+    }
+
+    /** Initializes the swerve drive widget for Elastic dashboard */
+    public void initSwerveDriveWidget() {
+        SmartDashboard.putData("Swerve Drive", new Sendable() {
+            @Override
+            public void initSendable(SendableBuilder builder) {
+                builder.setSmartDashboardType("SwerveDrive");
+
+                builder.addDoubleProperty("Front Left Angle", 
+                    () -> flipAngleIfRed(m_drivetrain.getState().ModuleStates[0].angle.getRadians()), null);
+                builder.addDoubleProperty("Front Left Velocity", 
+                    () -> flipVelocityIfRed(m_drivetrain.getState().ModuleStates[0].speedMetersPerSecond), null);
+
+                builder.addDoubleProperty("Front Right Angle", 
+                    () -> flipAngleIfRed(m_drivetrain.getState().ModuleStates[1].angle.getRadians()), null);
+                builder.addDoubleProperty("Front Right Velocity", 
+                    () -> flipVelocityIfRed(m_drivetrain.getState().ModuleStates[1].speedMetersPerSecond), null);
+
+                builder.addDoubleProperty("Back Left Angle", 
+                    () -> flipAngleIfRed(m_drivetrain.getState().ModuleStates[2].angle.getRadians()), null);
+                builder.addDoubleProperty("Back Left Velocity", 
+                    () -> flipVelocityIfRed(m_drivetrain.getState().ModuleStates[2].speedMetersPerSecond), null);
+
+                builder.addDoubleProperty("Back Right Angle", 
+                    () -> flipAngleIfRed(m_drivetrain.getState().ModuleStates[3].angle.getRadians()), null);
+                builder.addDoubleProperty("Back Right Velocity", 
+                    () -> flipVelocityIfRed(m_drivetrain.getState().ModuleStates[3].speedMetersPerSecond), null);
+
+                builder.addDoubleProperty("Robot Angle", 
+                    () -> flipAngleIfRed(m_drivetrain.getState().Pose.getRotation().getRadians()), null);
+            }
+        });
+    }
+
+    /** Flips angle by 180 degrees if on red alliance */
+    private double flipAngleIfRed(double angleRadians) {
+        if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red) {
+            return angleRadians + Math.PI;
+        }
+        return angleRadians;
+    }
+
+    /** Negates velocity if on red alliance (for flipped display) */
+    private double flipVelocityIfRed(double velocity) {
+        if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red) {
+            return -velocity;
+        }
+        return velocity;
     }
 }
