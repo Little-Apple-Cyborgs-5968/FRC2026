@@ -11,6 +11,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,12 +43,17 @@ public class RobotContainer {
     // Auto chooser
     private final SendableChooser<Command> autoChooser;
 
+    // Dashboard publisher
+    private final DashboardPublisher dashboard;
+
     public RobotContainer() {
 
         //creates and puts the auto chooser object from pathplanner autos
         autoChooser = AutoBuilder.buildAutoChooser();
         //puts auto chooser on smartdashboard for selection
         SmartDashboard.putData("Auto Chooser", autoChooser);
+
+        dashboard = new DashboardPublisher(drivetrain);
 
         configureBindings();
     }
@@ -91,5 +97,17 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
+    }
+
+    // syommma 
+
+        /** Called from Robot.java robotPeriodic() */
+    public void updateDashboard() {
+        dashboard.update();
+    }
+
+    /** Call when starting a path to visualize it */
+    public void displayPath(Trajectory trajectory) {
+        dashboard.showTrajectory(trajectory);
     }
 }
