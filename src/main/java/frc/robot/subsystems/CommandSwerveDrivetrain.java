@@ -9,6 +9,10 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -105,6 +109,36 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         )
     );
 
+//Setups Path Planner AutoBuilder (bassicaly following Pathplanner Getting started guide)
+public void configurePathPlanner() {
+    try {
+        RobotConfig config = RobotConfig.fromGUISettings();
+        
+        AutoBuilder.configure(
+            () -> getState().Pose,  // Robot pose supplier
+            this::resetPose,         // Method to reset odometry
+            () -> getState().Speeds, // ChassisSpeeds supplier
+            (speeds, feedforwards) -> setControl(
+                new SwerveRequest.ApplyRobotSpeeds()
+                    .withSpeeds(speeds)
+            ),
+            new PPHolonomicDriveController(
+                new PIDConstants(5.0, 0.0, 0.0), // Translation PID
+                new PIDConstants(5.0, 0.0, 0.0)  // Rotation PID
+            ),
+            config,
+            () -> {
+                // Flip path for red alliance
+                var alliance = DriverStation.getAlliance();
+                return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
+            },
+            this // Reference to this subsystem
+        );
+    } catch (Exception e) {
+        DriverStation.reportError("Failed to load PathPlanner config: " + e.getMessage(), e.getStackTrace());
+    }
+}
+
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
@@ -126,6 +160,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        //this is called to configure the Path Planner AutoBuilder
+        configurePathPlanner();
     }
 
     /**
