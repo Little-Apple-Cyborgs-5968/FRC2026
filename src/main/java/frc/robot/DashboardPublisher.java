@@ -13,8 +13,10 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
+    import edu.wpi.first.util.datalog.DataLogWriter;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -36,6 +38,9 @@ public class DashboardPublisher {
     public DashboardPublisher(CommandSwerveDrivetrain drivetrain, SendableChooser<Command> autoChooser) {
         m_drivetrain = drivetrain;
         m_autoChooser = autoChooser;
+
+        //starts data logger (writes downs to a WpiLog file )
+        configureWpiLogging();
         
         SmartDashboard.putData("Robot Field", m_field);
         SmartDashboard.putData("Auto Preview", m_autoPreviewField);
@@ -45,6 +50,20 @@ public class DashboardPublisher {
 
         // Initialize swerve drive widget
         initSwerveDriveWidget();
+    }
+
+    private void configureWpiLogging(){
+        // Start data logger - save to USB drive if available, otherwise use default location
+        if (new java.io.File("/u/").exists()) {
+            DataLogManager.start("/u/logs");
+        } else if (new java.io.File("/media/sda1/").exists()) {
+            DataLogManager.start("/media/sda1/logs");
+        } else {
+            DataLogManager.start(); // Default location
+        }
+
+        // Log DriverStation data (joystick inputs, match time, etc.)
+        DriverStation.startDataLog(DataLogManager.getLog());
     }
 
     /** Sets up PathPlanner to automatically log paths to our Field2d */
