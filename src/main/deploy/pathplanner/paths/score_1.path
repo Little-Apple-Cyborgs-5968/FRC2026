@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.462,
-        "y": 3.4243303571428565
+        "x": 7.416964285714287,
+        "y": 3.5735650510204073
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2354417076409607,
-        "y": 3.998468689837066
+        "x": 8.416964285714286,
+        "y": 3.5735650510204073
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "dance_position"
     },
     {
       "anchor": {
-        "x": 6.708099489795919,
-        "y": 6.476179846938774
+        "x": 8.46906887755102,
+        "y": 5.050988520408163
       },
       "prevControl": {
-        "x": 6.144324680822907,
-        "y": 6.075024886295585
+        "x": 7.46906887755102,
+        "y": 5.050988520408163
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "cage_right_position"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -46.57102827127283
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 123.92979742206063
+    "velocity": 1.0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

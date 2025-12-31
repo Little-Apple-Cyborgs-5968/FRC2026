@@ -21,16 +21,27 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
+import frc.robot.Constants;
+
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
+
 public class RobotContainer {
+    private double robotCentricDriveSpeed = Constants.Swerve.kRobotCentricSpeed;
+
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-    /* Setting up bindings for necessary control of the swerve drive platform */
+    //field centric drive command object
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+
+    // robot centric drive command object
+    private final SwerveRequest.RobotCentric driveRobotCentric = new SwerveRequest.RobotCentric()
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -50,6 +61,7 @@ public class RobotContainer {
 
         //creates and puts the auto chooser object from pathplanner autos
         autoChooser = AutoBuilder.buildAutoChooser();
+        
         //puts auto chooser on smartdashboard for selection
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -70,6 +82,20 @@ public class RobotContainer {
             )
         );
 
+        // robot oriented drive forwad and backward, also left right
+        joystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
+            driveRobotCentric.withVelocityX(robotCentricDriveSpeed).withVelocityY(0))
+        );
+        joystick.pov(90).whileTrue(drivetrain.applyRequest(() -> 
+            driveRobotCentric.withVelocityX(0).withVelocityY(-robotCentricDriveSpeed))
+        );
+        joystick.pov(180).whileTrue(drivetrain.applyRequest(() -> 
+            driveRobotCentric.withVelocityX(-robotCentricDriveSpeed).withVelocityY(0))
+        );
+        joystick.pov(270).whileTrue(drivetrain.applyRequest(() -> 
+            driveRobotCentric.withVelocityX(0).withVelocityY(robotCentricDriveSpeed))
+        );
+
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -82,6 +108,11 @@ public class RobotContainer {
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
 
+
+
+        joystick.leftStick().onTrue(drivetrain.runOnce(() -> System.out.println("Left stick pressed")));
+        joystick.rightStick().onTrue(drivetrain.runOnce(() -> System.out.println("Right stick pressed")));
+
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
         joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -89,8 +120,8 @@ public class RobotContainer {
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        // reset the field-centric heading on left bumper press
-        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        // reset the field-centric heading on back button press(back button)
+        joystick.back().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
@@ -98,6 +129,8 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
+
+    
 
     // syommma 
 
