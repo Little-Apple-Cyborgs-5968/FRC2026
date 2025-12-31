@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.Constants;
-
+import frc.robot.commands.PathFindCommands;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 
@@ -96,6 +96,16 @@ public class RobotContainer {
             driveRobotCentric.withVelocityX(0).withVelocityY(robotCentricDriveSpeed))
         );
 
+        joystick.a().onTrue(
+            PathFindCommands.pathfindToPath("score_reef")
+        );
+        joystick.b().onTrue(
+            PathFindCommands.pathfindAndDo("score_barge", drivetrain.runOnce(() -> System.out.println("run reef motors")))
+        );
+        joystick.y().onTrue(
+            PathFindCommands.pathfindToPath("still")
+        );
+
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -103,10 +113,10 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        joystick.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
-        ));
+        //joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        // joystick.b().whileTrue(drivetrain.applyRequest(() ->
+        //     point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+        // ));
 
 
 
