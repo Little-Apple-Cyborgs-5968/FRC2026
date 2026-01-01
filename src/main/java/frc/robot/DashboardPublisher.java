@@ -64,6 +64,9 @@ public class DashboardPublisher {
 
         // Log DriverStation data (joystick inputs, match time, etc.)
         DriverStation.startDataLog(DataLogManager.getLog());
+        
+        // Log all NetworkTables data (pose, module states, etc.)
+        DataLogManager.logNetworkTables(true);
     }
 
     /** Sets up PathPlanner to automatically log paths to our Field2d */
@@ -176,22 +179,22 @@ public class DashboardPublisher {
                 builder.addDoubleProperty("Robot Angle", 
                     () -> flipAngleIfRed(m_drivetrain.getState().Pose.getRotation().getRadians()), null);
             }
+
+            /** Flips angle by 180 degrees if on red alliance */
+            private double flipAngleIfRed(double angleRadians) {
+                if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red) {
+                    return angleRadians + Math.PI;
+                }
+                return angleRadians;
+            }
+
+            /** Negates velocity if on red alliance (for flipped display) */
+            private double flipVelocityIfRed(double velocity) {
+                if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red) {
+                    return -velocity;
+                }
+                return velocity;
+            }
         });
-    }
-
-    /** Flips angle by 180 degrees if on red alliance */
-    private double flipAngleIfRed(double angleRadians) {
-        if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red) {
-            return angleRadians + Math.PI;
-        }
-        return angleRadians;
-    }
-
-    /** Negates velocity if on red alliance (for flipped display) */
-    private double flipVelocityIfRed(double velocity) {
-        if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red) {
-            return -velocity;
-        }
-        return velocity;
     }
 }
