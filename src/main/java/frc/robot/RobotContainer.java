@@ -113,13 +113,7 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        //joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        // joystick.b().whileTrue(drivetrain.applyRequest(() ->
-        //     point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
-        // ));
-
-
-
+        
         joystick.leftStick().onTrue(drivetrain.runOnce(() -> System.out.println("Left stick pressed")));
         joystick.rightStick().onTrue(drivetrain.runOnce(() -> System.out.println("Right stick pressed")));
 
@@ -136,21 +130,14 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
+    //** Called from Robot.java autonomousInit(), gets selected auto command */
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
 
-    
 
-    // syommma 
-
-        /** Called from Robot.java robotPeriodic() */
+    /** Called from Robot.java robotPeriodic(), updates dashboard */
     public void updateDashboard() {
         dashboard.update();
-    }
-
-    /** Call when starting a path to visualize it */
-    public void displayPath(Trajectory trajectory) {
-        dashboard.showTrajectory(trajectory);
     }
 }

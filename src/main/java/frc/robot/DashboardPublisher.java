@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /**
@@ -39,37 +40,37 @@ public class DashboardPublisher {
         m_drivetrain = drivetrain;
         m_autoChooser = autoChooser;
 
-        //starts data logger (writes downs to a WpiLog file )
-        configureWpiLogging();
-        
+        //put data on the dashboard
         SmartDashboard.putData("Robot Field", m_field);
         SmartDashboard.putData("Auto Preview", m_autoPreviewField);
-        
+        SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
+        initSwerveDriveWidget();
+
         // Subscribe to PathPlanner's active path
         configurePathPlannerLogging();
 
-        // Initialize swerve drive widget
-        initSwerveDriveWidget();
+        //starts data logger (writes downs to a WpiLog file )
+        configureWpiLogging();
+
+
     }
 
-    private void configureWpiLogging(){
-        // Start data logger - save to USB drive if available, otherwise use default location
-        if (new java.io.File("/u/").exists()) {
-            DataLogManager.start("/u/logs");
-        } else if (new java.io.File("/media/sda1/").exists()) {
-            DataLogManager.start("/media/sda1/logs");
-        } else {
-            DataLogManager.start(); // Default location
-        }
-
-        // Log DriverStation data (joystick inputs, match time, etc.)
-        DriverStation.startDataLog(DataLogManager.getLog());
-        
-        // Log all NetworkTables data (pose, module states, etc.)
-        DataLogManager.logNetworkTables(true);
+    /** * Call periodically to update dashboard visualizations */
+    public void update() {
+        updateRobotField();
+        updateAutoPreviewField();
     }
 
-    /** Sets up PathPlanner to automatically log paths to our Field2d */
+//------------------------------------------------------------------------------------
+//ROBOT FIELD WIDGET(m_field)
+//------------------------------------------------------------------------------------
+
+    /** Updates the robot pose on the Field2d widget */
+    private void updateRobotField() {
+        m_field.setRobotPose(m_drivetrain.getState().Pose);
+    }
+
+    /** Sets up PathPlanner to automatically log paths to our Robot Field2d */
     private void configurePathPlannerLogging() {
         // PathPlanner will call these whenever a path starts/ends
         com.pathplanner.lib.util.PathPlannerLogging.setLogActivePathCallback((poses) -> {
@@ -81,16 +82,12 @@ public class DashboardPublisher {
         });
     }
 
-    /** Call this every robot periodic cycle */
-    public void update() {
-        m_field.setRobotPose(m_drivetrain.getState().Pose);
-        
-        // Update auto preview if selection changed
-        updateAutoPreview();
-    }
+//------------------------------------------------------------------------------------
+//AUTO CHOOSER AND PREVIEW WIDGET(m_autoChooser,m_autoPreviewField)
+//------------------------------------------------------------------------------------
 
     /** Updates the auto preview field when a new auto is selected */
-    private void updateAutoPreview() {
+    private void updateAutoPreviewField() {
         String currentAutoName = m_autoChooser.getSelected() != null 
             ? m_autoChooser.getSelected().getName() 
             : "";
@@ -134,21 +131,9 @@ public class DashboardPublisher {
         }
     }
 
-    /** Display a WPILib trajectory on the field */
-    public void showTrajectory(edu.wpi.first.math.trajectory.Trajectory trajectory) {
-        m_field.getObject("trajectory").setTrajectory(trajectory);
-    }
-
-    /** Display a list of poses as a path */
-    public void showPath(String name, List<Pose2d> poses) {
-        m_field.getObject(name).setPoses(poses);
-    }
-
-    /** Clear a displayed path */
-    public void clearPath(String name) {
-        m_field.getObject(name).setPoses(List.of());
-    }
-
+//------------------------------------------------------------------------------------
+//SWERVE WIDGET
+//------------------------------------------------------------------------------------
     /** Initializes the swerve drive widget for Elastic dashboard */
     public void initSwerveDriveWidget() {
         SmartDashboard.putData("Swerve Drive", new Sendable() {
@@ -197,4 +182,26 @@ public class DashboardPublisher {
             }
         });
     }
+
+//------------------------------------------------------------------------------------
+//Data logging to WPI Logs
+//------------------------------------------------------------------------------------
+    /** Configures WPI DataLogManager to log to USB if available, and logs DS and NetworkTables data */
+    private void configureWpiLogging(){
+        if (new java.io.File("/u/").exists()) {
+            DataLogManager.start("/u/logs");
+        } else if (new java.io.File("/media/sda1/").exists()) {
+            DataLogManager.start("/media/sda1/logs");
+        } else {
+            DataLogManager.start(); // Default location
+        }
+
+        // Log DriverStation data (joystick inputs, match time, etc.)
+        DriverStation.startDataLog(DataLogManager.getLog());
+        
+        // Log all NetworkTables data (pose, module states, etc.)
+        DataLogManager.logNetworkTables(true);
+    }
+
 }
+
