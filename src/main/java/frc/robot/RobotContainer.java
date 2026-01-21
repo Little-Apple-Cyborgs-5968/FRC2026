@@ -108,15 +108,15 @@ public class RobotContainer {
             driveRobotCentric.withVelocityX(0).withVelocityY(robotCentricDriveSpeed))
         );
 
-        joystick.a().onTrue(
-            PathFindCommands.pathfindToPath("score_reef")
+        joystick.a().and(joystick.y()).onTrue(
+            PathFindCommands.pathfindToPath("hub_front")
         );
-        joystick.b().onTrue(
-            PathFindCommands.pathfindAndDo("score_barge", drivetrain.runOnce(() -> System.out.println("run reef motors")))
-        );
-        joystick.y().onTrue(
-            PathFindCommands.pathfindToPath("still")
-        );
+        // joystick.b().onTrue(
+        //     PathFindCommands.pathfindAndDo("score_barge", drivetrain.runOnce(() -> System.out.println("run reef motors")))
+        // );
+        // joystick.y().onTrue(
+        //     PathFindCommands.pathfindToPath("still")
+        // );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
