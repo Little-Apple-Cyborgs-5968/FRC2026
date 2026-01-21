@@ -11,11 +11,9 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -24,6 +22,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.Constants;
 import frc.robot.commands.PathFindCommands;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Vision;
 
 
 public class RobotContainer {
@@ -49,7 +48,11 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
+    // ==================== SUBSYSTEMS ====================
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    
+    // Vision subsystem for AprilTag localization
+    private final Vision vision;
 
     // Auto chooser
     private final SendableChooser<Command> autoChooser;
@@ -58,6 +61,15 @@ public class RobotContainer {
     private final DashboardPublisher dashboard;
 
     public RobotContainer() {
+        // Initialize Vision subsystem with drivetrain integration
+        vision = new Vision(
+            // Pose supplier - gets current robot pose from drivetrain
+            () -> drivetrain.getState().Pose,
+            // Heading supplier - gets current robot heading for MegaTag2
+            () -> drivetrain.getState().Pose.getRotation(),
+            // Vision consumer - feeds vision measurements to drivetrain pose estimator
+            (pose, timestamp, stdDevs) -> drivetrain.addVisionMeasurement(pose, timestamp, stdDevs)
+        );
 
         //creates and puts the auto chooser object from pathplanner autos
         autoChooser = AutoBuilder.buildAutoChooser();
