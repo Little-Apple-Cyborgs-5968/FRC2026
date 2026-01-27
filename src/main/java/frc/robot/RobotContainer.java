@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.Constants;
 import frc.robot.commands.PathFindCommands;
+import frc.robot.driverIO.ControllerRumble;
+import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision;
 
@@ -47,6 +49,7 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
+    private final ControllerRumble rumble = new ControllerRumble(joystick);
 
     // ==================== SUBSYSTEMS ====================
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -108,8 +111,14 @@ public class RobotContainer {
             driveRobotCentric.withVelocityX(0).withVelocityY(robotCentricDriveSpeed))
         );
 
+        // Example usage of PathFindCommands to go to preset locations
         joystick.a().and(joystick.y()).onTrue(
             PathFindCommands.pathfindToPath("hub_front")
+        );
+
+        // Example usage of rumble command (controller rumble for driver feedback)
+        joystick.a().and(joystick.x()).onTrue(
+            rumble.doublePulse()
         );
         // joystick.b().onTrue(
         //     PathFindCommands.pathfindAndDo("score_barge", drivetrain.runOnce(() -> System.out.println("run reef motors")))
