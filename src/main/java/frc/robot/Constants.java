@@ -27,8 +27,8 @@ public class Constants {
     public static class Vision {
         // ==================== LIMELIGHT NAMES ====================
         // Network table names for each Limelight (must match what's configured in the Limelight web interface)
-        public static final String kLimelightFrontName = "limelight-front";
-        public static final String kLimelightBackName = "limelight-back";
+        public static final String kLimelightFrontName = "limelight-two"; //left and two
+        public static final String kLimelightBackName = "limelight-right";
         public static final String kLimelightGamepieceName = "limelight-gp";
 
         // ==================== CAMERA POSITIONS ====================
@@ -44,7 +44,7 @@ public class Constants {
                 Units.inchesToMeters(8.401)    // Z: 8 inches up from ground
             ),
             new Rotation3d(
-                0.0,                          // Roll: 0 degrees
+                Units.degreesToRadians(180),                          // Roll: 0 degrees
                 Units.degreesToRadians(65.0), // Pitch: degrees
                 Units.degreesToRadians(25)      // Yaw: degrees
             )
@@ -58,7 +58,7 @@ public class Constants {
                 Units.inchesToMeters(8.401)    // Z: inches up from ground
             ),
             new Rotation3d(
-                0.0,                           // Roll: 0 degrees
+                Units.degreesToRadians(0),                           // Roll: 0 degrees
                 Units.degreesToRadians(65.0),  // Pitch: degrees
                 Units.degreesToRadians(-25.0)  // Yaw: degrees
             )
@@ -111,6 +111,6 @@ public class Constants {
         // ==================== CAMERA POSE CONFIG ====================
         // Set to true to override web GUI camera poses with code values
         // Set to false to use values configured in Limelight web interface
-        public static final boolean kSetCameraPosesFromCode = true;
+        public static final boolean kSetCameraPosesFromCode = false;
     }
 }
