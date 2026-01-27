@@ -146,20 +146,38 @@ public class Vision extends SubsystemBase {
                 int id = fiducial.get("id").asInt();
                 JsonNode transform = fiducial.get("transform");
 
-                if (transform != null && transform.isArray() && transform.size() >= 7) {
-                    // Parse position (meters)
-                    double x = transform.get(0).asDouble();
-                    double y = transform.get(1).asDouble();
-                    double z = transform.get(2).asDouble();
+                if (transform != null && transform.isArray() && transform.size() >= 16) {
+                    // The .fmap transform is a 4x4 transformation matrix stored row-major:
+                    // [r00, r01, r02, tx, r10, r11, r12, ty, r20, r21, r22, tz, 0, 0, 0, 1]
+                    // Extract position from the 4th column (indices 3, 7, 11)
+                    double x = transform.get(3).asDouble();
+                    double y = transform.get(7).asDouble();
+                    double z = transform.get(11).asDouble();
 
-                    // Parse rotation as quaternion (qw, qx, qy, qz)
-                    double qw = transform.get(3).asDouble();
-                    double qx = transform.get(4).asDouble();
-                    double qy = transform.get(5).asDouble();
-                    double qz = transform.get(6).asDouble();
+                    // Extract rotation matrix elements
+                    double r00 = transform.get(0).asDouble();
+                    double r01 = transform.get(1).asDouble();
+                    double r02 = transform.get(2).asDouble();
+                    double r10 = transform.get(4).asDouble();
+                    double r11 = transform.get(5).asDouble();
+                    double r12 = transform.get(6).asDouble();
+                    double r20 = transform.get(8).asDouble();
+                    double r21 = transform.get(9).asDouble();
+                    double r22 = transform.get(10).asDouble();
 
-                    // Convert quaternion to Rotation3d
-                    Rotation3d rotation = new Rotation3d(new edu.wpi.first.math.geometry.Quaternion(qw, qx, qy, qz));
+                    // Create Rotation3d from rotation matrix using Matrix
+                    Matrix<N3, N3> rotMatrix = new Matrix<>(edu.wpi.first.math.Nat.N3(), edu.wpi.first.math.Nat.N3());
+                    rotMatrix.set(0, 0, r00);
+                    rotMatrix.set(0, 1, r01);
+                    rotMatrix.set(0, 2, r02);
+                    rotMatrix.set(1, 0, r10);
+                    rotMatrix.set(1, 1, r11);
+                    rotMatrix.set(1, 2, r12);
+                    rotMatrix.set(2, 0, r20);
+                    rotMatrix.set(2, 1, r21);
+                    rotMatrix.set(2, 2, r22);
+                    
+                    Rotation3d rotation = new Rotation3d(rotMatrix);
                     Translation3d translation = new Translation3d(x, y, z);
                     Pose3d tagPose = new Pose3d(translation, rotation);
 
