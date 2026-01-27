@@ -4,6 +4,8 @@
 
 package frc.robot.driverIO;
 
+import frc.robot.utils.GameState;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +59,11 @@ public class DashboardPublisher {
 
     /** * Call periodically to update dashboard visualizations */
     public void update() {
-        updateRobotField();
-        updateAutoPreviewField();
+    updateRobotField();
+    updateAutoPreviewField();
+    updateGameState();
     }
+
 
 //------------------------------------------------------------------------------------
 //ROBOT FIELD WIDGET(m_field)
@@ -181,6 +185,18 @@ public class DashboardPublisher {
                 return velocity;
             }
         });
+    }
+
+//------------------------------------------------------------------------------------
+//GAME STATE,SHIFT, & TIMER DISPLAY
+//------------------------------------------------------------------------------------
+
+    /** Publishes the current game state and time left in state to SmartDashboard */
+    private void updateGameState() {
+        GameState.States currentState = GameState.determineGameState();
+        String stateString = (currentState != null) ? currentState.name() : "UNKNOWN";
+        SmartDashboard.putString("Game State", stateString);
+        SmartDashboard.putNumber("Time Left In State", GameState.timeRemainingInCurrentState());
     }
 
 //------------------------------------------------------------------------------------

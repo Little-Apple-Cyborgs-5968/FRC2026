@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
@@ -25,6 +26,7 @@ import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Vision;
+import frc.robot.utils.GameState;
 
 
 public class RobotContainer {
@@ -120,6 +122,9 @@ public class RobotContainer {
         joystick.a().and(joystick.x()).onTrue(
             rumble.doublePulse()
         );
+
+        new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 5).onTrue(rumble.lightPulse());
+        new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 0).onTrue(rumble.doublePulse());
         // joystick.b().onTrue(
         //     PathFindCommands.pathfindAndDo("score_barge", drivetrain.runOnce(() -> System.out.println("run reef motors")))
         // );
