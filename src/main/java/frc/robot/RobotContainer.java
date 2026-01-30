@@ -25,7 +25,9 @@ import frc.robot.commands.PathFindCommands;
 import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.simulation.TurretSim;
 import frc.robot.utils.GameState;
 
 
@@ -50,8 +52,17 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
+    
+
+    // ==================== DRIVER I/O ====================
+
     private final CommandXboxController joystick = new CommandXboxController(0);
+
+    // Rumble command for driver feedback
     private final ControllerRumble rumble = new ControllerRumble(joystick);
+
+    // Dashboard publisher
+    private final DashboardPublisher dashboard;
 
     // ==================== SUBSYSTEMS ====================
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -59,11 +70,14 @@ public class RobotContainer {
     // Vision subsystem for AprilTag localization
     private final Vision vision;
 
+    // Turret subsystem
+    private final Turret turret = new Turret();
+    private final TurretSim turretSim = new TurretSim(turret);
+
     // Auto chooser
     private final SendableChooser<Command> autoChooser;
 
-    // Dashboard publisher
-    private final DashboardPublisher dashboard;
+    
 
     public RobotContainer() {
         // Initialize Vision subsystem with drivetrain integration
@@ -121,6 +135,17 @@ public class RobotContainer {
         // Example usage of rumble command (controller rumble for driver feedback)
         joystick.a().and(joystick.x()).onTrue(
             rumble.doublePulse()
+        );
+
+        joystick.pov(45).onTrue(
+            turret.moveToAngleCommand(45.0)
+        );
+        joystick.pov(135).onTrue(
+            turret.moveToAngleCommand(135.0)
+        );
+
+        joystick.pov(225).onTrue(
+            turret.moveToAngleCommand(-135.0)
         );
 
         new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 5).onTrue(rumble.lightPulse());
