@@ -15,6 +15,8 @@ import frc.robot.subsystems.Turret;
  */
 public class TurretSim extends SubsystemBase {
 
+  
+
   private final Turret turret;
 
   // Simulation display
@@ -25,8 +27,8 @@ public class TurretSim extends SubsystemBase {
   // Visualization constants
   private final double BASE_WIDTH = 60.0;
   private final double BASE_HEIGHT = 10.0;
-  private final double turret_LENGTH = 140.0;
-  private final double turret_WIDTH = 20.0;
+  private final double turret_LENGTH = 0.3;
+  private final double turret_WIDTH = 5;
 
   /**
    * Creates a new visualization for the turret.
@@ -37,16 +39,16 @@ public class TurretSim extends SubsystemBase {
     this.turret = turretSubsystem;
 
     // Create the simulation display
-    mech = new Mechanism2d(300, 300);
-    root = mech.getRoot("turretRoot", 150, 150);
+    mech = new Mechanism2d(1, 1);
+    root = mech.getRoot("turretRoot", 0.5, 0.5);
 
     // Add a small base to represent the pivot point
     MechanismLigament2d base = root.append(
       new MechanismLigament2d(
         "Base",
-        5.0, // Small length to represent the pivot
+        0, // Small length to represent the pivot
         0,
-        5.0, // Small height
+        2.5, // Small height
         new Color8Bit(Color.kDarkGray)
       )
     );
@@ -58,7 +60,7 @@ public class TurretSim extends SubsystemBase {
         turret_LENGTH,
         0, // Initial angle
         turret_WIDTH,
-        new Color8Bit(Color.kBlue)
+        new Color8Bit(Color.kRed)
       )
     );
 
