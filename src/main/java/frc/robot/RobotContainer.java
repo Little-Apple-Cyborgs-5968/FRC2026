@@ -25,8 +25,10 @@ import frc.robot.commands.PathFindCommands;
 import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.simulation.IntakeSim;
 import frc.robot.subsystems.simulation.TurretSim;
 import frc.robot.utils.GameState;
 
@@ -73,6 +75,11 @@ public class RobotContainer {
     // Turret subsystem
     private final Turret turret = new Turret();
     private final TurretSim turretSim = new TurretSim(turret);
+
+    // Intake Subsystem
+
+    private final Intake intake = new Intake();
+    private final IntakeSim intakeSim = new IntakeSim(intake);
 
     // Auto chooser
     private final SendableChooser<Command> autoChooser;
@@ -138,14 +145,19 @@ public class RobotContainer {
         );
 
         joystick.pov(45).onTrue(
-            turret.moveToAngleCommand(45.0)
-        );
-        joystick.pov(135).onTrue(
-            turret.moveToAngleCommand(135.0)
+            intake.PivotSetAngleCommand(0)
         );
 
+        joystick.pov(135).onTrue(
+            intake.PivotSetAngleCommand(45)
+        );
+        
         joystick.pov(225).onTrue(
-            turret.moveToAngleCommand(-135.0)
+            intake.SpinnerStopCommand()
+        );
+
+        joystick.pov(315).onTrue(
+            intake.SpinnerMoveAtVelocityCommand(10)
         );
 
         new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 5).onTrue(rumble.lightPulse());
