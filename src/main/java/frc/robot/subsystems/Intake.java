@@ -17,17 +17,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState.MotorType;
-import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.ResetMode;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkSim;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -45,7 +34,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
- * intake subsystem using TalonFX with Krakenx60 motor
+ * intake subsystem using TalonFX with Krakenx60 motors
  */
 @Logged(name = "Intake")
 public class Intake extends SubsystemBase {
@@ -78,7 +67,7 @@ public class Intake extends SubsystemBase {
 
   
   // Constants for spinner
-  private final DCMotor spinnerDcMotor = DCMotor.getNeo550(1);
+  private final DCMotor spinnerDcMotor = DCMotor.getKrakenX60(1);
   private final int spinnerCanID = 9;
   private final double spinnerGearRatio = 2;
   private final double spinnerKP = 1;
@@ -87,7 +76,7 @@ public class Intake extends SubsystemBase {
   private final double spinnerKS = 0;
   private final double spinnerKV = 0;
   private final double spinnerKA = 0;
-  private final double spinnerKG = 0; // Unused for pivots
+  private final double spinnerKG = 0; // Unused for spinners
   private final double spinnerMaxVelocity = 1; // rad/s
   private final double spinnerMaxAcceleration = 1; // rad/s²
   private final boolean spinnerBrakeMode = true;
@@ -128,10 +117,13 @@ public class Intake extends SubsystemBase {
   private final StatusSignal<Temperature> pivotTemperatureSignal;
 
   //Spinner Motor controller
-  private final SparkMax SpinnerMotor;
-  private final RelativeEncoder SpinnerEncoder;
-  private final SparkSim SpinnerMotorSim;
-  private final SparkClosedLoopController sparkPidController;
+  private final TalonFX SpinnerMotor;
+  private final VelocityVoltage spinnerVelocityRequest;
+  private final StatusSignal<Angle> spinnerPositionSignal;
+  private final StatusSignal<AngularVelocity> spinnerVelocitySignal;
+  private final StatusSignal<Voltage> spinnerVoltageSignal;
+  private final StatusSignal<Current> spinnerStatorCurrentSignal;
+  private final StatusSignal<Temperature> spinnerTemperatureSignal;
   
 
   // Simulation
@@ -145,18 +137,14 @@ public class Intake extends SubsystemBase {
     PivotMotor = new TalonFX(canIDPivot);
 
     // Initialize spinner motor controller
-    SparkMaxConfig motorConfig = new SparkMaxConfig();
-    SpinnerMotor = new SparkMax(spinnerCanID, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-    motorConfig.idleMode(spinnerBrakeMode ? IdleMode.kBrake : IdleMode.kCoast);
-
-
-    // Configure spinner encoder
-    SpinnerEncoder = SpinnerMotor.getEncoder();
-    SpinnerEncoder.setPosition(0);
+    SpinnerMotor = new TalonFX(spinnerCanID);
 
     //pivot Create control requests
     pivotPositionRequest = new PositionVoltage(0).withSlot(0);
     pivotVelocityRequest = new VelocityVoltage(0).withSlot(0);
+
+    // Spinner create control requests
+    spinnerVelocityRequest = new VelocityVoltage(0).withSlot(0);
 
     // pivot get status signals
     pivotPositionSignal = PivotMotor.getPosition();
@@ -165,7 +153,15 @@ public class Intake extends SubsystemBase {
     pivotStatorCurrentSignal = PivotMotor.getStatorCurrent();
     pivotTemperatureSignal = PivotMotor.getDeviceTemp();
 
+    // Spinner get status signals
+    spinnerPositionSignal = SpinnerMotor.getPosition();
+    spinnerVelocitySignal = SpinnerMotor.getVelocity();
+    spinnerVoltageSignal = SpinnerMotor.getMotorVoltage();
+    spinnerStatorCurrentSignal = SpinnerMotor.getStatorCurrent();
+    spinnerTemperatureSignal = SpinnerMotor.getDeviceTemp();
+
     TalonFXConfiguration PivotMotorConfig = new TalonFXConfiguration();
+    TalonFXConfiguration SpinnerMotorConfig = new TalonFXConfiguration();
 
     //Pivot Configure PID for slot 0
     Slot0Configs slot0 = PivotMotorConfig.Slot0;
@@ -177,13 +173,14 @@ public class Intake extends SubsystemBase {
     slot0.kV = PivotkV;
     slot0.kA = PivotkA;
 
-    // Spinner Configure Feedback and Feedforward
-    sparkPidController = SpinnerMotor.getClosedLoopController();
-    motorConfig.closedLoop
-      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-      .pid(spinnerKP, spinnerKI, spinnerKD, ClosedLoopSlot.kSlot0);
-    motorConfig.closedLoop.feedForward.kS(spinnerKS).kV(spinnerKV).kA(spinnerKA);
-    motorConfig.closedLoop.feedForward.kG(spinnerKG);
+    // Spinner Configure PID for slot 0
+    Slot0Configs spinnerSlot0 = SpinnerMotorConfig.Slot0;
+    spinnerSlot0.kP = spinnerKP;
+    spinnerSlot0.kI = spinnerKI;
+    spinnerSlot0.kD = spinnerKD;
+    spinnerSlot0.kS = spinnerKS;
+    spinnerSlot0.kV = spinnerKV;
+    spinnerSlot0.kA = spinnerKA;
 
     // Pivot Set current limits
     CurrentLimitsConfigs currentLimits = PivotMotorConfig.CurrentLimits;
@@ -193,7 +190,11 @@ public class Intake extends SubsystemBase {
     currentLimits.SupplyCurrentLimitEnable = IsPivotSupplyLimitEnabled;
 
     // Set spinner current limits
-    motorConfig.smartCurrentLimit(spinnerStatorCurrentLimit);
+    CurrentLimitsConfigs spinnerCurrentLimits = SpinnerMotorConfig.CurrentLimits;
+    spinnerCurrentLimits.StatorCurrentLimit = spinnerStatorCurrentLimit;
+    spinnerCurrentLimits.StatorCurrentLimitEnable = spinnerEnableStatorLimit;
+    spinnerCurrentLimits.SupplyCurrentLimit = spinnerSupplyCurrentLimit;
+    spinnerCurrentLimits.SupplyCurrentLimitEnable = spinnerEnableSupplyLimit;
 
     // pivot Set soft limits
     SoftwareLimitSwitchConfigs softLimits = PivotMotorConfig.SoftwareLimitSwitch;
@@ -207,27 +208,28 @@ public class Intake extends SubsystemBase {
       ? NeutralModeValue.Brake
       : NeutralModeValue.Coast;
 
+    // Spinner set brake mode
+    SpinnerMotorConfig.MotorOutput.NeutralMode = spinnerBrakeMode
+      ? NeutralModeValue.Brake
+      : NeutralModeValue.Coast;
+
     // pivot Apply gear ratio
     PivotMotorConfig.Feedback.SensorToMechanismRatio = gearRatioPivot;
 
-        // Spinner Configure Encoder Gear Ratio
-    motorConfig.encoder
-      .positionConversionFactor(1 / spinnerGearRatio)
-      .velocityConversionFactor((1 / spinnerGearRatio) / 60); // Covnert RPM to RPS
+    // Spinner apply gear ratio
+    SpinnerMotorConfig.Feedback.SensorToMechanismRatio = spinnerGearRatio;
 
     // pivot Apply configuration
     PivotMotor.getConfigurator().apply(PivotMotorConfig);
 
-    //Spinner Save configuration
-    SpinnerMotor.configure(
-      motorConfig,
-      ResetMode.kResetSafeParameters,
-      PersistMode.kPersistParameters
-    );
-    SpinnerMotorSim = new SparkSim(SpinnerMotor, spinnerDcMotor);
+    // Spinner apply configuration
+    SpinnerMotor.getConfigurator().apply(SpinnerMotorConfig);
 
     // pivot Reset encoder position
     PivotMotor.setPosition(0);
+
+    // Spinner reset encoder position
+    SpinnerMotor.setPosition(0);
 
     // Initialize simulation
     intakeSim = new SingleJointedArmSim(
@@ -252,7 +254,12 @@ public class Intake extends SubsystemBase {
       pivotVelocitySignal,
       pivotVoltageSignal,
       pivotStatorCurrentSignal,
-      pivotTemperatureSignal
+      pivotTemperatureSignal,
+      spinnerPositionSignal,
+      spinnerVelocitySignal,
+      spinnerVoltageSignal,
+      spinnerStatorCurrentSignal,
+      spinnerTemperatureSignal
     );
   }
 
@@ -420,7 +427,7 @@ public class Intake extends SubsystemBase {
   @Logged(name = "Spinner Position/Rotations")
   public double SpinnerGetPosition() {
     // Rotations
-    return SpinnerEncoder.getPosition();
+    return spinnerPositionSignal.getValueAsDouble();
   }
 
   /**
@@ -429,12 +436,12 @@ public class Intake extends SubsystemBase {
    */
   @Logged(name = "Spinner Velocity/RotationsPerSecond")
   public double SpinnerGetVelocity() {
-    return SpinnerEncoder.getVelocity();
+    return spinnerVelocitySignal.getValueAsDouble();
   }
 
   @Logged(name = "Target Spinner Velocity/RotationsPerSecond")
   public double SpinnerGetTargetVelocity() {
-    return sparkPidController.getSetpoint();
+    return spinnerVelocityRequest.Velocity;
   }
 
   /**
@@ -443,7 +450,7 @@ public class Intake extends SubsystemBase {
    */
   @Logged(name = "Spinner Voltage")
   public double SpinnerGetVoltage() {
-    return SpinnerMotor.getAppliedOutput() * SpinnerMotor.getBusVoltage();
+    return spinnerVoltageSignal.getValueAsDouble();
   }
 
 
@@ -452,7 +459,7 @@ public class Intake extends SubsystemBase {
    * @return Motor current in amps
    */
   public double SpinnerGetCurrent() {
-    return SpinnerMotor.getOutputCurrent();
+    return spinnerStatorCurrentSignal.getValueAsDouble();
   }
 
   /**
@@ -460,7 +467,7 @@ public class Intake extends SubsystemBase {
    * @return Motor temperature in Celsius
    */
   public double SpinnerGetTemperature() {
-    return SpinnerMotor.getMotorTemperature();
+    return spinnerTemperatureSignal.getValueAsDouble();
   }
 
   /**
@@ -478,12 +485,8 @@ public class Intake extends SubsystemBase {
    * @param acceleration The acceleration in rotations per second squared
    */
   private void SpinnerSetVelocity(double velocityRotSec, double acceleration) {
-
-    sparkPidController.setSetpoint(
-      velocityRotSec,
-      ControlType.kVelocity,
-      ClosedLoopSlot.kSlot0
-    );
+    double ffVolts = spinnerFeedforward.calculate(SpinnerGetVelocity(), acceleration);
+    SpinnerMotor.setControl(spinnerVelocityRequest.withVelocity(velocityRotSec));
   }
 
   /**
