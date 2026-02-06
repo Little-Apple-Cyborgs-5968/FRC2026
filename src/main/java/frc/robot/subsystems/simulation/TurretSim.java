@@ -100,9 +100,9 @@ public class TurretSim extends SubsystemBase {
       turret.getSimulation().getCurrentDrawAmps()
     );
     
-        // Publish Pose3d with turret rotation to NetworkTables (FOR FANCY FULL ROBOT VISUALIT)
-    // Pose3d turretPose = new Pose3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, currentAngleRad));
-    // turretPosePublisher.set(turretPose);
+        //Publish Pose3d with turret rotation to NetworkTables (FOR FANCY FULL ROBOT VISUALIT)
+    Pose3d turretPose = new Pose3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, currentAngleRad));
+    turretPosePublisher.set(turretPose);
     
   }
 }
