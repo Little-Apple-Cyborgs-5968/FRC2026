@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
-import frc.robot.LimelightHelpers.RawFiducial;
 
 import java.io.File;
 import java.io.IOException;
@@ -395,46 +394,48 @@ public class Vision extends SubsystemBase {
      */
     private void logDetectedTags() {
         // Log front camera tags
-        List<Pose3d> frontTags = getDetectedTagPoses(latestFrontEstimate);
+        List<Pose3d> frontTags = getDetectedTagPoses(Constants.Vision.kLimelightFrontName);
         frontTagsPublisher.set(frontTags.toArray(new Pose3d[0]));
 
         // Log back camera tags
-        List<Pose3d> backTags = getDetectedTagPoses(latestBackEstimate);
+        List<Pose3d> backTags = getDetectedTagPoses(Constants.Vision.kLimelightBackName);
         backTagsPublisher.set(backTags.toArray(new Pose3d[0]));
     }
 
     /**
-     * Extracts the 3D poses of detected AprilTags from a pose estimate.
+     * Extracts the robot-relative 3D poses of detected AprilTags from a Limelight.
+     * For AdvantageScope, we want robot-relative positions, not field positions.
      * 
-     * @param estimate The pose estimate containing raw fiducial data
-     * @return List of Pose3d objects representing detected tag positions
+     * @param limelightName The name of the Limelight to get fiducial data from
+     * @return List of Pose3d objects representing detected tag positions relative to the robot
      */
-    private List<Pose3d> getDetectedTagPoses(PoseEstimate estimate) {
+    private List<Pose3d> getDetectedTagPoses(String limelightName) {
         List<Pose3d> tagPoses = new ArrayList<>();
         
-        if (estimate == null || estimate.rawFiducials == null) {
-            return tagPoses;
-        }
-
-        for (RawFiducial fiducial : estimate.rawFiducials) {
-            // Get the field pose of this AprilTag from the loaded field map
-            Pose3d tagPose = getAprilTagFieldPose(fiducial.id);
-            if (tagPose != null) {
-                tagPoses.add(tagPose);
+        try {
+            // Get the full results from the Limelight
+            LimelightHelpers.LimelightResults results = LimelightHelpers.getLatestResults(limelightName);
+            
+            if (results == null || results.targets_Fiducials == null) {
+                return tagPoses;
             }
+
+            // Extract robot-relative poses from each detected fiducial
+            for (LimelightHelpers.LimelightTarget_Fiducial fiducial : results.targets_Fiducials) {
+                if (fiducial != null) {
+                    // Get the robot-relative pose of the detected AprilTag
+                    Pose3d robotRelativePose = fiducial.getTargetPose_RobotSpace();
+                    if (robotRelativePose != null) {
+                        tagPoses.add(robotRelativePose);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Log error but don't crash
+            System.err.println("[Vision] Error getting fiducial data from " + limelightName + ": " + e.getMessage());
         }
 
         return tagPoses;
-    }
-
-    /**
-     * Gets the field pose of an AprilTag by its ID from the loaded .fmap file.
-     * 
-     * @param tagId The AprilTag ID
-     * @return The 3D field pose of the tag, or null if not found
-     */
-    private Pose3d getAprilTagFieldPose(int tagId) {
-        return aprilTagFieldMap.get(tagId);
     }
 
     /**
