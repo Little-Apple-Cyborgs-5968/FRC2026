@@ -40,58 +40,58 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Intake extends SubsystemBase {
 
   //Constants
-  private final double spinnerSpeed = 10; // Target spinner speed in rotations per second
+  private final double spinnerSpeed = 10; // Target spinner speed in rotations per second (RPS)
   private final double intakeAngleDeployed = 45; // Deployed angle in degrees
   private final double intakeAngleStowed = 0; // Stowed angle in degrees
 
   //Pivot Constants
   private final DCMotor dcMotorPivot = DCMotor.getKrakenX60(1);
-  private final int canIDPivot = 10;
-  private final double gearRatioPivot = 9;
-  private final double PivotkP = 1;
-  private final double PivotkI = 0;
-  private final double PivotkD = 0;
-  private final double PivotkS = 0;
-  private final double PivotkV = 0;
-  private final double PivotkA = 0;
-  private final double PivotkG = 0; // Unused for intakes
-  private final double PivotMaxVelocity = 1; // rad/s
-  private final double PivotMaxAcceleration = 1; // rad/s²
-  private final boolean IsPivotBrakeEnabled = true;
-  private final double PivotForwardSoftLimit = 60; // max angle in radians
-  private final double PivotReverseSoftLimit = 0; // min angle in radians
-  private final boolean IsPivotStatorLimitEnabled = true;
-  private final double PivotStatorCurrentLimit = 40;
-  private final boolean IsPivotSupplyLimitEnabled = false;
-  private final double PivotSupplyCurrentLimit = 40;
+  private final int canIDPivot = 10; // CAN ID (dimensionless)
+  private final double gearRatioPivot = 9; // Gear ratio (dimensionless)
+  private final double PivotkP = 5.07; // Proportional gain (dimensionless)
+  private final double PivotkI = 0; // Integral gain (dimensionless)
+  private final double PivotkD = 2.82; // Derivative gain (dimensionless)
+  private final double PivotkS = 0; // Static friction feedforward (volts)
+  private final double PivotkV = 1.12; // Velocity feedforward (volt-seconds per radian)
+  private final double PivotkA = 0.08; // Acceleration feedforward (volt-seconds² per radian)
+  private final double PivotkG = 0.53; // Gravity feedforward (volts) - Unused for now
+  private final double PivotMaxVelocity = 1; // Maximum velocity (rad/s)
+  private final double PivotMaxAcceleration = 1; // Maximum acceleration (rad/s²)
+  private final boolean IsPivotBrakeEnabled = true; // Brake mode enabled (boolean)
+  private final double PivotForwardSoftLimit = 60; // Maximum angle (degrees)
+  private final double PivotReverseSoftLimit = 0; // Minimum angle (degrees)
+  private final boolean IsPivotStatorLimitEnabled = true; // Stator current limit enabled (boolean)
+  private final double PivotStatorCurrentLimit = 40; // Stator current limit (amperes)
+  private final boolean IsPivotSupplyLimitEnabled = false; // Supply current limit enabled (boolean)
+  private final double PivotSupplyCurrentLimit = 40; // Supply current limit (amperes)
 
   
   // Constants for spinner
   private final DCMotor spinnerDcMotor = DCMotor.getKrakenX60(1);
-  private final int spinnerCanID = 9;
-  private final double spinnerGearRatio = 2;
-  private final double spinnerKP = 1;
-  private final double spinnerKI = 0;
-  private final double spinnerKD = 0;
-  private final double spinnerKS = 0;
-  private final double spinnerKV = 0;
-  private final double spinnerKA = 0;
-  private final double spinnerKG = 0; // Unused for spinners
-  private final double spinnerMaxVelocity = 1; // rad/s
-  private final double spinnerMaxAcceleration = 1; // rad/s²
-  private final boolean spinnerBrakeMode = true;
-  private final double spinnerForwardSoftLimit = 0; // max angle in radians
-  private final double spinnerReverseSoftLimit = 0; // min angle in radians
-  private final boolean spinnerEnableStatorLimit = true;
-  private final int spinnerStatorCurrentLimit = 40;
-  private final boolean spinnerEnableSupplyLimit = false;
-  private final double spinnerSupplyCurrentLimit = 40;
+  private final int spinnerCanID = 9; // CAN ID (dimensionless)
+  private final double spinnerGearRatio = 2; // Gear ratio (dimensionless)
+  private final double spinnerKP = 1; // Proportional gain (dimensionless)
+  private final double spinnerKI = 0; // Integral gain (dimensionless)
+  private final double spinnerKD = 0; // Derivative gain (dimensionless)
+  private final double spinnerKS = 0; // Static friction feedforward (volts)
+  private final double spinnerKV = 0; // Velocity feedforward (volt-seconds per radian)
+  private final double spinnerKA = 0; // Acceleration feedforward (volt-seconds² per radian)
+  private final double spinnerKG = 0; // Gravity feedforward (volts) - Unused for spinners
+  private final double spinnerMaxVelocity = 1; // Maximum velocity (rad/s)
+  private final double spinnerMaxAcceleration = 1; // Maximum acceleration (rad/s²)
+  private final boolean spinnerBrakeMode = true; // Brake mode enabled (boolean)
+  private final double spinnerForwardSoftLimit = 0; // Maximum angle (degrees)
+  private final double spinnerReverseSoftLimit = 0; // Minimum angle (degrees)
+  private final boolean spinnerEnableStatorLimit = true; // Stator current limit enabled (boolean)
+  private final int spinnerStatorCurrentLimit = 40; // Stator current limit (amperes)
+  private final boolean spinnerEnableSupplyLimit = false; // Supply current limit enabled (boolean)
+  private final double spinnerSupplyCurrentLimit = 40; // Supply current limit (amperes)
   
 
   // Feedforward
   private final ArmFeedforward Pivotfeedforward = new ArmFeedforward(
     PivotkS, // kS
-    0, // kG - intake doesn't need gravity compensation
+    PivotkG, // kG - gravity compensation for pivot
     PivotkV, // kV
     PivotkA // kA
   );
