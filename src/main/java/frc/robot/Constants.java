@@ -27,8 +27,8 @@ public class Constants {
     public static class Vision {
         // ==================== LIMELIGHT NAMES ====================
         // Network table names for each Limelight (must match what's configured in the Limelight web interface)
-        public static final String kLimelightFrontName = "limelight-two"; //left and two
-        public static final String kLimelightRightName = "limelight-right";
+        public static final String kLimelightLeftName = "limelight-two"; //left and two
+        public static final String kLimelightRightName = "limelight-right"; // everytihn called back actually right
         public static final String kLimelightGamepieceName = "limelight-gp";
 
         // ==================== CAMERA POSITIONS ====================
@@ -36,8 +36,8 @@ public class Constants {
         // +X is forward, +Y is right, +Z is up
         // Rotation: Roll (X), Pitch (Y), Yaw (Z)
         
-        // Front Limelight 4 - AprilTag camera (adjust these values to your robot)
-        public static final Transform3d kLimelightFrontPosition = new Transform3d(
+        // Left Limelight 4 - AprilTag camera (adjust these values to your robot)
+        public static final Transform3d kLimelightLeftPosition = new Transform3d(
             new Translation3d(
                 Units.inchesToMeters(10.118),  // X: 10 inches forward from center
                 Units.inchesToMeters(-9.770),   // Y: centered left-right
@@ -50,8 +50,8 @@ public class Constants {
             )
         );
 
-        // Back Limelight 4 - AprilTag camera (adjust these values to your robot)
-        public static final Transform3d kLimelightBackPosition = new Transform3d(
+        // Right Limelight 4 - AprilTag camera (adjust these values to your robot)
+        public static final Transform3d kLimelightRightPosition = new Transform3d(
             new Translation3d(
                 Units.inchesToMeters(10.118), // 
                 Units.inchesToMeters(9.770),   // Y: left-right
