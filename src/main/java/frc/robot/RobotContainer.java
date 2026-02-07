@@ -160,6 +160,14 @@ public class RobotContainer {
             intake.SpinnerMoveAtVelocityCommand(10)
         );
 
+        // joystick.leftTrigger().onTrue(
+        //     intake.DeployCommand()
+        // );
+
+        // joystick.leftBumper().onTrue(
+        //     intake.StowCommand()
+        // );
+
         joystick.x().onTrue(
             turret.setAngleCommand(90)
         );

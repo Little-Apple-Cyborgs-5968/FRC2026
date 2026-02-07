@@ -197,20 +197,20 @@ public class Vision extends SubsystemBase {
     private void configureLimelights() {
         // Set AprilTag Limelights to pipeline 0 (should be AprilTag pipeline)
         LimelightHelpers.setPipelineIndex(Constants.Vision.kLimelightFrontName, 0);
-        LimelightHelpers.setPipelineIndex(Constants.Vision.kLimelightBackName, 0);
+        LimelightHelpers.setPipelineIndex(Constants.Vision.kLimelightRightName, 0);
         
         // Set gamepiece Limelight to neural network pipeline
         LimelightHelpers.setPipelineIndex(Constants.Vision.kLimelightGamepieceName, 0);
         
         // Turn off LEDs for AprilTag cameras (they don't need them)
         LimelightHelpers.setLEDMode_ForceOff(Constants.Vision.kLimelightFrontName);
-        LimelightHelpers.setLEDMode_ForceOff(Constants.Vision.kLimelightBackName);
+        LimelightHelpers.setLEDMode_ForceOff(Constants.Vision.kLimelightRightName);
         
         // Configure camera positions relative to robot center using Transform3d constants
         // These override the web GUI values - comment out to use GUI values instead
         if (Constants.Vision.kSetCameraPosesFromCode) {
             setCameraPoseFromTransform(Constants.Vision.kLimelightFrontName, Constants.Vision.kLimelightFrontPosition);
-            setCameraPoseFromTransform(Constants.Vision.kLimelightBackName, Constants.Vision.kLimelightBackPosition);
+            setCameraPoseFromTransform(Constants.Vision.kLimelightRightName, Constants.Vision.kLimelightBackPosition);
             setCameraPoseFromTransform(Constants.Vision.kLimelightGamepieceName, Constants.Vision.kLimelightGamepiecePosition);
         }
     }
@@ -240,7 +240,7 @@ public class Vision extends SubsystemBase {
         
         // Process AprilTag vision from both cameras
         processAprilTagVision(Constants.Vision.kLimelightFrontName, true);
-        processAprilTagVision(Constants.Vision.kLimelightBackName, false);
+        processAprilTagVision(Constants.Vision.kLimelightRightName, false);
         
         // Log detected AprilTags to NetworkTables
         logDetectedTags();
@@ -278,7 +278,7 @@ public class Vision extends SubsystemBase {
             yawDegrees, 0, 0, 0, 0, 0
         );
         LimelightHelpers.SetRobotOrientation(
-            Constants.Vision.kLimelightBackName,
+            Constants.Vision.kLimelightRightName,
             yawDegrees, 0, 0, 0, 0, 0
         );
     }
@@ -398,7 +398,7 @@ public class Vision extends SubsystemBase {
         frontTagsPublisher.set(frontTags.toArray(new Pose3d[0]));
 
         // Log back camera tags
-        List<Pose3d> backTags = getDetectedTagPoses(Constants.Vision.kLimelightBackName);
+        List<Pose3d> backTags = getDetectedTagPoses(Constants.Vision.kLimelightRightName);
         backTagsPublisher.set(backTags.toArray(new Pose3d[0]));
     }
 

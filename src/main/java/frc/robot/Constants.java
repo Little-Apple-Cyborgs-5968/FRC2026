@@ -28,7 +28,7 @@ public class Constants {
         // ==================== LIMELIGHT NAMES ====================
         // Network table names for each Limelight (must match what's configured in the Limelight web interface)
         public static final String kLimelightFrontName = "limelight-two"; //left and two
-        public static final String kLimelightBackName = "limelight-right";
+        public static final String kLimelightRightName = "limelight-right";
         public static final String kLimelightGamepieceName = "limelight-gp";
 
         // ==================== CAMERA POSITIONS ====================
@@ -112,5 +112,60 @@ public class Constants {
         // Set to true to override web GUI camera poses with code values
         // Set to false to use values configured in Limelight web interface
         public static final boolean kSetCameraPosesFromCode = false;
+    }
+
+    public static class Intake {
+        // Operational constants
+        public static final double kSpinnerSpeed = 10; // Target spinner speed in rotations per second (RPS)
+        public static final double kIntakeAngleDeployed = 45; // Deployed angle in degrees
+        public static final double kIntakeAngleStowed = 0; // Stowed angle in degrees
+        
+        // Pivot Constants
+        public static final int kPivotCanID = 10; // CAN ID (dimensionless)
+        public static final double kPivotGearRatio = 9; // Gear ratio (dimensionless)
+        public static final double kPivotKP = 5.07; // Proportional gain (dimensionless)
+        public static final double kPivotKI = 0; // Integral gain (dimensionless)
+        public static final double kPivotKD = 2.82; // Derivative gain (dimensionless)
+        public static final double kPivotKS = 0; // Static friction feedforward (volts)
+        public static final double kPivotKV = 1.12; // Velocity feedforward (volt-seconds per radian)
+        public static final double kPivotKA = 0.08; // Acceleration feedforward (volt-seconds² per radian)
+        public static final double kPivotKG = 0.53; // Gravity feedforward (volts)
+        public static final double kPivotMaxVelocity = 1; // Maximum velocity (rad/s)
+        public static final double kPivotMaxAcceleration = 1; // Maximum acceleration (rad/s²)
+        public static final boolean kPivotBrakeEnabled = true; // Brake mode enabled (boolean)
+        public static final double kPivotForwardSoftLimit = 60; // Maximum angle (degrees)
+        public static final double kPivotReverseSoftLimit = 0; // Minimum angle (degrees)
+        public static final boolean kPivotStatorLimitEnabled = true; // Stator current limit enabled (boolean)
+        public static final double kPivotStatorCurrentLimit = 40; // Stator current limit (amperes)
+        public static final boolean kPivotSupplyLimitEnabled = false; // Supply current limit enabled (boolean)
+        public static final double kPivotSupplyCurrentLimit = 40; // Supply current limit (amperes)
+
+        // Spinner constants
+        public static final int kSpinnerCanID = 9; // CAN ID (dimensionless)
+        public static final double kSpinnerGearRatio = 2; // Gear ratio (dimensionless)
+        public static final double kSpinnerKP = 1; // Proportional gain (dimensionless)
+        public static final double kSpinnerKI = 0; // Integral gain (dimensionless)
+        public static final double kSpinnerKD = 0; // Derivative gain (dimensionless)
+        public static final double kSpinnerKS = 0; // Static friction feedforward (volts)
+        public static final double kSpinnerKV = 0; // Velocity feedforward (volt-seconds per radian)
+        public static final double kSpinnerKA = 0; // Acceleration feedforward (volt-seconds² per radian)
+        public static final double kSpinnerKG = 0; // Gravity feedforward (volts)
+        public static final double kSpinnerMaxVelocity = 1; // Maximum velocity (rad/s)
+        public static final double kSpinnerMaxAcceleration = 1; // Maximum acceleration (rad/s²)
+        public static final boolean kSpinnerBrakeMode = true; // Brake mode enabled (boolean)
+        public static final double kSpinnerForwardSoftLimit = 0; // Maximum angle (degrees)
+        public static final double kSpinnerReverseSoftLimit = 0; // Minimum angle (degrees)
+        public static final boolean kSpinnerEnableStatorLimit = true; // Stator current limit enabled (boolean)
+        public static final int kSpinnerStatorCurrentLimit = 40; // Stator current limit (amperes)
+        public static final boolean kSpinnerEnableSupplyLimit = false; // Supply current limit enabled (boolean)
+        public static final double kSpinnerSupplyCurrentLimit = 40; // Supply current limit (amperes)
+        
+        // Simulation constants
+        public static final double kSimArmMomentOfInertia = 0.01; // Arm moment of inertia
+        public static final double kSimArmLength = 0.1; // Arm length (m)
+        public static final double kSimMinAngleDegrees = -90; // Min angle (degrees)
+        public static final double kSimMaxAngleDegrees = 90; // Max angle (degrees)
+        public static final boolean kSimulateGravity = false; // Simulate gravity
+        public static final double kSimStartingPositionDegrees = 0; // Starting position (degrees)
     }
 }

@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 /**
  * intake subsystem using TalonFX with Krakenx60 motors
@@ -40,53 +41,51 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Intake extends SubsystemBase {
 
   //Constants
-  private final double spinnerSpeed = 10; // Target spinner speed in rotations per second (RPS)
-  private final double intakeAngleDeployed = 45; // Deployed angle in degrees
-  private final double intakeAngleStowed = 0; // Stowed angle in degrees
+  private final double spinnerSpeed = Constants.Intake.kSpinnerSpeed;
+  private final double intakeAngleDeployed = Constants.Intake.kIntakeAngleDeployed;
+  private final double intakeAngleStowed = Constants.Intake.kIntakeAngleStowed;
 
   //Pivot Constants
   private final DCMotor dcMotorPivot = DCMotor.getKrakenX60(1);
-  private final int canIDPivot = 10; // CAN ID (dimensionless)
-  private final double gearRatioPivot = 9; // Gear ratio (dimensionless)
-  private final double PivotkP = 5.07; // Proportional gain (dimensionless)
-  private final double PivotkI = 0; // Integral gain (dimensionless)
-  private final double PivotkD = 2.82; // Derivative gain (dimensionless)
-  private final double PivotkS = 0; // Static friction feedforward (volts)
-  private final double PivotkV = 1.12; // Velocity feedforward (volt-seconds per radian)
-  private final double PivotkA = 0.08; // Acceleration feedforward (volt-seconds² per radian)
-  private final double PivotkG = 0.53; // Gravity feedforward (volts) - Unused for now
-  private final double PivotMaxVelocity = 1; // Maximum velocity (rad/s)
-  private final double PivotMaxAcceleration = 1; // Maximum acceleration (rad/s²)
-  private final boolean IsPivotBrakeEnabled = true; // Brake mode enabled (boolean)
-  private final double PivotForwardSoftLimit = 60; // Maximum angle (degrees)
-  private final double PivotReverseSoftLimit = 0; // Minimum angle (degrees)
-  private final boolean IsPivotStatorLimitEnabled = true; // Stator current limit enabled (boolean)
-  private final double PivotStatorCurrentLimit = 40; // Stator current limit (amperes)
-  private final boolean IsPivotSupplyLimitEnabled = false; // Supply current limit enabled (boolean)
-  private final double PivotSupplyCurrentLimit = 40; // Supply current limit (amperes)
+  private final int canIDPivot = Constants.Intake.kPivotCanID;
+  private final double gearRatioPivot = Constants.Intake.kPivotGearRatio;
+  private final double PivotkP = Constants.Intake.kPivotKP;
+  private final double PivotkI = Constants.Intake.kPivotKI;
+  private final double PivotkD = Constants.Intake.kPivotKD;
+  private final double PivotkS = Constants.Intake.kPivotKS;
+  private final double PivotkV = Constants.Intake.kPivotKV;
+  private final double PivotkA = Constants.Intake.kPivotKA;
+  private final double PivotkG = Constants.Intake.kPivotKG;
+  private final double PivotMaxVelocity = Constants.Intake.kPivotMaxVelocity;
+  private final double PivotMaxAcceleration = Constants.Intake.kPivotMaxAcceleration;
+  private final boolean IsPivotBrakeEnabled = Constants.Intake.kPivotBrakeEnabled;
+  private final double PivotForwardSoftLimit = Constants.Intake.kPivotForwardSoftLimit;
+  private final double PivotReverseSoftLimit = Constants.Intake.kPivotReverseSoftLimit;
+  private final boolean IsPivotStatorLimitEnabled = Constants.Intake.kPivotStatorLimitEnabled;
+  private final double PivotStatorCurrentLimit = Constants.Intake.kPivotStatorCurrentLimit;
+  private final boolean IsPivotSupplyLimitEnabled = Constants.Intake.kPivotSupplyLimitEnabled;
+  private final double PivotSupplyCurrentLimit = Constants.Intake.kPivotSupplyCurrentLimit;
 
-  
   // Constants for spinner
   private final DCMotor spinnerDcMotor = DCMotor.getKrakenX60(1);
-  private final int spinnerCanID = 9; // CAN ID (dimensionless)
-  private final double spinnerGearRatio = 2; // Gear ratio (dimensionless)
-  private final double spinnerKP = 1; // Proportional gain (dimensionless)
-  private final double spinnerKI = 0; // Integral gain (dimensionless)
-  private final double spinnerKD = 0; // Derivative gain (dimensionless)
-  private final double spinnerKS = 0; // Static friction feedforward (volts)
-  private final double spinnerKV = 0; // Velocity feedforward (volt-seconds per radian)
-  private final double spinnerKA = 0; // Acceleration feedforward (volt-seconds² per radian)
-  private final double spinnerKG = 0; // Gravity feedforward (volts) - Unused for spinners
-  private final double spinnerMaxVelocity = 1; // Maximum velocity (rad/s)
-  private final double spinnerMaxAcceleration = 1; // Maximum acceleration (rad/s²)
-  private final boolean spinnerBrakeMode = true; // Brake mode enabled (boolean)
-  private final double spinnerForwardSoftLimit = 0; // Maximum angle (degrees)
-  private final double spinnerReverseSoftLimit = 0; // Minimum angle (degrees)
-  private final boolean spinnerEnableStatorLimit = true; // Stator current limit enabled (boolean)
-  private final int spinnerStatorCurrentLimit = 40; // Stator current limit (amperes)
-  private final boolean spinnerEnableSupplyLimit = false; // Supply current limit enabled (boolean)
-  private final double spinnerSupplyCurrentLimit = 40; // Supply current limit (amperes)
-  
+  private final int spinnerCanID = Constants.Intake.kSpinnerCanID;
+  private final double spinnerGearRatio = Constants.Intake.kSpinnerGearRatio;
+  private final double spinnerKP = Constants.Intake.kSpinnerKP;
+  private final double spinnerKI = Constants.Intake.kSpinnerKI;
+  private final double spinnerKD = Constants.Intake.kSpinnerKD;
+  private final double spinnerKS = Constants.Intake.kSpinnerKS;
+  private final double spinnerKV = Constants.Intake.kSpinnerKV;
+  private final double spinnerKA = Constants.Intake.kSpinnerKA;
+  private final double spinnerKG = Constants.Intake.kSpinnerKG;
+  private final double spinnerMaxVelocity = Constants.Intake.kSpinnerMaxVelocity;
+  private final double spinnerMaxAcceleration = Constants.Intake.kSpinnerMaxAcceleration;
+  private final boolean spinnerBrakeMode = Constants.Intake.kSpinnerBrakeMode;
+  private final double spinnerForwardSoftLimit = Constants.Intake.kSpinnerForwardSoftLimit;
+  private final double spinnerReverseSoftLimit = Constants.Intake.kSpinnerReverseSoftLimit;
+  private final boolean spinnerEnableStatorLimit = Constants.Intake.kSpinnerEnableStatorLimit;
+  private final int spinnerStatorCurrentLimit = Constants.Intake.kSpinnerStatorCurrentLimit;
+  private final boolean spinnerEnableSupplyLimit = Constants.Intake.kSpinnerEnableSupplyLimit;
+  private final double spinnerSupplyCurrentLimit = Constants.Intake.kSpinnerSupplyCurrentLimit;
 
   // Feedforward
   private final ArmFeedforward Pivotfeedforward = new ArmFeedforward(
@@ -235,12 +234,12 @@ public class Intake extends SubsystemBase {
     intakeSim = new SingleJointedArmSim(
       dcMotorPivot, // Motor type
       gearRatioPivot,
-      0.01, // Arm moment of inertia - Small value since there are no arm parameters
-      0.1, // Arm length (m) - Small value since there are no arm parameters
-      Units.degreesToRadians(-90), // Min angle (rad)
-      Units.degreesToRadians(90), // Max angle (rad)
-      false, // Simulate gravity - Disable gravity for intake
-      Units.degreesToRadians(0) // Starting position (rad)
+      Constants.Intake.kSimArmMomentOfInertia,
+      Constants.Intake.kSimArmLength,
+      Units.degreesToRadians(Constants.Intake.kSimMinAngleDegrees),
+      Units.degreesToRadians(Constants.Intake.kSimMaxAngleDegrees),
+      Constants.Intake.kSimulateGravity,
+      Units.degreesToRadians(Constants.Intake.kSimStartingPositionDegrees)
     );
   }
 
@@ -525,7 +524,7 @@ public class Intake extends SubsystemBase {
     return runOnce(() -> stow());
   }
 
-  public void deploy(){
+  private void deploy(){
     PivotSetAngle(intakeAngleDeployed);
     SpinnerSetVelocity(spinnerSpeed);
   }
