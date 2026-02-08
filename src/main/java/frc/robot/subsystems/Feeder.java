@@ -32,20 +32,20 @@ import frc.robot.Constants;
 public class Feeder extends SubsystemBase {
 
   // Constants
-  private final double spinnerSpeed = Constants.TurretTower.kSpinnerSpeed;
-  private final int canID = Constants.TurretTower.kMotorCanID;
-  private final double gearRatio = Constants.TurretTower.kGearRatio;
-  private final double kP = Constants.TurretTower.kKP;
-  private final double kI = Constants.TurretTower.kKI;
-  private final double kD = Constants.TurretTower.kKD;
-  private final double kS = Constants.TurretTower.kKS;
-  private final double kV = Constants.TurretTower.kKV;
-  private final double kA = Constants.TurretTower.kKA;
-  private final boolean brakeMode = Constants.TurretTower.kBrakeMode;
-  private final boolean enableStatorLimit = Constants.TurretTower.kEnableStatorLimit;
-  private final int statorCurrentLimit = Constants.TurretTower.kStatorCurrentLimit;
-  private final boolean enableSupplyLimit = Constants.TurretTower.kEnableSupplyLimit;
-  private final double supplyCurrentLimit = Constants.TurretTower.kSupplyCurrentLimit;
+  private final double spinnerSpeed = Constants.Feeder.kSpinnerSpeed;
+  private final int canID = Constants.Feeder.kMotorCanID;
+  private final double gearRatio = Constants.Feeder.kGearRatio;
+  private final double kP = Constants.Feeder.kKP;
+  private final double kI = Constants.Feeder.kKI;
+  private final double kD = Constants.Feeder.kKD;
+  private final double kS = Constants.Feeder.kKS;
+  private final double kV = Constants.Feeder.kKV;
+  private final double kA = Constants.Feeder.kKA;
+  private final boolean brakeMode = Constants.Feeder.kBrakeMode;
+  private final boolean enableStatorLimit = Constants.Feeder.kEnableStatorLimit;
+  private final int statorCurrentLimit = Constants.Feeder.kStatorCurrentLimit;
+  private final boolean enableSupplyLimit = Constants.Feeder.kEnableSupplyLimit;
+  private final double supplyCurrentLimit = Constants.Feeder.kSupplyCurrentLimit;
 
   // Feedforward
   private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);

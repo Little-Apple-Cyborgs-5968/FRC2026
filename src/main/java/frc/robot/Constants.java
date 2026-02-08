@@ -191,7 +191,7 @@ public class Constants {
         public static final double kSupplyCurrentLimit = 40; // Supply current limit (amperes)
     }
 
-    public static class TurretTower {
+    public static class Feeder {
         // Operational constants
         public static final double kSpinnerSpeed = 20; // Target spinner speed in rotations per second (RPS)
         
