@@ -169,9 +169,31 @@ public class Constants {
         public static final double kSimStartingPositionDegrees = 0; // Starting position (degrees)
     }
 
+    public static class Spindexer {
+        // Operational constants
+        public static final double kSpinnerSpeed = 15; // Target spinner speed in rotations per second (RPS)
+        
+        // Motor Constants
+        public static final int kMotorCanID = 11; // CAN ID (dimensionless)
+        public static final double kGearRatio = 1; // Gear ratio (dimensionless)
+        public static final double kKP = 0.6; // Proportional gain (dimensionless)
+        public static final double kKI = 0; // Integral gain (dimensionless)
+        public static final double kKD = 0; // Derivative gain (dimensionless)
+        public static final double kKS = 0.1; // Static friction feedforward (volts)
+        public static final double kKV = 0.12; // Velocity feedforward (volt-seconds per radian)
+        public static final double kKA = 0.01; // Acceleration feedforward (volt-seconds² per radian)
+        public static final double kMaxVelocity = 50; // Maximum velocity (rotations/s)
+        public static final double kMaxAcceleration = 100; // Maximum acceleration (rotations/s²)
+        public static final boolean kBrakeMode = false; // Brake mode enabled (boolean)
+        public static final boolean kEnableStatorLimit = true; // Stator current limit enabled (boolean)
+        public static final int kStatorCurrentLimit = 40; // Stator current limit (amperes)
+        public static final boolean kEnableSupplyLimit = false; // Supply current limit enabled (boolean)
+        public static final double kSupplyCurrentLimit = 40; // Supply current limit (amperes)
+    }
+
     public static class Turret {
 
-        public static final int kTurretCanID = 11; // CAN ID (dimensionless)
+        public static final int kTurretCanID = 12; // CAN ID (dimensionless) - Changed from 11 to 12
 
         public static final double kTurretOffsetX  = 0.1; // X offset (forward +X, backward -X) from robot center to turret (meters) 
         public static final double kTurretOffsetY = -0.2; // Y offset (left +Y, right -Y) from robot center to turret (meters)
