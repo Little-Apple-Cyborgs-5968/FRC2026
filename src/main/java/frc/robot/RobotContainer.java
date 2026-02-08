@@ -153,11 +153,11 @@ public class RobotContainer {
         );
 
         joystick.leftTrigger().onTrue(
-            intake.SpinnerStopCommand()
+            intake.SpinnerMoveAtVelocityCommand(0)
         );
 
         joystick.rightTrigger().onTrue(
-            intake.SpinnerMoveAtVelocityCommand(10)
+            intake.SpinnerMoveAtVelocityCommand(-30)
         );
 
         // joystick.leftTrigger().onTrue(

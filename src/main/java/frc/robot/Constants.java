@@ -143,7 +143,7 @@ public class Constants {
         // Spinner constants
         public static final int kSpinnerCanID = 9; // CAN ID (dimensionless)
         public static final double kSpinnerGearRatio = 2; // Gear ratio (dimensionless)
-        public static final double kSpinnerKP = 1; // Proportional gain (dimensionless)
+        public static final double kSpinnerKP = 0.6; // Proportional gain (dimensionless) // 0.6 works fine for 1:2
         public static final double kSpinnerKI = 0; // Integral gain (dimensionless)
         public static final double kSpinnerKD = 0; // Derivative gain (dimensionless)
         public static final double kSpinnerKS = 0; // Static friction feedforward (volts)
