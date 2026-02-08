@@ -168,4 +168,20 @@ public class Constants {
         public static final boolean kSimulateGravity = false; // Simulate gravity
         public static final double kSimStartingPositionDegrees = 0; // Starting position (degrees)
     }
+
+    public static class Turret {
+
+        public static final int kTurretCanID = 11; // CAN ID (dimensionless)
+
+        public static final double kTurretOffsetX  = 0.1; // X offset (forward +X, backward -X) from robot center to turret (meters) 
+        public static final double kTurretOffsetY = -0.2; // Y offset (left +Y, right -Y) from robot center to turret (meters)
+
+        // Turret mechanical limits (degrees, relative to robot forward)
+        public static final double kMinAngleDegrees = -180.0;
+        public static final double kMaxAngleDegrees = 180.0;
+
+        // Shooting range limits (meters)
+        public static final double kMinShootingDistance = 1.0;
+        public static final double kMaxShootingDistance = 5.5;
+    }
 }

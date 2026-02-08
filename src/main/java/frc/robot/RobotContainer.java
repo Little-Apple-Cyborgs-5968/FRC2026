@@ -26,11 +26,12 @@ import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.TurretShooter;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.simulation.IntakeSim;
-import frc.robot.subsystems.simulation.TurretSim;
+import frc.robot.subsystems.simulation.TurretShooterSim;
 import frc.robot.utils.GameState;
+import frc.robot.utils.TurretUtil;
 
 
 public class RobotContainer {
@@ -73,8 +74,8 @@ public class RobotContainer {
     private final Vision vision;
 
     // Turret subsystem
-    private final Turret turret = new Turret();
-    private final TurretSim turretSim = new TurretSim(turret);
+    private final TurretShooter turret = new TurretShooter();
+    private final TurretShooterSim turretSim = new TurretShooterSim(turret);
 
     // Intake Subsystem
 
@@ -140,7 +141,8 @@ public class RobotContainer {
         // );
 
         // Example usage of rumble command (controller rumble for driver feedback)
-        joystick.a().and(joystick.x()).onTrue(
+        // Moved to start+back combo to avoid conflict with auto-aim
+        joystick.start().and(joystick.back()).onTrue(
             rumble.doublePulse()
         );
         // Map bumpers/triggers to intake commands
@@ -176,6 +178,12 @@ public class RobotContainer {
             turret.setAngleCommand(0)
         );
 
+        // Auto-aim bindings
+        // B button: Auto-aim at hub (stationary)
+        joystick.b().whileTrue(
+            turret.autoAimCommand(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB)
+        );
+
         new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 5).onTrue(rumble.lightPulse());
         new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 0).onTrue(rumble.doublePulse());
         // joystick.b().onTrue(
@@ -193,9 +201,6 @@ public class RobotContainer {
         );
 
         
-        joystick.leftStick().onTrue(drivetrain.runOnce(() -> System.out.println("Left stick pressed")));
-        joystick.rightStick().onTrue(drivetrain.runOnce(() -> System.out.println("Right stick pressed")));
-
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
         // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
