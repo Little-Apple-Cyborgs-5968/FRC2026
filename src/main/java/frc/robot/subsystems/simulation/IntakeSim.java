@@ -97,7 +97,7 @@ public class IntakeSim extends SubsystemBase {
       intake.getSimulation().getCurrentDrawAmps()
     );
     SmartDashboard.putNumber(
-      "spinner Velocity (rot/s)",
+      "spinner RPS",
       intake.SpinnerGetVelocity()
     );
 

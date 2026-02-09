@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.io.Console;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -159,7 +161,7 @@ public class RobotContainer {
         );
 
         joystick.rightTrigger().onTrue(
-            intake.SpinnerMoveAtVelocityCommand(-30)
+            intake.SpinnerMoveAtVelocityCommand(getTunableValue())
         );
 
         // joystick.leftTrigger().onTrue(
@@ -223,5 +225,10 @@ public class RobotContainer {
     /** Called from Robot.java robotPeriodic(), updates dashboard */
     public void updateDashboard() {
         dashboard.update();
+    }
+
+    /** Gets the current tunable value from the dashboard - use this for testing/tuning! */
+    public double getTunableValue() {
+        return dashboard.getTunableValue();
     }
 }
