@@ -20,7 +20,10 @@ import com.ctre.phoenix6.sim.TalonFXSimState.MotorType;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -28,6 +31,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -127,6 +131,7 @@ public class Intake extends SubsystemBase {
 
   // Simulation
   private final SingleJointedArmSim intakeSim;
+  private final FlywheelSim spinnerSim;
 
   /**
    * Creates a new intake Subsystem.
@@ -241,6 +246,14 @@ public class Intake extends SubsystemBase {
       Constants.Intake.kSimulateGravity,
       Units.degreesToRadians(Constants.Intake.kSimStartingPositionDegrees)
     );
+
+    // Initialize spinner simulation
+    LinearSystem<N1, N1, N1> spinnerPlant = LinearSystemId.createFlywheelSystem(
+      DCMotor.getKrakenX60(1),
+      Constants.Intake.kSimSpinnerMomentOfInertia,
+      spinnerGearRatio
+    );
+    spinnerSim = new FlywheelSim(spinnerPlant, DCMotor.getKrakenX60(1));
   }
 
   /**
@@ -288,6 +301,25 @@ public class Intake extends SubsystemBase {
 
     PivotMotor.getSimState().setRawRotorPosition(motorPosition);
     PivotMotor.getSimState().setRotorVelocity(motorVelocity);
+
+    // Simulate spinner motor
+    spinnerSim.setInput(SpinnerMotor.getSimState().getMotorVoltage());
+    spinnerSim.update(0.020);
+
+    // Update spinner motor sim state
+    double spinnerVelocityRadPerSec = spinnerSim.getAngularVelocityRadPerSec();
+    double spinnerMotorVelocity = RadiansPerSecond.of(
+      spinnerVelocityRadPerSec * spinnerGearRatio
+    ).in(RotationsPerSecond);
+
+    SpinnerMotor.getSimState().setRotorVelocity(spinnerMotorVelocity);
+    
+    // Update battery voltage considering both motors
+    RoboRioSim.setVInVoltage(
+      BatterySim.calculateDefaultBatteryLoadedVoltage(
+        intakeSim.getCurrentDrawAmps() + spinnerSim.getCurrentDrawAmps()
+      )
+    );
   }
 
 

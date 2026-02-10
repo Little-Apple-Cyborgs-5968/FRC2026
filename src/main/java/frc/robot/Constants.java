@@ -171,6 +171,9 @@ public class Constants {
         public static final double kSimMaxAngleDegrees = 90; // Max angle (degrees)
         public static final boolean kSimulateGravity = false; // Simulate gravity
         public static final double kSimStartingPositionDegrees = 0; // Starting position (degrees)
+        
+        // Spinner simulation constants
+        public static final double kSimSpinnerMomentOfInertia = 0.0001; // Spinner moment of inertia (kg·m²)
     }
 
     public static class Spindexer {
