@@ -32,6 +32,7 @@ import frc.robot.subsystems.TurretShooter;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.simulation.IntakeSim;
 import frc.robot.subsystems.simulation.TurretShooterSim;
+import frc.robot.subsystems.RoboSingSubsystem;
 import frc.robot.utils.GameState;
 import frc.robot.utils.TurretUtil;
 
@@ -74,6 +75,9 @@ public class RobotContainer {
     
     // Vision subsystem for AprilTag localization
     private final Vision vision;
+
+    // for robot sing
+    private final RoboSingSubsystem roboSing = new RoboSingSubsystem();
 
     // Turret subsystem
     private final TurretShooter turret = new TurretShooter();
@@ -122,6 +126,11 @@ public class RobotContainer {
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
+
+        // robo sing controls
+        joystick.start().and(joystick.a()).onTrue(roboSing.runOnce(roboSing::play));
+        joystick.start().and(joystick.b()).onTrue(roboSing.runOnce(roboSing::stop));
+
 
         // robot oriented drive forwad and backward, also left right
         joystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
