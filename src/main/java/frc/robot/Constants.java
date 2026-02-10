@@ -14,6 +14,10 @@ import edu.wpi.first.math.util.Units;
 public class Constants {
     public static class Swerve {
         public static final double kRobotCentricSpeed = 0.5; // how fast robot centric drive speed is in m/s
+        
+        // SYOMDrive (Synchronized Yaw-Optimized Motion Drive) constants
+        public static final double kSYOMDriveMinVelocity = 0.33; // Minimum velocity (m/s) before rotation activates
+        public static final double kSYOMDriveRotationKp = 8.0; // Proportional gain for smooth rotation to travel direction
     }
 
     public static class PathFinding {

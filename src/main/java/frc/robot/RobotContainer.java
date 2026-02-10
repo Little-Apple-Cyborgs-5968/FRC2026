@@ -6,8 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.io.Console;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -19,11 +17,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.Constants;
-import frc.robot.commands.PathFindCommands;
 import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -51,6 +47,9 @@ public class RobotContainer {
     private final SwerveRequest.RobotCentric driveRobotCentric = new SwerveRequest.RobotCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    
+    // SYOMDrive (Synchronized Yaw-Optimized Motion Drive) - auto-rotates to face travel direction
+    private boolean isSYOMDriveEnabled = false;
     
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -116,11 +115,47 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            )
+            drivetrain.applyRequest(() -> {
+                // Check if SYOMDrive mode is enabled
+                if (isSYOMDriveEnabled) {
+                    // SYOMDrive: Calculate automatic rotation to face travel direction
+                    double vx = -joystick.getLeftY() * MaxSpeed;
+                    double vy = -joystick.getLeftX() * MaxSpeed;
+                    
+                    // Calculate velocity magnitude
+                    double velocityMagnitude = Math.sqrt(vx * vx + vy * vy);
+                    
+                    // Calculate rotational rate
+                    double rotationalRate = 0;
+                    
+                    if (velocityMagnitude > Constants.Swerve.kSYOMDriveMinVelocity) {
+                        // Calculate the direction of travel (desired heading)
+                        Rotation2d desiredHeading = new Rotation2d(vx, vy);
+                        
+                        // Get current heading
+                        Rotation2d currentHeading = drivetrain.getState().Pose.getRotation();
+                        
+                        // Calculate heading error
+                        double headingError = desiredHeading.minus(currentHeading).getRadians();
+                        
+                        // Normalize to [-π, π]
+                        while (headingError > Math.PI) headingError -= 2 * Math.PI;
+                        while (headingError < -Math.PI) headingError += 2 * Math.PI;
+                        
+                        // Apply proportional control for smooth rotation
+                        rotationalRate = headingError * Constants.Swerve.kSYOMDriveRotationKp;
+                    }
+                    
+                    return drive.withVelocityX(vx)
+                                .withVelocityY(vy)
+                                .withRotationalRate(rotationalRate);
+                } else {
+                    // Normal field-centric drive with manual rotation
+                    return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
+                                .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                                .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
+                }
+            })
         );
 
         // robot oriented drive forwad and backward, also left right
@@ -147,6 +182,16 @@ public class RobotContainer {
         joystick.start().and(joystick.back()).onTrue(
             rumble.doublePulse()
         );
+        
+        // Toggle SYOMDrive (Synchronized Yaw-Optimized Motion Drive) with A button
+        // When enabled, robot automatically faces the direction it's traveling
+        joystick.a().onTrue(
+            drivetrain.runOnce(() -> {
+                isSYOMDriveEnabled = !isSYOMDriveEnabled;
+                System.out.println("SYOMDrive " + (isSYOMDriveEnabled ? "ENABLED" : "DISABLED"));
+            })
+        );
+        
         // Map bumpers/triggers to intake commands
         joystick.leftBumper().onTrue(
             intake.PivotSetAngleCommand(0)
@@ -225,6 +270,8 @@ public class RobotContainer {
     /** Called from Robot.java robotPeriodic(), updates dashboard */
     public void updateDashboard() {
         dashboard.update();
+        // Update SYOMDrive status on SmartDashboard
+        SmartDashboard.putBoolean("SYOMDrive Enabled", isSYOMDriveEnabled);
     }
 
     /** Gets the current tunable value from the dashboard - use this for testing/tuning! */
