@@ -210,7 +210,7 @@ public class Spindexer extends SubsystemBase {
    * Stop the motor.
    */
   private void stop() {
-    setVelocity(0);
+    motor.stopMotor();
   }
 
   /**

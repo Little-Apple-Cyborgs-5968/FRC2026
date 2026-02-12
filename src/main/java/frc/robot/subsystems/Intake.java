@@ -452,25 +452,17 @@ public class Intake extends SubsystemBase {
 
   //------------------------ Spinner Methods -----------------------//
   /**
-   * Get the current position in Rotations.
-   * @return Position in Rotations
-   */
-  @Logged(name = "Spinner Position/Rotations")
-  public double SpinnerGetPosition() {
-    // Rotations
-    return spinnerPositionSignal.getValueAsDouble();
-  }
 
   /**
    * Get the current velocity in rotations per second.
    * @return Velocity in rotations per second
    */
-  @Logged(name = "Spinner Velocity/RotationsPerSecond")
+  @Logged(name = "Spinner Vel")
   public double SpinnerGetVelocity() {
     return spinnerVelocitySignal.getValueAsDouble();
   }
 
-  @Logged(name = "Target Spinner Velocity/RotationsPerSecond")
+  @Logged(name = "Target Spinner Vel")
   public double SpinnerGetTargetVelocity() {
     return spinnerVelocityRequest.Velocity;
   }
@@ -533,7 +525,7 @@ public class Intake extends SubsystemBase {
    * @return A command that stops the spinner
    */
   public Command SpinnerStopCommand() {
-    return runOnce(() -> SpinnerSetVelocity(0));
+    return runOnce(() -> SpinnerMotor.stopMotor());
   }
 
   /**

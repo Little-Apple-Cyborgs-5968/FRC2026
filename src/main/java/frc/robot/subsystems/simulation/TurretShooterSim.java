@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.TurretShooter;
+import frc.robot.subsystems.Turret;
 
 /**
  * Visualization for the turret subsystem in simulation.
@@ -22,7 +22,7 @@ public class TurretShooterSim extends SubsystemBase {
 
   
 
-  private final TurretShooter turret;
+  private final Turret turret;
 
   // Simulation display
   private final Mechanism2d mech;
@@ -43,7 +43,7 @@ public class TurretShooterSim extends SubsystemBase {
    *
    * @param turretSubsystem The turret subsystem to visualize
    */
-  public TurretShooterSim(TurretShooter turretSubsystem) {
+  public TurretShooterSim(Turret turretSubsystem) {
     this.turret = turretSubsystem;
 
     // Create the simulation display

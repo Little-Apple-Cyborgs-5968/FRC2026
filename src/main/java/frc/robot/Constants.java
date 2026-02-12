@@ -178,7 +178,7 @@ public class Constants {
 
     public static class Spindexer {
         // Operational constants
-        public static final double kSpinnerSpeed = 15; // Target spinner speed in rotations per second (RPS)
+        public static final double kSpinnerSpeed = -25; // Target spinner speed in rotations per second (RPS)
         
         // Motor Constants
         public static final int kMotorCanID = 11; // CAN ID (dimensionless)

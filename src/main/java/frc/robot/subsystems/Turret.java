@@ -36,7 +36,7 @@ import java.util.function.Supplier;
  * Pivot subsystem using TalonFX with Krakenx60 motor
  */
 @Logged(name = "Turret")
-public class TurretShooter extends SubsystemBase {
+public class Turret extends SubsystemBase {
 
   // Constants
   private final DCMotor dcMotor = DCMotor.getKrakenX60(1);
@@ -81,7 +81,7 @@ public class TurretShooter extends SubsystemBase {
   /**
    * Creates a new Pivot Subsystem.
    */
-  public TurretShooter() {
+  public Turret() {
     // Initialize motor controller
     motor = new TalonFX(canID);
 

@@ -24,7 +24,7 @@ import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.TurretShooter;
+import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.simulation.IntakeSim;
 import frc.robot.subsystems.simulation.TurretShooterSim;
@@ -75,7 +75,7 @@ public class RobotContainer {
     private final Vision vision;
 
     // Turret subsystem
-    private final TurretShooter turret = new TurretShooter();
+    private final Turret turret = new Turret();
     private final TurretShooterSim turretSim = new TurretShooterSim(turret);
 
     // Intake Subsystem
