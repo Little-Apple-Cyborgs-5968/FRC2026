@@ -47,17 +47,24 @@ public class DashboardPublisher {
             .getTable("Tuning")
             .getEntry("TunableValue");
 
-    public DashboardPublisher(CommandSwerveDrivetrain drivetrain, SendableChooser<Command> autoChooser) {
+    public DashboardPublisher(CommandSwerveDrivetrain drivetrain) {
         m_drivetrain = drivetrain;
-        m_autoChooser = autoChooser;
+
+        //creates and puts the auto chooser object from pathplanner autos
+        m_autoChooser = AutoBuilder.buildAutoChooser();
+        
+        //puts auto chooser on smartdashboard for selection
+        SmartDashboard.putData("DASHBOARD/Auto Chooser", m_autoChooser);
 
         // Initialize tunable value with default of 0.0
         tunableValue.setDouble(0.0);
 
-        //put data on the dashboard
-        SmartDashboard.putData("Robot Field", m_field);
-        SmartDashboard.putData("Auto Preview", m_autoPreviewField);
-        SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
+        // Put data in the "DASHBOARD" subfolder on the dashboard (NetworkTables keys support '/')
+        SmartDashboard.putData("DASHBOARD/Robot Field", m_field);
+        SmartDashboard.putData("DASHBOARD/Auto Preview", m_autoPreviewField);
+        SmartDashboard.putData("DASHBOARD/Scheduler", CommandScheduler.getInstance());
+
+        // Initialize the swerve widget in DASHBOARD subfolder
         initSwerveDriveWidget();
 
         // Subscribe to PathPlanner's active path
@@ -79,6 +86,10 @@ public class DashboardPublisher {
     /** Gets the current tunable value from the dashboard */
     public double getTunableValue() {
         return tunableValue.getDouble(0.0); // Returns 0.0 if not set
+    }
+
+    public Command getAuto() {
+        return m_autoChooser.getSelected();
     }
 
 //------------------------------------------------------------------------------------
@@ -156,7 +167,7 @@ public class DashboardPublisher {
 //------------------------------------------------------------------------------------
     /** Initializes the swerve drive widget for Elastic dashboard */
     public void initSwerveDriveWidget() {
-        SmartDashboard.putData("Swerve Drive", new Sendable() {
+        SmartDashboard.putData("DASHBOARD/Swerve Drive", new Sendable() {
             @Override
             public void initSendable(SendableBuilder builder) {
                 builder.setSmartDashboardType("SwerveDrive");
@@ -211,8 +222,8 @@ public class DashboardPublisher {
     private void updateGameState() {
         GameState.States currentState = GameState.determineGameState();
         String stateString = (currentState != null) ? currentState.name() : "UNKNOWN";
-        SmartDashboard.putString("Game State", stateString);
-        SmartDashboard.putNumber("Time Left In State", GameState.timeRemainingInCurrentState());
+        SmartDashboard.putString("DASHBOARD/Game State", stateString);
+        SmartDashboard.putNumber("DASHBOARD/Time Left In State", GameState.timeRemainingInCurrentState());
     }
 
 //------------------------------------------------------------------------------------

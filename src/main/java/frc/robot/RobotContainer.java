@@ -8,10 +8,8 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -19,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.generated.TunerConstants;
-import frc.robot.Constants;
 import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -28,6 +25,7 @@ import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.simulation.IntakeSim;
 import frc.robot.subsystems.simulation.TurretShooterSim;
+import frc.robot.subsystems.simulation.Visualizer;
 import frc.robot.utils.GameState;
 import frc.robot.utils.TurretUtil;
 
@@ -83,8 +81,8 @@ public class RobotContainer {
     private final Intake intake = new Intake();
     private final IntakeSim intakeSim = new IntakeSim(intake);
 
-    // Auto chooser
-    private final SendableChooser<Command> autoChooser;
+    
+    private final Visualizer visualizer = new Visualizer(turret);
 
     
 
@@ -99,13 +97,8 @@ public class RobotContainer {
             (pose, timestamp, stdDevs) -> drivetrain.addVisionMeasurement(pose, timestamp, stdDevs)
         );
 
-        //creates and puts the auto chooser object from pathplanner autos
-        autoChooser = AutoBuilder.buildAutoChooser();
-        
-        //puts auto chooser on smartdashboard for selection
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-
-        dashboard = new DashboardPublisher(drivetrain, autoChooser);
+        // Dashboard now handles auto chooser creation and publishing
+        dashboard = new DashboardPublisher(drivetrain);
 
         configureBindings();
     }
@@ -263,7 +256,7 @@ public class RobotContainer {
 
     //** Called from Robot.java autonomousInit(), gets selected auto command */
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        return dashboard.getAuto();
     }
 
 
@@ -271,7 +264,7 @@ public class RobotContainer {
     public void updateDashboard() {
         dashboard.update();
         // Update SYOMDrive status on SmartDashboard
-        SmartDashboard.putBoolean("SYOMDrive Enabled", isSYOMDriveEnabled);
+        SmartDashboard.putBoolean("DASHBOARD/SYOMDrive Enabled", isSYOMDriveEnabled);
     }
 
     /** Gets the current tunable value from the dashboard - use this for testing/tuning! */

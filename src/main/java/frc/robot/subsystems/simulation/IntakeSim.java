@@ -74,31 +74,31 @@ public class IntakeSim extends SubsystemBase {
     );
 
     // Initialize visualization
-    SmartDashboard.putData("intake Sim", mech);
+    SmartDashboard.putData("INTAKE/intake Sim", mech);
   }
 
   @Override
   public void periodic() {
     // Update intake angle
-    double currentAngleRad = intake.getSimulation().getAngleRads();
+    double currentAngleRad = intake.GetPivotPosition();
     intakeMech.setAngle(Units.radiansToDegrees(currentAngleRad));
 
     // Add telemetry data
     SmartDashboard.putNumber(
-      "intake Angle (deg)",
-      Units.radiansToDegrees(currentAngleRad)
+      "INTAKE/pivot Angle (deg)",
+      Units.rotationsToDegrees(currentAngleRad)
     );
     SmartDashboard.putNumber(
-      "intake Velocity (deg/s)",
-      Units.radiansToDegrees(intake.getSimulation().getVelocityRadPerSec())
+      "INTAKE/pivot Velocity (deg/s)",
+      Units.rotationsToDegrees(intake.GetPivotVelocity())
     );
     SmartDashboard.putNumber(
-      "pivot Current (A)",
+      "INTAKE/pivot Current (A)",
       intake.getSimulation().getCurrentDrawAmps()
     );
     SmartDashboard.putNumber(
-      "spinner RPS",
-      intake.SpinnerGetVelocity()
+      "INTAKE/spinner RPS",
+      intake.GetSpinnerVelocity()
     );
 
   }

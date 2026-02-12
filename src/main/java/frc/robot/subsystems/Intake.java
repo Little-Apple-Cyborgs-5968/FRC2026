@@ -329,7 +329,7 @@ public class Intake extends SubsystemBase {
    * @return Position in Rotations
    */
   @Logged(name = "Pivot Position/Rotations")
-  public double PivotGetPosition() {
+  public double GetPivotPosition() {
     // Rotations
     return pivotPositionSignal.getValueAsDouble();
   }
@@ -339,8 +339,8 @@ public class Intake extends SubsystemBase {
    * @return Position in Degrees.
    */
   @Logged(name = "Pivot Position/Degrees")
-  public double PivotGetPositionDegrees() {
-    return PivotGetPosition() * 360;
+  public double GetPivotPositionDegrees() {
+    return GetPivotPosition() * 360;
   }
 
   /**
@@ -348,7 +348,7 @@ public class Intake extends SubsystemBase {
    * @return Velocity in rotations per second
    */
   @Logged(name = "Pivot Velocity/RotationsPerSecond")
-  public double PivotMotorGetVelocity() {
+  public double GetPivotVelocity() {
     return pivotVelocitySignal.getValueAsDouble();
   }
 
@@ -357,7 +357,7 @@ public class Intake extends SubsystemBase {
    * @return Applied voltage
    */
   @Logged(name = "Pivot Voltage")
-  public double PivotMotorGetVoltage() {
+  public double GetPivotVoltage() {
     return pivotVoltageSignal.getValueAsDouble();
   }
 
@@ -365,7 +365,7 @@ public class Intake extends SubsystemBase {
    * Get the current motor current.
    * @return Motor current in amps
    */
-  public double PivotMotorGetCurrent() {
+  public double GetPivotCurrent() {
     return pivotStatorCurrentSignal.getValueAsDouble();
   }
 
@@ -373,7 +373,7 @@ public class Intake extends SubsystemBase {
    * Get the current motor temperature.
    * @return Motor temperature in Celsius
    */
-  public double PivotMotorgetTemperature() {
+  public double GetPivotTemperature() {
     return pivotTemperatureSignal.getValueAsDouble();
   }
 
@@ -395,7 +395,7 @@ public class Intake extends SubsystemBase {
     double angleRadians = Units.degreesToRadians(angleDegrees);
     double positionRotations = angleRadians / (2.0 * Math.PI);
 
-    double PivotffVolts = Pivotfeedforward.calculate(PivotMotorGetVelocity(), acceleration);
+    double PivotffVolts = Pivotfeedforward.calculate(GetPivotVelocity(), acceleration);
     //motor.setControl(positionRequest.withPosition(positionRotations).withFeedForward(ffVolts));
     PivotMotor.setControl(pivotPositionRequest.withPosition(positionRotations));
   }
@@ -418,7 +418,7 @@ public class Intake extends SubsystemBase {
     double velocityRadPerSec = Units.degreesToRadians(velocityDegPerSec);
     double velocityRotations = velocityRadPerSec / (2.0 * Math.PI);
 
-    double ffVolts = Pivotfeedforward.calculate(PivotMotorGetVelocity(), acceleration);
+    double ffVolts = Pivotfeedforward.calculate(GetPivotVelocity(), acceleration);
     //motor.setControl(velocityRequest.withVelocity(velocityRotations).withFeedForward(ffVolts));
     PivotMotor.setControl(pivotVelocityRequest.withVelocity(velocityRotations));
   }
@@ -458,12 +458,12 @@ public class Intake extends SubsystemBase {
    * @return Velocity in rotations per second
    */
   @Logged(name = "Spinner Vel")
-  public double SpinnerGetVelocity() {
+  public double GetSpinnerVelocity() {
     return spinnerVelocitySignal.getValueAsDouble();
   }
 
   @Logged(name = "Target Spinner Vel")
-  public double SpinnerGetTargetVelocity() {
+  public double GetSpinnerTargetVelocity() {
     return spinnerVelocityRequest.Velocity;
   }
 
@@ -472,7 +472,7 @@ public class Intake extends SubsystemBase {
    * @return Applied voltage
    */
   @Logged(name = "Spinner Voltage")
-  public double SpinnerGetVoltage() {
+  public double GetSpinnerVoltage() {
     return spinnerVoltageSignal.getValueAsDouble();
   }
 
@@ -481,7 +481,7 @@ public class Intake extends SubsystemBase {
    * Get the current motor current.
    * @return Motor current in amps
    */
-  public double SpinnerGetCurrent() {
+  public double GetSpinnerCurrent() {
     return spinnerStatorCurrentSignal.getValueAsDouble();
   }
 
@@ -489,7 +489,7 @@ public class Intake extends SubsystemBase {
    * Get the current motor temperature.
    * @return Motor temperature in Celsius
    */
-  public double SpinnerGetTemperature() {
+  public double GetSpinnerTemperature() {
     return spinnerTemperatureSignal.getValueAsDouble();
   }
 
@@ -508,7 +508,7 @@ public class Intake extends SubsystemBase {
    * @param acceleration The acceleration in rotations per second squared
    */
   private void SpinnerSetVelocity(double velocityRotSec, double acceleration) {
-    double ffVolts = spinnerFeedforward.calculate(SpinnerGetVelocity(), acceleration);
+    double ffVolts = spinnerFeedforward.calculate(GetSpinnerVelocity(), acceleration);
     SpinnerMotor.setControl(spinnerVelocityRequest.withVelocity(velocityRotSec));
   }
 

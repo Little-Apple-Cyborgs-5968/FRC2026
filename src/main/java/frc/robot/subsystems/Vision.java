@@ -96,7 +96,7 @@ public class Vision extends SubsystemBase {
         this.visionConsumer = visionConsumer;
 
         // Initialize NetworkTables publishers for logging
-        var visionTable = ntInstance.getTable("Vision");
+        var visionTable = ntInstance.getTable("VISION");
         
         leftPosePublisher = visionTable.getStructTopic("LeftEstimatedPose", Pose2d.struct).publish();
         rightPosePublisher = visionTable.getStructTopic("RightEstimatedPose", Pose2d.struct).publish();
