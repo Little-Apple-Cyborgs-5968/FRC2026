@@ -151,7 +151,7 @@ public class Constants {
         public static final double kSpinnerKI = 0; // Integral gain (dimensionless)
         public static final double kSpinnerKD = 0; // Derivative gain (dimensionless)
         public static final double kSpinnerKS = 0; // Static friction feedforward (volts)
-        public static final double kSpinnerKV = 0; // Velocity feedforward (volt-seconds per radian)
+        public static final double kSpinnerKV = 0.1; // Velocity feedforward (volt-seconds per radian)
         public static final double kSpinnerKA = 0; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kSpinnerKG = 0; // Gravity feedforward (volts)
         public static final double kSpinnerMaxVelocity = 1; // Maximum velocity (rad/s)

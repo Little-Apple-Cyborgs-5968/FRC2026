@@ -443,7 +443,7 @@ public class Intake extends SubsystemBase {
    * @return A command that stops the intake
    */
   public Command PivotStopCommand() {
-    return runOnce(() -> PivotSetVelocity(0));
+    return runOnce(() -> PivotMotor.stopMotor());
   }
 
   public Command PivotSetAngleCommand(double angleDegrees) {
@@ -464,7 +464,7 @@ public class Intake extends SubsystemBase {
 
   @Logged(name = "Target Spinner Vel")
   public double GetSpinnerTargetVelocity() {
-    return spinnerVelocityRequest.Velocity;
+    return SpinnerMotor.getClosedLoopReference().getValueAsDouble();
   }
 
   /**
@@ -525,7 +525,11 @@ public class Intake extends SubsystemBase {
    * @return A command that stops the spinner
    */
   public Command SpinnerStopCommand() {
-    return runOnce(() -> SpinnerMotor.stopMotor());
+    return runOnce(() -> {
+      // set closed-loop setpoint to zero, then stop output
+      SpinnerSetVelocity(0);
+      SpinnerMotor.stopMotor();
+    });
   }
 
   /**

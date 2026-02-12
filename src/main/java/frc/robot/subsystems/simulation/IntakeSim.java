@@ -100,6 +100,14 @@ public class IntakeSim extends SubsystemBase {
       "INTAKE/spinner RPS",
       intake.GetSpinnerVelocity()
     );
+    SmartDashboard.putNumber(
+      "INTAKE/spinner voltage (V)",
+      intake.GetSpinnerVoltage()
+    );
+    SmartDashboard.putNumber(
+      "INTAKE/spinner target RPS",
+      intake.GetSpinnerTargetVelocity ()
+    );
 
   }
 }

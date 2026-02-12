@@ -95,7 +95,7 @@ public class Feeder extends SubsystemBase {
     currentLimits.SupplyCurrentLimit = supplyCurrentLimit;
     currentLimits.SupplyCurrentLimitEnable = enableSupplyLimit;
 
-    // Set brake mode
+    // Set coast mode
     motorConfig.MotorOutput.NeutralMode = brakeMode
       ? NeutralModeValue.Brake
       : NeutralModeValue.Coast;
@@ -210,7 +210,7 @@ public class Feeder extends SubsystemBase {
    * Stop the motor.
    */
   private void stop() {
-    setVelocity(0);
+    motor.stopMotor();
   }
 
   /**

@@ -195,11 +195,11 @@ public class RobotContainer {
         );
 
         joystick.leftTrigger().onTrue(
-            intake.SpinnerMoveAtVelocityCommand(0)
+            intake.SpinnerStopCommand()
         );
 
         joystick.rightTrigger().onTrue(
-            intake.SpinnerMoveAtVelocityCommand(-35)
+            intake.SpinnerMoveAtVelocityCommand(-40)
         );
 
         // joystick.leftTrigger().onTrue(
@@ -209,10 +209,6 @@ public class RobotContainer {
         // joystick.leftBumper().onTrue(
         //     intake.StowCommand()
         // );
-
-        joystick.x().onTrue(
-            turret.setAngleCommand(90)
-        );
 
         joystick.y().onTrue(
             turret.setAngleCommand(0)
