@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
@@ -35,6 +36,7 @@ import frc.robot.subsystems.simulation.TurretShooterSim;
 import frc.robot.subsystems.RoboSingSubsystem;
 import frc.robot.utils.GameState;
 import frc.robot.utils.TurretUtil;
+
 
 
 public class RobotContainer {
@@ -126,10 +128,16 @@ public class RobotContainer {
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
-
         // robo sing controls
-        joystick.start().and(joystick.a()).onTrue(roboSing.runOnce(roboSing::play));
-        joystick.start().and(joystick.b()).onTrue(roboSing.runOnce(roboSing::stop));
+        // joystick.a().onTrue(roboSing.runOnce(roboSing::play));
+        joystick.a().onTrue(
+            Commands.sequence(
+                roboSing.runOnce(roboSing::play),
+                drivetrain.runOnce(() -> System.out.println("Joystick A pressed"))
+            )
+        );
+        joystick.b().onTrue(roboSing.runOnce(roboSing::stop));
+        joystick.b().onTrue(roboSing.runOnce(roboSing::stop));
 
 
         // robot oriented drive forwad and backward, also left right

@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
   }
 
   public void robotInit() {
-    
+    System.out.println("Hello, world!");
     PathfindingCommand.warmupCommand().schedule();
   }
 
