@@ -626,7 +626,7 @@ public class Intake extends SubsystemBase {
 
   private void stow(){
     PivotSetAngle(intakeAngleStowed);
-    SpinnerSetVelocity(0);
+    SpinnerStopCommand().schedule();
   }
 
   public Command StowCommand() {

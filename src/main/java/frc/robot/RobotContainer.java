@@ -20,10 +20,14 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Spindexer;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.simulation.FeederSim;
 import frc.robot.subsystems.simulation.IntakeSim;
+import frc.robot.subsystems.simulation.SpindexerSim;
 import frc.robot.subsystems.simulation.TurretShooterSim;
 import frc.robot.subsystems.simulation.Visualizer;
 import frc.robot.utils.GameState;
@@ -77,9 +81,16 @@ public class RobotContainer {
     private final TurretShooterSim turretSim = new TurretShooterSim(turret);
 
     // Intake Subsystem
-
     private final Intake intake = new Intake();
     private final IntakeSim intakeSim = new IntakeSim(intake);
+
+    // Spindexer Subsystem
+    private final Spindexer spindexer = new Spindexer();
+    private final SpindexerSim spindexerSim = new SpindexerSim(spindexer);
+
+    // Feeder Subsystem
+    private final Feeder feeder = new Feeder();
+    private final FeederSim feederSim = new FeederSim(feeder);
 
     
     private final Visualizer visualizer = new Visualizer(turret);
@@ -178,21 +189,14 @@ public class RobotContainer {
         
         // Toggle SYOMDrive (Synchronized Yaw-Optimized Motion Drive) with A button
         // When enabled, robot automatically faces the direction it's traveling
-        joystick.a().onTrue(
-            drivetrain.runOnce(() -> {
-                isSYOMDriveEnabled = !isSYOMDriveEnabled;
-                System.out.println("SYOMDrive " + (isSYOMDriveEnabled ? "ENABLED" : "DISABLED"));
-            })
-        );
+        // joystick.a().onTrue(
+        //     drivetrain.runOnce(() -> {
+        //         isSYOMDriveEnabled = !isSYOMDriveEnabled;
+        //         System.out.println("SYOMDrive " + (isSYOMDriveEnabled ? "ENABLED" : "DISABLED"));
+        //     })
+        // );
         
         // Map bumpers/triggers to intake commands
-        joystick.leftBumper().onTrue(
-            intake.PivotSetAngleCommand(0)
-        );
-
-        joystick.rightBumper().onTrue(
-            intake.PivotTunableCommand(dashboard)
-        );
 
         joystick.leftTrigger().onTrue(
             intake.SpinnerStopCommand()
@@ -201,24 +205,38 @@ public class RobotContainer {
         joystick.rightTrigger().onTrue(
             intake.SpinnerTunableCommand(dashboard)
         );
-
-        // joystick.leftTrigger().onTrue(
-        //     intake.DeployCommand()
-        // );
-
+// INTAKE PIVOT TEMP BINDINGS
         // joystick.leftBumper().onTrue(
-        //     intake.StowCommand()
+        //     intake.PivotSetAngleCommand(0)
         // );
 
-        joystick.y().onTrue(
-            turret.setAngleCommand(0)
+        // joystick.rightBumper().onTrue(
+        //     intake.PivotTunableCommand(dashboard)
+        // );
+// SPINDEXER TEMP BINDINGS
+        // joystick.leftBumper().onTrue(
+        //     spindexer.stopCommand()
+        // );
+
+        // joystick.rightBumper().onTrue(
+        //     spindexer.tunableCommand(dashboard)
+        // );
+
+// FEEDER TEMP BINDINGS
+        joystick.leftBumper().onTrue(
+            feeder.stopCommand()
         );
+
+        joystick.rightBumper().onTrue(
+            feeder.tunableCommand(dashboard)
+        );
+
 
         // Auto-aim bindings
         // B button: Auto-aim at hub (stationary)
-        joystick.b().whileTrue(
-            turret.autoAimCommand(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB)
-        );
+        // joystick.b().whileTrue(
+        //     turret.autoAimCommand(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB)
+        // );
 
         new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 5).onTrue(rumble.lightPulse());
         new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 0).onTrue(rumble.doublePulse());

@@ -1,8 +1,7 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
+
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -15,24 +14,34 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.driverIO.DashboardPublisher;
 
 /**
- * TurretTower subsystem using TalonFX with Kraken x60 motor
- * Simple spinner mechanism for turret tower operation
+ * Feeder subsystem using TalonFX with Krakenx60 motor
+ * Used for feeding game pieces from intake to shooter
  */
-@Logged(name = "TurretTower")
+@Logged(name = "Feeder")
 public class Feeder extends SubsystemBase {
 
   // Constants
-  private final double spinnerSpeed = Constants.Feeder.kSpinnerSpeed;
+  private final double defaultSpeed = Constants.Feeder.kSpinnerSpeed;
+
+  // Motor Constants
   private final int canID = Constants.Feeder.kMotorCanID;
   private final double gearRatio = Constants.Feeder.kGearRatio;
   private final double kP = Constants.Feeder.kKP;
@@ -48,7 +57,11 @@ public class Feeder extends SubsystemBase {
   private final double supplyCurrentLimit = Constants.Feeder.kSupplyCurrentLimit;
 
   // Feedforward
-  private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+  private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(
+    kS, // kS - static friction
+    kV, // kV - velocity
+    kA  // kA - acceleration
+  );
 
   // Motor controller
   private final TalonFX motor;
@@ -59,14 +72,17 @@ public class Feeder extends SubsystemBase {
   private final StatusSignal<Current> statorCurrentSignal;
   private final StatusSignal<Temperature> temperatureSignal;
 
+  // Simulation
+  private final FlywheelSim feederSim;
+
   /**
-   * Creates a new TurretTower subsystem.
+   * Creates a new Feeder Subsystem.
    */
   public Feeder() {
     // Initialize motor controller
     motor = new TalonFX(canID);
 
-    // Create control requests
+    // Create control request
     velocityRequest = new VelocityVoltage(0).withSlot(0);
 
     // Get status signals
@@ -76,7 +92,6 @@ public class Feeder extends SubsystemBase {
     statorCurrentSignal = motor.getStatorCurrent();
     temperatureSignal = motor.getDeviceTemp();
 
-    // Configure motor
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
 
     // Configure PID for slot 0
@@ -95,7 +110,7 @@ public class Feeder extends SubsystemBase {
     currentLimits.SupplyCurrentLimit = supplyCurrentLimit;
     currentLimits.SupplyCurrentLimitEnable = enableSupplyLimit;
 
-    // Set coast mode
+    // Set brake mode
     motorConfig.MotorOutput.NeutralMode = brakeMode
       ? NeutralModeValue.Brake
       : NeutralModeValue.Coast;
@@ -108,10 +123,18 @@ public class Feeder extends SubsystemBase {
 
     // Reset encoder position
     motor.setPosition(0);
+
+    // Initialize simulation
+    LinearSystem<N1, N1, N1> feederPlant = LinearSystemId.createFlywheelSystem(
+      DCMotor.getKrakenX60(1),
+      0.002, // Moment of inertia - rollers with game piece
+      gearRatio
+    );
+    feederSim = new FlywheelSim(feederPlant, DCMotor.getKrakenX60(1));
   }
 
   /**
-   * Update telemetry signals.
+   * Update telemetry.
    */
   @Override
   public void periodic() {
@@ -124,13 +147,40 @@ public class Feeder extends SubsystemBase {
     );
   }
 
-  //------------------------ Motor Methods -----------------------//
-  
   /**
-   * Get the current position in rotations.
-   * @return Position in rotations
+   * Update simulation.
    */
-  @Logged(name = "TurretTower Position/Rotations")
+  @Override
+  public void simulationPeriodic() {
+    // Set input voltage from motor controller to simulation
+    feederSim.setInput(motor.getSimState().getMotorVoltage());
+    
+    // Update simulation by 20ms
+    feederSim.update(0.020);
+
+    // Update motor sim state
+    double velocityRadPerSec = feederSim.getAngularVelocityRadPerSec();
+    double motorVelocity = RadiansPerSecond.of(
+      velocityRadPerSec * gearRatio
+    ).in(RotationsPerSecond);
+
+    motor.getSimState().setRotorVelocity(motorVelocity);
+    
+    // Update battery voltage
+    RoboRioSim.setVInVoltage(
+      BatterySim.calculateDefaultBatteryLoadedVoltage(
+        feederSim.getCurrentDrawAmps()
+      )
+    );
+  }
+
+  //------------------------ Motor Methods -----------------------//
+
+  /**
+   * Get the current position in Rotations.
+   * @return Position in Rotations
+   */
+  @Logged(name = "Position/Rotations")
   public double getPosition() {
     return positionSignal.getValueAsDouble();
   }
@@ -139,25 +189,25 @@ public class Feeder extends SubsystemBase {
    * Get the current velocity in rotations per second.
    * @return Velocity in rotations per second
    */
-  @Logged(name = "TurretTower Velocity/RotationsPerSecond")
+  @Logged(name = "Velocity/RotationsPerSecond")
   public double getVelocity() {
     return velocitySignal.getValueAsDouble();
   }
 
   /**
-   * Get the target velocity from the current velocity request.
+   * Get the target velocity in rotations per second.
    * @return Target velocity in rotations per second
    */
-  @Logged(name = "TurretTower Target Velocity/RotationsPerSecond")
+  @Logged(name = "Target Velocity/RotationsPerSecond")
   public double getTargetVelocity() {
-    return velocityRequest.Velocity;
+    return motor.getClosedLoopReference().getValueAsDouble();
   }
 
   /**
    * Get the current applied voltage.
-   * @return Applied voltage in volts
+   * @return Applied voltage
    */
-  @Logged(name = "TurretTower Voltage/Volts")
+  @Logged(name = "Voltage")
   public double getVoltage() {
     return voltageSignal.getValueAsDouble();
   }
@@ -166,7 +216,7 @@ public class Feeder extends SubsystemBase {
    * Get the current motor current.
    * @return Motor current in amps
    */
-  @Logged(name = "TurretTower Current/Amps")
+  @Logged(name = "Current/Amps")
   public double getCurrent() {
     return statorCurrentSignal.getValueAsDouble();
   }
@@ -175,13 +225,13 @@ public class Feeder extends SubsystemBase {
    * Get the current motor temperature.
    * @return Motor temperature in Celsius
    */
-  @Logged(name = "TurretTower Temperature/Celsius")
+  @Logged(name = "Temperature/Celsius")
   public double getTemperature() {
     return temperatureSignal.getValueAsDouble();
   }
 
   /**
-   * Set motor velocity.
+   * Set motor angular velocity.
    * @param velocityRotSec The target velocity in rotations per second
    */
   private void setVelocity(double velocityRotSec) {
@@ -189,13 +239,12 @@ public class Feeder extends SubsystemBase {
   }
 
   /**
-   * Set motor velocity with acceleration.
+   * Set motor angular velocity with acceleration.
    * @param velocityRotSec The target velocity in rotations per second
    * @param acceleration The acceleration in rotations per second squared
    */
   private void setVelocity(double velocityRotSec, double acceleration) {
-    double ffVolts = feedforward.calculate(velocityRotSec);
-    motor.setControl(velocityRequest.withVelocity(velocityRotSec).withFeedForward(ffVolts));
+    motor.setControl(velocityRequest.withVelocity(velocityRotSec));
   }
 
   /**
@@ -207,67 +256,107 @@ public class Feeder extends SubsystemBase {
   }
 
   /**
-   * Stop the motor.
+   * Get the feeder simulation for testing.
+   * @return The feeder simulation model
    */
-  private void stop() {
-    motor.stopMotor();
+  public FlywheelSim getSimulation() {
+    return feederSim;
   }
 
   /**
-   * Spin at the default speed.
-   */
-  private void spin() {
-    setVelocity(spinnerSpeed);
-  }
-
-  /**
-   * Spin in reverse at the default speed.
-   */
-  private void spinReverse() {
-    setVelocity(-spinnerSpeed);
-  }
-
-  //------------------------ Command Methods -----------------------//
-
-  /**
-   * Creates a command to stop the turret tower.
-   * @return A command that stops the motor
+   * Creates a command to stop the feeder.
+   * @return A command that stops the feeder
    */
   public Command stopCommand() {
-    return runOnce(() -> stop());
+    return runOnce(() -> {
+      motor.stopMotor();
+    });
   }
 
   /**
-   * Creates a command to spin the turret tower at default speed.
-   * @return A command that spins the motor at default speed
+   * Creates a command to run the feeder at the default velocity.
+   * @return A command that runs the feeder at default speed
    */
-  public Command spinCommand() {
-    return run(() -> spin());
+  public Command runCommand() {
+    return run(() -> setVelocity(defaultSpeed));
   }
 
   /**
-   * Creates a command to spin the turret tower in reverse at default speed.
-   * @return A command that spins the motor in reverse at default speed
-   */
-  public Command spinReverseCommand() {
-    return run(() -> spinReverse());
-  }
-
-  /**
-   * Creates a command to spin the turret tower at a specific velocity.
+   * Creates a command to run the feeder at a specific velocity.
    * @param velocityRotSec The target velocity in rotations per second
-   * @return A command that spins the motor at the specified velocity
+   * @return A command that runs the feeder at the specified velocity
    */
-  public Command spinAtVelocityCommand(double velocityRotSec) {
+  public Command runAtVelocityCommand(double velocityRotSec) {
     return run(() -> setVelocity(velocityRotSec));
   }
 
   /**
-   * Creates a command to set the motor voltage directly.
-   * @param voltage The voltage to apply
-   * @return A command that applies the specified voltage
+   * Creates a command to reverse the feeder (negative default speed).
+   * @return A command that reverses the feeder
    */
-  public Command setVoltageCommand(double voltage) {
-    return run(() -> setVoltage(voltage));
+  public Command reverseCommand() {
+    return run(() -> setVelocity(-defaultSpeed));
+  }
+
+  /**
+   * Check if feeder is running (velocity above threshold).
+   * @return True if feeder is running
+   */
+  @Logged(name = "Is Running")
+  public boolean isRunning() {
+    return Math.abs(getVelocity()) > 1.0; // 1 RPS threshold
+  }
+
+  /**
+   * Check if feeder is at target velocity (within tolerance).
+   * @return True if at target velocity
+   */
+  @Logged(name = "At Target")
+  public boolean atTargetVelocity() {
+    double error = Math.abs(getTargetVelocity() - getVelocity());
+    return error < 2.0; // 2 RPS tolerance
+  }
+
+  //------------------------ Tuning -----------------------//
+
+  /**
+   * Sets motor velocity using tunable PID values and setpoint from dashboard.
+   * Updates PID gains in real-time and uses Setpoint1 for target velocity.
+   */
+  private void runTunable(DashboardPublisher dashboard) {
+    if (dashboard == null) {
+      System.err.println("Dashboard is null");
+      return;
+    }
+
+    // Get tunable PID values
+    double tunableKP = dashboard.getTunableKP();
+    double tunableKI = dashboard.getTunableKI();
+    double tunableKD = dashboard.getTunableKD();
+    double tunableKV = dashboard.getTunableKV();
+    double tunableKA = dashboard.getTunableKA();
+    double setpoint = dashboard.getTunableSetpoint1();
+
+    // Update PID gains in slot 0
+    Slot0Configs slot0 = new Slot0Configs();
+    slot0.kP = tunableKP;
+    slot0.kI = tunableKI;
+    slot0.kD = tunableKD;
+    slot0.kV = tunableKV;
+    slot0.kA = tunableKA;
+    slot0.kS = kS; // Keep original kS
+    
+    motor.getConfigurator().apply(slot0);
+
+    // Set velocity using tunable setpoint
+    setVelocity(setpoint);
+  }
+
+  /**
+   * Command to tune feeder using dashboard values.
+   * Continuously updates PID and setpoint from dashboard.
+   */
+  public Command tunableCommand(DashboardPublisher dashboard) {
+    return run(() -> runTunable(dashboard));
   }
 }

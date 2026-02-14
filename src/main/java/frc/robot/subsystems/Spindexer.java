@@ -1,8 +1,7 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
+
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -15,24 +14,35 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.driverIO.DashboardPublisher;
 
 /**
- * Spindexer subsystem using TalonFX with Kraken x60 motor
- * Simple spinner mechanism for indexing/conveying game pieces
+ * Spindexer subsystem using TalonFX with Krakenx60 motor
+ * Used for indexing game pieces through the robot
  */
 @Logged(name = "Spindexer")
 public class Spindexer extends SubsystemBase {
 
   // Constants
-  private final double spinnerSpeed = Constants.Spindexer.kSpinnerSpeed;
+  private final double defaultSpeed = Constants.Spindexer.kSpinnerSpeed;
+
+  // Motor Constants
+  private final DCMotor dcMotor = DCMotor.getKrakenX60(1);
   private final int canID = Constants.Spindexer.kMotorCanID;
   private final double gearRatio = Constants.Spindexer.kGearRatio;
   private final double kP = Constants.Spindexer.kKP;
@@ -41,6 +51,8 @@ public class Spindexer extends SubsystemBase {
   private final double kS = Constants.Spindexer.kKS;
   private final double kV = Constants.Spindexer.kKV;
   private final double kA = Constants.Spindexer.kKA;
+  private final double maxVelocity = Constants.Spindexer.kMaxVelocity;
+  private final double maxAcceleration = Constants.Spindexer.kMaxAcceleration;
   private final boolean brakeMode = Constants.Spindexer.kBrakeMode;
   private final boolean enableStatorLimit = Constants.Spindexer.kEnableStatorLimit;
   private final int statorCurrentLimit = Constants.Spindexer.kStatorCurrentLimit;
@@ -48,7 +60,11 @@ public class Spindexer extends SubsystemBase {
   private final double supplyCurrentLimit = Constants.Spindexer.kSupplyCurrentLimit;
 
   // Feedforward
-  private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+  private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(
+    kS, // kS - static friction
+    kV, // kV - velocity
+    kA  // kA - acceleration
+  );
 
   // Motor controller
   private final TalonFX motor;
@@ -59,14 +75,17 @@ public class Spindexer extends SubsystemBase {
   private final StatusSignal<Current> statorCurrentSignal;
   private final StatusSignal<Temperature> temperatureSignal;
 
+  // Simulation
+  private final FlywheelSim spindexerSim;
+
   /**
-   * Creates a new Spindexer subsystem.
+   * Creates a new Spindexer Subsystem.
    */
   public Spindexer() {
     // Initialize motor controller
     motor = new TalonFX(canID);
 
-    // Create control requests
+    // Create control request
     velocityRequest = new VelocityVoltage(0).withSlot(0);
 
     // Get status signals
@@ -76,7 +95,6 @@ public class Spindexer extends SubsystemBase {
     statorCurrentSignal = motor.getStatorCurrent();
     temperatureSignal = motor.getDeviceTemp();
 
-    // Configure motor
     TalonFXConfiguration motorConfig = new TalonFXConfiguration();
 
     // Configure PID for slot 0
@@ -108,10 +126,18 @@ public class Spindexer extends SubsystemBase {
 
     // Reset encoder position
     motor.setPosition(0);
+
+    // Initialize simulation
+    LinearSystem<N1, N1, N1> spindexerPlant = LinearSystemId.createFlywheelSystem(
+      DCMotor.getKrakenX60(1),
+      0.001, // Moment of inertia - lightweight spinning mechanism
+      gearRatio
+    );
+    spindexerSim = new FlywheelSim(spindexerPlant, DCMotor.getKrakenX60(1));
   }
 
   /**
-   * Update telemetry signals.
+   * Update telemetry.
    */
   @Override
   public void periodic() {
@@ -124,11 +150,38 @@ public class Spindexer extends SubsystemBase {
     );
   }
 
-  //------------------------ Motor Methods -----------------------//
-  
   /**
-   * Get the current position in rotations.
-   * @return Position in rotations
+   * Update simulation.
+   */
+  @Override
+  public void simulationPeriodic() {
+    // Set input voltage from motor controller to simulation
+    spindexerSim.setInput(motor.getSimState().getMotorVoltage());
+    
+    // Update simulation by 20ms
+    spindexerSim.update(0.020);
+
+    // Update motor sim state
+    double velocityRadPerSec = spindexerSim.getAngularVelocityRadPerSec();
+    double motorVelocity = RadiansPerSecond.of(
+      velocityRadPerSec * gearRatio
+    ).in(RotationsPerSecond);
+
+    motor.getSimState().setRotorVelocity(motorVelocity);
+    
+    // Update battery voltage
+    RoboRioSim.setVInVoltage(
+      BatterySim.calculateDefaultBatteryLoadedVoltage(
+        spindexerSim.getCurrentDrawAmps()
+      )
+    );
+  }
+
+  //------------------------ Motor Methods -----------------------//
+
+  /**
+   * Get the current position in Rotations.
+   * @return Position in Rotations
    */
   @Logged(name = "Position/Rotations")
   public double getPosition() {
@@ -145,17 +198,17 @@ public class Spindexer extends SubsystemBase {
   }
 
   /**
-   * Get the target velocity from the current velocity request.
+   * Get the target velocity in rotations per second.
    * @return Target velocity in rotations per second
    */
   @Logged(name = "Target Velocity/RotationsPerSecond")
   public double getTargetVelocity() {
-    return velocityRequest.Velocity;
+    return motor.getClosedLoopReference().getValueAsDouble();
   }
 
   /**
    * Get the current applied voltage.
-   * @return Applied voltage in volts
+   * @return Applied voltage
    */
   @Logged(name = "Voltage")
   public double getVoltage() {
@@ -166,7 +219,7 @@ public class Spindexer extends SubsystemBase {
    * Get the current motor current.
    * @return Motor current in amps
    */
-  @Logged(name = "Current")
+  @Logged(name = "Current/Amps")
   public double getCurrent() {
     return statorCurrentSignal.getValueAsDouble();
   }
@@ -175,13 +228,13 @@ public class Spindexer extends SubsystemBase {
    * Get the current motor temperature.
    * @return Motor temperature in Celsius
    */
-  @Logged(name = "Temperature")
+  @Logged(name = "Temperature/Celsius")
   public double getTemperature() {
     return temperatureSignal.getValueAsDouble();
   }
 
   /**
-   * Set motor velocity.
+   * Set motor angular velocity.
    * @param velocityRotSec The target velocity in rotations per second
    */
   private void setVelocity(double velocityRotSec) {
@@ -189,13 +242,13 @@ public class Spindexer extends SubsystemBase {
   }
 
   /**
-   * Set motor velocity with acceleration.
+   * Set motor angular velocity with acceleration.
    * @param velocityRotSec The target velocity in rotations per second
    * @param acceleration The acceleration in rotations per second squared
    */
   private void setVelocity(double velocityRotSec, double acceleration) {
-    double ffVolts = feedforward.calculate(velocityRotSec);
-    motor.setControl(velocityRequest.withVelocity(velocityRotSec).withFeedForward(ffVolts));
+    double ffVolts = feedforward.calculate(velocityRotSec, acceleration);
+    motor.setControl(velocityRequest.withVelocity(velocityRotSec));
   }
 
   /**
@@ -207,67 +260,88 @@ public class Spindexer extends SubsystemBase {
   }
 
   /**
-   * Stop the motor.
+   * Get the spindexer simulation for testing.
+   * @return The spindexer simulation model
    */
-  private void stop() {
-    motor.stopMotor();
+  public FlywheelSim getSimulation() {
+    return spindexerSim;
   }
-
-  /**
-   * Spin at the default speed.
-   */
-  private void spin() {
-    setVelocity(spinnerSpeed);
-  }
-
-  /**
-   * Spin in reverse at the default speed.
-   */
-  private void spinReverse() {
-    setVelocity(-spinnerSpeed);
-  }
-
-  //------------------------ Command Methods -----------------------//
 
   /**
    * Creates a command to stop the spindexer.
-   * @return A command that stops the motor
+   * @return A command that stops the spindexer
    */
   public Command stopCommand() {
-    return runOnce(() -> stop());
+    return runOnce(() -> {
+      motor.stopMotor();
+    });
   }
 
   /**
-   * Creates a command to spin the spindexer at default speed.
-   * @return A command that spins the motor at default speed
+   * Creates a command to move the spindexer at the default velocity.
+   * @return A command that moves the spindexer at default speed
    */
-  public Command spinCommand() {
-    return run(() -> spin());
+  public Command runCommand() {
+    return run(() -> setVelocity(defaultSpeed));
   }
 
   /**
-   * Creates a command to spin the spindexer in reverse at default speed.
-   * @return A command that spins the motor in reverse at default speed
-   */
-  public Command spinReverseCommand() {
-    return run(() -> spinReverse());
-  }
-
-  /**
-   * Creates a command to spin the spindexer at a specific velocity.
+   * Creates a command to move the spindexer at a specific velocity.
    * @param velocityRotSec The target velocity in rotations per second
-   * @return A command that spins the motor at the specified velocity
+   * @return A command that moves the spindexer at the specified velocity
    */
-  public Command spinAtVelocityCommand(double velocityRotSec) {
+  public Command runAtVelocityCommand(double velocityRotSec) {
     return run(() -> setVelocity(velocityRotSec));
   }
 
   /**
-   * Creates a command to set the motor voltage directly.
-   * @param voltage The voltage to apply
-   * @return A command that applies the specified voltage
+   * Creates a command to reverse the spindexer (negative default speed).
+   * @return A command that reverses the spindexer
    */
-  public Command setVoltageCommand(double voltage) {
-    return run(() -> setVoltage(voltage));
+  public Command reverseCommand() {
+    return run(() -> setVelocity(-defaultSpeed));
+  }
+
+  //------------------------ Tuning -----------------------//
+
+  /**
+   * Sets motor velocity using tunable PID values and setpoint from dashboard.
+   * Updates PID gains in real-time and uses Setpoint1 for target velocity.
+   */
+  private void runTunable(DashboardPublisher dashboard) {
+    if (dashboard == null) {
+      System.err.println("Dashboard is null");
+      return;
+    }
+
+    // Get tunable PID values
+    double tunableKP = dashboard.getTunableKP();
+    double tunableKI = dashboard.getTunableKI();
+    double tunableKD = dashboard.getTunableKD();
+    double tunableKV = dashboard.getTunableKV();
+    double tunableKA = dashboard.getTunableKA();
+    double setpoint = dashboard.getTunableSetpoint1();
+
+    // Update PID gains in slot 0
+    Slot0Configs slot0 = new Slot0Configs();
+    slot0.kP = tunableKP;
+    slot0.kI = tunableKI;
+    slot0.kD = tunableKD;
+    slot0.kV = tunableKV;
+    slot0.kA = tunableKA;
+    slot0.kS = kS; // Keep original kS
+    
+    motor.getConfigurator().apply(slot0);
+
+    // Set velocity using tunable setpoint
+    setVelocity(setpoint);
+  }
+
+  /**
+   * Command to tune spindexer using dashboard values.
+   * Continuously updates PID and setpoint from dashboard.
+   */
+  public Command tunableCommand(DashboardPublisher dashboard) {
+    return run(() -> runTunable(dashboard));
   }
 }
