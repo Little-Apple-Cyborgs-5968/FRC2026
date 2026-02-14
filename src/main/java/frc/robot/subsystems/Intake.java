@@ -543,24 +543,7 @@ public class Intake extends SubsystemBase {
     return run(() -> SpinnerSetVelocity(velocityRotSec));
   }
 
-  //------------------------ Useful Methods -----------------------//
-
-  private void stow(){
-    PivotSetAngle(intakeAngleStowed);
-    SpinnerSetVelocity(0);
-  }
-
-  public Command StowCommand() {
-    return runOnce(() -> stow());
-  }
-
-  private void deploy(){
-    PivotSetAngle(intakeAngleDeployed);
-    SpinnerSetVelocity(spinnerSpeed);
-  }
-  public Command DeployCommand() {
-    return runOnce(() -> deploy());
-  }
+  //------------------------ Tuning -----------------------//
 
   /**
    * Sets spinner velocity using tunable PID values and setpoint from dashboard.
@@ -623,7 +606,6 @@ public class Intake extends SubsystemBase {
     slot0.kD = kD;
     slot0.kV = kV;
     slot0.kA = kA;
-    slot0.GravityType = GravityTypeValue.Arm_Cosine; // Keep gravity compensation
     slot0.kS = PivotkS; // Keep original kS
     
     PivotMotor.getConfigurator().apply(slot0);
@@ -639,4 +621,25 @@ public class Intake extends SubsystemBase {
   public Command PivotTunableCommand(DashboardPublisher dashboard) {
     return run(() -> pivotTunnable(dashboard));
   }
+
+  //------------------------ Useful Commands -----------------------//
+
+  private void stow(){
+    PivotSetAngle(intakeAngleStowed);
+    SpinnerSetVelocity(0);
+  }
+
+  public Command StowCommand() {
+    return runOnce(() -> stow());
+  }
+
+  private void deploy(){
+    PivotSetAngle(intakeAngleDeployed);
+    SpinnerSetVelocity(spinnerSpeed);
+  }
+  public Command DeployCommand() {
+    return runOnce(() -> deploy());
+  }
+
+  
 }

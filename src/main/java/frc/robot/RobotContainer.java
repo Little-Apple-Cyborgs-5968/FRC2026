@@ -191,7 +191,7 @@ public class RobotContainer {
         );
 
         joystick.rightBumper().onTrue(
-            intake.PivotSetAngleCommand(45)
+            intake.PivotTunableCommand(dashboard)
         );
 
         joystick.leftTrigger().onTrue(
