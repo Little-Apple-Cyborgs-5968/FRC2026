@@ -40,12 +40,47 @@ public class DashboardPublisher {
     private final SendableChooser<Command> m_autoChooser;
     private String m_lastAutoName = "";
     
-    // ==================== TUNABLE VALUE ====================
+    // ==================== TUNABLE VALUES ====================
     // Editable on dashboard - no redeploy needed!
-    private final NetworkTableEntry tunableValue = 
+    private final NetworkTableEntry tunableKP = 
         NetworkTableInstance.getDefault()
             .getTable("Tuning")
-            .getEntry("TunableValue");
+            .getEntry("kP");
+    
+    private final NetworkTableEntry tunableKI = 
+        NetworkTableInstance.getDefault()
+            .getTable("Tuning")
+            .getEntry("kI");
+    
+    private final NetworkTableEntry tunableKD = 
+        NetworkTableInstance.getDefault()
+            .getTable("Tuning")
+            .getEntry("kD");
+    
+    private final NetworkTableEntry tunableKV = 
+        NetworkTableInstance.getDefault()
+            .getTable("Tuning")
+            .getEntry("kV");
+    
+    private final NetworkTableEntry tunableKA = 
+        NetworkTableInstance.getDefault()
+            .getTable("Tuning")
+            .getEntry("kA");
+    
+    private final NetworkTableEntry tunableKX = 
+        NetworkTableInstance.getDefault()
+            .getTable("Tuning")
+            .getEntry("kX");
+    
+    private final NetworkTableEntry tunableSetpoint1 = 
+        NetworkTableInstance.getDefault()
+            .getTable("Tuning")
+            .getEntry("Setpoint1");
+    
+    private final NetworkTableEntry tunableSetpoint2 = 
+        NetworkTableInstance.getDefault()
+            .getTable("Tuning")
+            .getEntry("Setpoint2");
 
     public DashboardPublisher(CommandSwerveDrivetrain drivetrain) {
         m_drivetrain = drivetrain;
@@ -56,8 +91,15 @@ public class DashboardPublisher {
         //puts auto chooser on smartdashboard for selection
         SmartDashboard.putData("DASHBOARD/Auto Chooser", m_autoChooser);
 
-        // Initialize tunable value with default of 0.0
-        tunableValue.setDouble(0.0);
+        // Initialize tunable values with defaults
+        tunableKP.setDouble(0.0);
+        tunableKI.setDouble(0.0);
+        tunableKD.setDouble(0.0);
+        tunableKV.setDouble(0.0);
+        tunableKA.setDouble(0.0);
+        tunableKX.setDouble(0.0);
+        tunableSetpoint1.setDouble(0.0);
+        tunableSetpoint2.setDouble(0.0);
 
         // Put data in the "DASHBOARD" subfolder on the dashboard (NetworkTables keys support '/')
         SmartDashboard.putData("DASHBOARD/Robot Field", m_field);
@@ -84,8 +126,36 @@ public class DashboardPublisher {
     }
 
     /** Gets the current tunable value from the dashboard */
-    public double getTunableValue() {
-        return tunableValue.getDouble(0.0); // Returns 0.0 if not set
+    public double getTunableKP() {
+        return tunableKP.getDouble(0.0);
+    }
+
+    public double getTunableKI() {
+        return tunableKI.getDouble(0.0);
+    }
+
+    public double getTunableKD() {
+        return tunableKD.getDouble(0.0);
+    }
+
+    public double getTunableKV() {
+        return tunableKV.getDouble(0.0);
+    }
+
+    public double getTunableKA() {
+        return tunableKA.getDouble(0.0);
+    }
+
+    public double getTunableKX() {
+        return tunableKX.getDouble(0.0);
+    }
+
+    public double getTunableSetpoint1() {
+        return tunableSetpoint1.getDouble(0.0);
+    }
+
+    public double getTunableSetpoint2() {
+        return tunableSetpoint2.getDouble(0.0);
     }
 
     public Command getAuto() {

@@ -199,7 +199,7 @@ public class RobotContainer {
         );
 
         joystick.rightTrigger().onTrue(
-            intake.SpinnerMoveAtVelocityCommand(-40)
+            intake.SpinnerTunableCommand(dashboard)
         );
 
         // joystick.leftTrigger().onTrue(
@@ -265,6 +265,6 @@ public class RobotContainer {
 
     /** Gets the current tunable value from the dashboard - use this for testing/tuning! */
     public double getTunableValue() {
-        return dashboard.getTunableValue();
+        return dashboard.getTunableSetpoint1();
     }
 }

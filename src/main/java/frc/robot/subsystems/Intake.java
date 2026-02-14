@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.driverIO.DashboardPublisher;
 
 /**
  * intake subsystem using TalonFX with Krakenx60 motors
@@ -526,8 +527,9 @@ public class Intake extends SubsystemBase {
    */
   public Command SpinnerStopCommand() {
     return runOnce(() -> {
-      // set closed-loop setpoint to zero, then stop output
-      SpinnerSetVelocity(0);
+      // Update velocity request to 0 so logged target shows 0
+      SpinnerMotor.setControl(spinnerVelocityRequest.withVelocity(0));
+      // Then immediately stop motor (neutral output)
       SpinnerMotor.stopMotor();
     });
   }
@@ -559,5 +561,82 @@ public class Intake extends SubsystemBase {
   public Command DeployCommand() {
     return runOnce(() -> deploy());
   }
-  
+
+  /**
+   * Sets spinner velocity using tunable PID values and setpoint from dashboard.
+   * Updates PID gains in real-time and uses Setpoint1 for target velocity.
+   */
+  private void SpinnerTunable(DashboardPublisher dashboard) {
+    if (dashboard == null) {
+      return; // Skip if no dashboard publisher
+    }
+
+    // Get tunable PID values
+    double kP = dashboard.getTunableKP();
+    double kI = dashboard.getTunableKI();
+    double kD = dashboard.getTunableKD();
+    double kV = dashboard.getTunableKV();
+    double kA = dashboard.getTunableKA();
+    double setpoint = dashboard.getTunableSetpoint1();
+
+    // Update PID gains in slot 0
+    Slot0Configs slot0 = new Slot0Configs();
+    slot0.kP = kP;
+    slot0.kI = kI;
+    slot0.kD = kD;
+    slot0.kV = kV;
+    slot0.kA = kA;
+    slot0.kS = spinnerKS; // Keep original kS
+    
+    SpinnerMotor.getConfigurator().apply(slot0);
+
+    // Set velocity using tunable setpoint
+    SpinnerSetVelocity(setpoint);
+  }
+
+  /**
+   * Command to tune spinner using dashboard values.
+   * Continuously updates PID and setpoint from dashboard.
+   */
+  public Command SpinnerTunableCommand(DashboardPublisher dashboard) {
+    return run(() -> SpinnerTunable(dashboard));
+  }
+
+
+  private void pivotTunnable(DashboardPublisher dashboard) {
+    if (dashboard == null) {
+      return; // Skip if no dashboard publisher
+    }
+
+    // Get tunable PID values
+    double kP = dashboard.getTunableKP();
+    double kI = dashboard.getTunableKI();
+    double kD = dashboard.getTunableKD();
+    double kV = dashboard.getTunableKV();
+    double kA = dashboard.getTunableKA();
+    double setpoint = dashboard.getTunableSetpoint1();
+
+    // Update PID gains in slot 0
+    Slot0Configs slot0 = new Slot0Configs();
+    slot0.kP = kP;
+    slot0.kI = kI;
+    slot0.kD = kD;
+    slot0.kV = kV;
+    slot0.kA = kA;
+    slot0.GravityType = GravityTypeValue.Arm_Cosine; // Keep gravity compensation
+    slot0.kS = PivotkS; // Keep original kS
+    
+    PivotMotor.getConfigurator().apply(slot0);
+
+    // Set position using tunable setpoint
+    PivotSetAngle(setpoint);
+  }
+
+  /**
+   * Command to tune pivot using dashboard values.
+   * Continuously updates PID and setpoint from dashboard.
+   */
+  public Command PivotTunableCommand(DashboardPublisher dashboard) {
+    return run(() -> pivotTunnable(dashboard));
+  }
 }
