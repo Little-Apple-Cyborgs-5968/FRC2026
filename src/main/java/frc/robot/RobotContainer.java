@@ -22,11 +22,13 @@ import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Spindexer;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.simulation.FeederSim;
 import frc.robot.subsystems.simulation.IntakeSim;
+import frc.robot.subsystems.simulation.ShooterSim;
 import frc.robot.subsystems.simulation.SpindexerSim;
 import frc.robot.subsystems.simulation.TurretShooterSim;
 import frc.robot.subsystems.simulation.Visualizer;
@@ -91,6 +93,10 @@ public class RobotContainer {
     // Feeder Subsystem
     private final Feeder feeder = new Feeder();
     private final FeederSim feederSim = new FeederSim(feeder);
+
+    // Shooter Subsystem
+    private final Shooter shooter = new Shooter();
+    private final ShooterSim shooterSim = new ShooterSim(shooter);
 
     
     private final Visualizer visualizer = new Visualizer(turret);
@@ -223,13 +229,24 @@ public class RobotContainer {
         // );
 
 // FEEDER TEMP BINDINGS
-        joystick.leftBumper().onTrue(
-            feeder.stopCommand()
+        // joystick.leftBumper().onTrue(
+        //     feeder.stopCommand()
+        // );
+
+        // joystick.rightBumper().onTrue(
+        //     feeder.tunableCommand(dashboard)
+        // );
+
+// SHOOTER TEMP BINDINGS
+        joystick.leftBumper().whileTrue(
+            shooter.stopCommand()
         );
 
         joystick.rightBumper().onTrue(
-            feeder.tunableCommand(dashboard)
+            shooter.runFlywheelsCommand() // Set to minimum angle
         );
+
+
 
 
         // Auto-aim bindings

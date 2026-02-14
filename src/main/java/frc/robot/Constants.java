@@ -220,9 +220,56 @@ public class Constants {
         public static final double kSupplyCurrentLimit = 40; // Supply current limit (amperes)
     }
 
+    public static class Shooter {
+        // Flywheel Constants
+        public static final int kLeftFlywheelCanID = 14; // CAN ID for left flywheel
+        public static final int kRightFlywheelCanID = 15; // CAN ID for right flywheel
+        public static final double kFlywheelGearRatio = 2.0; // 2:1 gear ratio
+        public static final double kDefaultFlywheelSpeed = 30.0; // Default speed in RPS
+        
+        // Flywheel PID Constants
+        public static final double kFlywheelKP = 0.6;
+        public static final double kFlywheelKI = 0;
+        public static final double kFlywheelKD = 0;
+        public static final double kFlywheelKS = 0.1;
+        public static final double kFlywheelKV = 0.12;
+        public static final double kFlywheelKA = 0.01;
+        
+        // Flywheel Current Limits
+        public static final boolean kFlywheelEnableStatorLimit = true;
+        public static final int kFlywheelStatorCurrentLimit = 60; // Higher for flywheels
+        public static final boolean kFlywheelEnableSupplyLimit = false;
+        public static final double kFlywheelSupplyCurrentLimit = 60;
+        public static final boolean kFlywheelBrakeMode = false; // Coast mode for flywheels
+        
+        // Hood Constants
+        public static final int kHoodCanID = 16; // CAN ID for hood SparkMax
+        public static final double kHoodGearRatio = 9.0; // 1:9 gear ratio
+        public static final double kHoodMinAngleDegrees = 45.0; // Minimum hood angle
+        public static final double kHoodMaxAngleDegrees = 90.0; // Maximum hood angle (straight up)
+        public static final double kHoodStartAngleDegrees = 90.0; // Starting position
+        
+        // Hood PID Constants
+        public static final double kHoodKP = 0.1;
+        public static final double kHoodKI = 0;
+        public static final double kHoodKD = 0;
+        public static final double kHoodKS = 0;
+        public static final double kHoodKV = 0;
+        public static final double kHoodKA = 0;
+        
+        // Hood Current Limits
+        public static final int kHoodCurrentLimit = 20; // Amps for NEO 550
+        public static final boolean kHoodBrakeMode = true;
+        
+        // Simulation Constants
+        public static final double kSimFlywheelMomentOfInertia = 0.005; // kg·m²
+        public static final double kSimHoodMomentOfInertia = 0.01; // kg·m²
+        public static final double kSimHoodLength = 0.3; // meters
+    }
+
     public static class Turret {
 
-        public static final int kTurretCanID = 14; // CAN ID (dimensionless) - Changed from 11 to 12
+        public static final int kTurretCanID = 13; // CAN ID (dimensionless) - Changed to 13 since shooter uses 14-15
 
         public static final double kTurretOffsetX  = 0.1; // X offset (forward +X, backward -X) from robot center to turret (meters) 
         public static final double kTurretOffsetY = -0.2; // Y offset (left +Y, right -Y) from robot center to turret (meters)
