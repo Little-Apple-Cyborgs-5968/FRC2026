@@ -238,13 +238,13 @@ public class RobotContainer {
         // );
 
 // SHOOTER TEMP BINDINGS
-        joystick.leftBumper().whileTrue(
-            shooter.stopCommand()
-        );
+        // joystick.leftBumper().whileTrue(
+        //     shooter.stopCommand()
+        // );
 
-        joystick.rightBumper().onTrue(
-            shooter.runFlywheelsCommand() // Set to minimum angle
-        );
+        // joystick.rightBumper().onTrue(
+        //     shooter.runFlywheelsCommand() // Set to minimum angle
+        // );
 
 
 

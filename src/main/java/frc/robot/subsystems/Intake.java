@@ -330,7 +330,7 @@ public class Intake extends SubsystemBase {
    * @return Position in Rotations
    */
   @Logged(name = "Pivot Position/Rotations")
-  public double GetPivotPosition() {
+  public double   GetPivotPosition() {
     // Rotations
     return pivotPositionSignal.getValueAsDouble();
   }
