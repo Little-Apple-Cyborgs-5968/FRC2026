@@ -140,9 +140,9 @@ public class Constants {
         public static final double kPivotForwardSoftLimit = 60; // Maximum angle (degrees)
         public static final double kPivotReverseSoftLimit = 0; // Minimum angle (degrees)
         public static final boolean kPivotStatorLimitEnabled = true; // Stator current limit enabled (boolean)
-        public static final double kPivotStatorCurrentLimit = 40; // Stator current limit (amperes)
+        public static final double kPivotStatorCurrentLimit = 20; // Stator current limit (amperes)
         public static final boolean kPivotSupplyLimitEnabled = false; // Supply current limit enabled (boolean)
-        public static final double kPivotSupplyCurrentLimit = 40; // Supply current limit (amperes)
+        public static final double kPivotSupplyCurrentLimit = 20; // Supply current limit (amperes)
 
         // Spinner constants
         public static final int kSpinnerCanID = 9; // CAN ID (dimensionless)
@@ -162,7 +162,7 @@ public class Constants {
         public static final boolean kSpinnerEnableStatorLimit = true; // Stator current limit enabled (boolean)
         public static final int kSpinnerStatorCurrentLimit = 30; // Stator current limit (amperes)
         public static final boolean kSpinnerEnableSupplyLimit = false; // Supply current limit enabled (boolean)
-        public static final double kSpinnerSupplyCurrentLimit = 40; // Supply current limit (amperes)
+        public static final double kSpinnerSupplyCurrentLimit = 25; // Supply current limit (amperes)
         
         // Simulation constants
         public static final double kSimArmMomentOfInertia = 0.01; // Arm moment of inertia
@@ -217,10 +217,26 @@ public class Constants {
         public static final boolean kEnableStatorLimit = true; // Stator current limit enabled (boolean)
         public static final int kStatorCurrentLimit = 40; // Stator current limit (amperes)
         public static final boolean kEnableSupplyLimit = false; // Supply current limit enabled (boolean)
-        public static final double kSupplyCurrentLimit = 40; // Supply current limit (amperes)
+        public static final double kSupplyCurrentLimit = 30; // Supply current limit (amperes)
     }
 
-    public static class Shooter {
+    public static class Turret {
+
+        public static final int kTurretCanID = 13; // CAN ID (dimensionless) - Changed to 13 since shooter uses 14-15
+
+        public static final double kTurretOffsetX  = 0.1; // X offset (forward +X, backward -X) from robot center to turret (meters) 
+        public static final double kTurretOffsetY = -0.2; // Y offset (left +Y, right -Y) from robot center to turret (meters)
+
+        // Turret mechanical limits (degrees, relative to robot forward)
+        public static final double kMinAngleDegrees = -180.0;
+        public static final double kMaxAngleDegrees = 180.0;
+
+        // Shooting range limits (meters)
+        public static final double kMinShootingDistance = 1.0;
+        public static final double kMaxShootingDistance = 5.5;
+    }
+
+     public static class Shooter {
         // Flywheel Constants
         public static final int kLeftFlywheelCanID = 14; // CAN ID for left flywheel
         public static final int kRightFlywheelCanID = 15; // CAN ID for right flywheel
@@ -246,7 +262,7 @@ public class Constants {
         public static final int kHoodCanID = 16; // CAN ID for hood SparkMax
         public static final double kHoodGearRatio = 9.0; // 1:9 gear ratio
         public static final double kHoodMinAngleDegrees = 45.0; // Minimum hood angle
-        public static final double kHoodMaxAngleDegrees = 90.0; // Maximum hood angle (straight up)
+        public static final double kHoodMaxAngleDegrees = 90.0; // Maximum hood angle (shooting straight up)
         public static final double kHoodStartAngleDegrees = 90.0; // Starting position
         
         // Hood PID Constants
@@ -265,21 +281,5 @@ public class Constants {
         public static final double kSimFlywheelMomentOfInertia = 0.005; // kg·m²
         public static final double kSimHoodMomentOfInertia = 0.01; // kg·m²
         public static final double kSimHoodLength = 0.3; // meters
-    }
-
-    public static class Turret {
-
-        public static final int kTurretCanID = 13; // CAN ID (dimensionless) - Changed to 13 since shooter uses 14-15
-
-        public static final double kTurretOffsetX  = 0.1; // X offset (forward +X, backward -X) from robot center to turret (meters) 
-        public static final double kTurretOffsetY = -0.2; // Y offset (left +Y, right -Y) from robot center to turret (meters)
-
-        // Turret mechanical limits (degrees, relative to robot forward)
-        public static final double kMinAngleDegrees = -180.0;
-        public static final double kMaxAngleDegrees = 180.0;
-
-        // Shooting range limits (meters)
-        public static final double kMinShootingDistance = 1.0;
-        public static final double kMaxShootingDistance = 5.5;
     }
 }
