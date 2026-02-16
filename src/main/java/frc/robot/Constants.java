@@ -18,6 +18,7 @@ public class Constants {
         // SYOMDrive (Synchronized Yaw-Optimized Motion Drive) constants
         public static final double kSYOMDriveMinVelocity = 0.33; // Minimum velocity (m/s) before rotation activates
         public static final double kSYOMDriveRotationKp = 8.0; // Proportional gain for smooth rotation to travel direction
+        public static final double kSYOMDriveMaxRotationalVelocity = Units.degreesToRadians(180); // Max rotational velocity (rad/s) to prevent spinning
     }
 
     public static class PathFinding {

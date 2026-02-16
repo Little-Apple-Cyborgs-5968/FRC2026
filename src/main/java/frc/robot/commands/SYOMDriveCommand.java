@@ -33,6 +33,7 @@ public class SYOMDriveCommand extends Command {
     // Rotation control parameters
     private final double kRotationKp = Constants.Swerve.kSYOMDriveRotationKp;
     private final double kMinVelocity = Constants.Swerve.kSYOMDriveMinVelocity;
+    private final double kMaxRotationalVelocity = Constants.Swerve.kSYOMDriveMaxRotationalVelocity;
     
     /**
      * Creates a new SYOMDrive command
@@ -91,6 +92,9 @@ public class SYOMDriveCommand extends Command {
             
             // Apply proportional control for smooth rotation
             rotationalRate = headingError * kRotationKp;
+            
+            // Clamp to max rotational velocity
+            rotationalRate = Math.max(-kMaxRotationalVelocity, Math.min(kMaxRotationalVelocity, rotationalRate));
         }
         // If below minimum velocity, rotationalRate stays 0 (no rotation)
         
