@@ -448,7 +448,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Command PivotSetAngleCommand(double angleDegrees) {
-    return runOnce(() -> PivotSetAngle(angleDegrees));
+    return run(() -> PivotSetAngle(angleDegrees));
   }
 
   //------------------------ Spinner Methods -----------------------//
@@ -586,7 +586,7 @@ public class Intake extends SubsystemBase {
   }
 
 
-  private void pivotTunnable(DashboardPublisher dashboard) {
+  private void pivotTunable(DashboardPublisher dashboard) {
     if (dashboard == null) {
       return; // Skip if no dashboard publisher
     }
@@ -619,7 +619,7 @@ public class Intake extends SubsystemBase {
    * Continuously updates PID and setpoint from dashboard.
    */
   public Command PivotTunableCommand(DashboardPublisher dashboard) {
-    return run(() -> pivotTunnable(dashboard));
+    return run(() -> pivotTunable(dashboard));
   }
 
   //------------------------ Useful Commands -----------------------//

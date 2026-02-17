@@ -212,21 +212,21 @@ public class RobotContainer {
             intake.SpinnerTunableCommand(dashboard)
         );
 // INTAKE PIVOT TEMP BINDINGS
-        // joystick.leftBumper().onTrue(
-        //     intake.PivotSetAngleCommand(0)
-        // );
-
-        // joystick.rightBumper().onTrue(
-        //     intake.PivotTunableCommand(dashboard)
-        // );
+        joystick.leftBumper().onTrue(
+            intake.PivotSetAngleCommand(Constants.Intake.kIntakeAngleDeployed)
+        );
+        joystick.rightBumper().onTrue(
+            intake.PivotSetAngleCommand(Constants.Intake.kIntakeAngleStowed)
+            
+        );
 // SPINDEXER TEMP BINDINGS
-        // joystick.leftBumper().onTrue(
-        //     spindexer.stopCommand()
-        // );
+        joystick.b().onTrue(
+            spindexer.stopCommand()
+        );
 
-        // joystick.rightBumper().onTrue(
-        //     spindexer.tunableCommand(dashboard)
-        // );
+        joystick.x().onTrue(
+            spindexer.tunableCommand(dashboard)
+        );
 
 // FEEDER TEMP BINDINGS
         // joystick.leftBumper().onTrue(

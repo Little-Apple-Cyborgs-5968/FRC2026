@@ -121,29 +121,29 @@ public class Constants {
 
     public static class Intake {
         // Operational constants
-        public static final double kSpinnerSpeed = 10; // Target spinner speed in rotations per second (RPS)
-        public static final double kIntakeAngleDeployed = 45; // Deployed angle in degrees
-        public static final double kIntakeAngleStowed = 0; // Stowed angle in degrees
+        public static final double kSpinnerSpeed = -20; // Target spinner speed in rotations per second (RPS)
+        public static final double kIntakeAngleDeployed = -55; // Deployed angle in degrees
+        public static final double kIntakeAngleStowed = 1; // Stowed angle in degrees
         
         // Pivot Constants
         public static final int kPivotCanID = 10; // CAN ID (dimensionless)
         public static final double kPivotGearRatio = 9; // Gear ratio (dimensionless)
-        public static final double kPivotKP = 5.07; // Proportional gain (dimensionless)
+        public static final double kPivotKP = 500; // Proportional gain (dimensionless)
         public static final double kPivotKI = 0; // Integral gain (dimensionless)
-        public static final double kPivotKD = 2.82; // Derivative gain (dimensionless)
+        public static final double kPivotKD = 0; // Derivative gain (dimensionless)
         public static final double kPivotKS = 0; // Static friction feedforward (volts)
         public static final double kPivotKV = 1.12; // Velocity feedforward (volt-seconds per radian)
         public static final double kPivotKA = 0.08; // Acceleration feedforward (volt-seconds² per radian)
-        public static final double kPivotKG = 0.53; // Gravity feedforward (volts)
+        public static final double kPivotKG = 0; // Gravity feedforward (volts)
         public static final double kPivotMaxVelocity = 1; // Maximum velocity (rad/s)
-        public static final double kPivotMaxAcceleration = 1; // Maximum acceleration (rad/s²)
+        public static final double kPivotMaxAcceleration = 2; // Maximum acceleration (rad/s²)
         public static final boolean kPivotBrakeEnabled = true; // Brake mode enabled (boolean)
-        public static final double kPivotForwardSoftLimit = 60; // Maximum angle (degrees)
-        public static final double kPivotReverseSoftLimit = 0; // Minimum angle (degrees)
+        public static final double kPivotForwardSoftLimit = 1000; // Maximum angle (degrees)
+        public static final double kPivotReverseSoftLimit = -1000; // Minimum angle (degrees)
         public static final boolean kPivotStatorLimitEnabled = true; // Stator current limit enabled (boolean)
-        public static final double kPivotStatorCurrentLimit = 20; // Stator current limit (amperes)
+        public static final double kPivotStatorCurrentLimit = 60; // Stator current limit (amperes)
         public static final boolean kPivotSupplyLimitEnabled = false; // Supply current limit enabled (boolean)
-        public static final double kPivotSupplyCurrentLimit = 20; // Supply current limit (amperes)
+        public static final double kPivotSupplyCurrentLimit = 40; // Supply current limit (amperes)
 
         // Spinner constants
         public static final int kSpinnerCanID = 9; // CAN ID (dimensionless)
@@ -183,7 +183,7 @@ public class Constants {
         
         // Motor Constants
         public static final int kMotorCanID = 11; // CAN ID (dimensionless)
-        public static final double kGearRatio = 1; // Gear ratio (dimensionless)
+        public static final double kGearRatio = 15; // Gear ratio (dimensionless)
         public static final double kKP = 1; // Proportional gain (dimensionless)
         public static final double kKI = 0; // Integral gain (dimensionless)
         public static final double kKD = 0; // Derivative gain (dimensionless)
