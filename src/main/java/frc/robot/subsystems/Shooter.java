@@ -486,4 +486,19 @@ public class Shooter extends SubsystemBase {
   public SingleJointedArmSim getHoodSim() {
     return hoodSim;
   }
+
+  /**
+   * Rezero the shooter hood encoder to 90 degrees.
+   */
+  private void rezero() {
+    double rezeroPositionRotations = Constants.Shooter.kHoodRezeroAngleDegrees / 360.0 * hoodGearRatio;
+    hoodEncoder.setPosition(rezeroPositionRotations);
+  }
+
+  /**
+   * Command to rezero the shooter hood encoder.
+   */
+  public Command RezeroCommand() {
+    return runOnce(() -> rezero());
+  }
 }

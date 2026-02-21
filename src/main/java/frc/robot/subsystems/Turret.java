@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.utils.TurretUtil;
 import java.util.function.Supplier;
@@ -457,6 +458,21 @@ public class Turret extends SubsystemBase {
    */
   public Command TurretTunableCommand(DashboardPublisher dashboard) {
     return run(() -> turretTunable(dashboard));
+  }
+
+  /**
+   * Rezero the turret encoder to 0 degrees.
+   */
+  private void rezero() {
+    double rezeroPositionRotations = Units.degreesToRadians(Constants.Turret.kTurretRezeroAngleDegrees) / (2.0 * Math.PI);
+    motor.setPosition(rezeroPositionRotations);
+  }
+
+  /**
+   * Command to rezero the turret encoder.
+   */
+  public Command RezeroCommand() {
+    return runOnce(() -> rezero());
   }
 
 }

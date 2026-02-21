@@ -641,5 +641,20 @@ public class Intake extends SubsystemBase {
     return runOnce(() -> deploy());
   }
 
+  /**
+   * Rezero the intake pivot encoder to 0 degrees.
+   */
+  private void rezero() {
+    double rezeroPositionRotations = Constants.Intake.kPivotRezeroAngleDegrees / 360.0 * gearRatioPivot;
+    PivotMotor.setPosition(rezeroPositionRotations);
+  }
+
+  /**
+   * Command to rezero the intake pivot encoder.
+   */
+  public Command RezeroCommand() {
+    return runOnce(() -> rezero());
+  }
+
   
 }

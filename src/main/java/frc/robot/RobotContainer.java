@@ -213,21 +213,29 @@ public class RobotContainer {
         );
 // INTAKE PIVOT TEMP BINDINGS
         joystick.leftBumper().onTrue(
-            intake.PivotSetAngleCommand(Constants.Intake.kIntakeAngleDeployed)
+            intake.StowCommand()
         );
         joystick.rightBumper().onTrue(
-            intake.PivotSetAngleCommand(Constants.Intake.kIntakeAngleStowed)
+            intake.DeployCommand()
             
         );
 // SPINDEXER TEMP BINDINGS
-        joystick.b().onTrue(
+        joystick.x().onTrue(
             spindexer.stopCommand()
         );
 
-        joystick.x().onTrue(
-            spindexer.tunableCommand(dashboard)
+        joystick.b().onTrue(
+            spindexer.runCommand()
         );
 
+//SHOOTER TEMP BINDINGS
+        joystick.y().whileTrue(
+            shooter.runFlywheelsAtSpeedCommand(MaxAngularRate)
+        );
+
+        joystick.a().whileTrue(
+            shooter.setHoodAngleCommand(65)
+        );
 // FEEDER TEMP BINDINGS
         // joystick.leftBumper().onTrue(
         //     feeder.stopCommand()
@@ -280,7 +288,13 @@ public class RobotContainer {
         // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on back button press(back button)
-        joystick.back().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        // Also rezeroes turret, intake pivot, and shooter hood encoders
+        joystick.back().onTrue(
+            drivetrain.runOnce(() -> drivetrain.seedFieldCentric())
+                .andThen(turret.RezeroCommand())
+                .andThen(intake.RezeroCommand())
+                .andThen(shooter.RezeroCommand())
+        );
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

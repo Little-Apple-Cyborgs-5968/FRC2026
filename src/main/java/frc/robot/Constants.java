@@ -124,6 +124,7 @@ public class Constants {
         public static final double kSpinnerSpeed = -20; // Target spinner speed in rotations per second (RPS)
         public static final double kIntakeAngleDeployed = -55; // Deployed angle in degrees
         public static final double kIntakeAngleStowed = 1; // Stowed angle in degrees
+        public static final double kPivotRezeroAngleDegrees = 0.0; // Rezero position in degrees
         
         // Pivot Constants
         public static final int kPivotCanID = 10; // CAN ID (dimensionless)
@@ -228,6 +229,7 @@ public class Constants {
         public static final double kTurretOffsetX  = -0.2; // X offset (forward +X, backward -X) from robot center to turret (meters) 
         public static final double kTurretOffsetY = -0.2; // Y offset (left +Y, right -Y) from robot center to turret (meters)
         public static final double kTurretOffsetZ = 0.3; // Z offset (up +Z, down -Z) from robot center to turret (meters)
+        public static final double kTurretRezeroAngleDegrees = 0.0; // Rezero position in degrees
 
         // Turret mechanical limits (degrees, relative to robot forward)
         public static final double kMinAngleDegrees = -180.0;
@@ -266,6 +268,7 @@ public class Constants {
         public static final double kHoodMinAngleDegrees = 45.0; // Minimum hood angle
         public static final double kHoodMaxAngleDegrees = 90.0; // Maximum hood angle (shooting straight up)
         public static final double kHoodStartAngleDegrees = 90.0; // Starting position
+        public static final double kHoodRezeroAngleDegrees = 90.0; // Rezero position in degrees
         
         // Hood PID Constants
         public static final double kHoodKP = 0.1;
