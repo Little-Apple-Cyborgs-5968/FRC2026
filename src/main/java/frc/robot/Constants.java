@@ -225,8 +225,9 @@ public class Constants {
 
         public static final int kTurretCanID = 13; // CAN ID (dimensionless) - Changed to 13 since shooter uses 14-15
 
-        public static final double kTurretOffsetX  = 0.1; // X offset (forward +X, backward -X) from robot center to turret (meters) 
+        public static final double kTurretOffsetX  = -0.2; // X offset (forward +X, backward -X) from robot center to turret (meters) 
         public static final double kTurretOffsetY = -0.2; // Y offset (left +Y, right -Y) from robot center to turret (meters)
+        public static final double kTurretOffsetZ = 0.3; // Z offset (up +Z, down -Z) from robot center to turret (meters)
 
         // Turret mechanical limits (degrees, relative to robot forward)
         public static final double kMinAngleDegrees = -180.0;

@@ -99,7 +99,7 @@ public class RobotContainer {
     private final ShooterSim shooterSim = new ShooterSim(shooter);
 
     
-    private final Visualizer visualizer = new Visualizer(turret);
+    private final Visualizer visualizer = new Visualizer(turret,shooter);
 
     
 
