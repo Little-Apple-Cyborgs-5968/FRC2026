@@ -42,22 +42,22 @@ public class Turret extends SubsystemBase {
 
   // Constants
   private final DCMotor dcMotor = DCMotor.getKrakenX60(1);
-  private final int canID = 11;
-  private final double gearRatio = 15;
-  private final double kP = 8;
-  private final double kI = 0;
-  private final double kD = 0.1;
-  private final double kS = 0;
-  private final double kV = 0;
-  private final double kA = 0;
-  private final double kG = 0; // Unused for pivots
-  private final double maxVelocity = 4; // rad/s
-  private final double maxAcceleration = 4; // rad/s²
-  private final boolean brakeMode = true;
-  private final boolean enableStatorLimit = true;
-  private final double statorCurrentLimit = 40;
-  private final boolean enableSupplyLimit = false;
-  private final double supplyCurrentLimit = 40;
+  private final int canID = Constants.Turret.kTurretCanID;
+  private final double gearRatio = Constants.Turret.kGearRatio;
+  private final double kP = Constants.Turret.kKP;
+  private final double kI = Constants.Turret.kKI;
+  private final double kD = Constants.Turret.kKD;
+  private final double kS = Constants.Turret.kKS;
+  private final double kV = Constants.Turret.kKV;
+  private final double kA = Constants.Turret.kKA;
+  private final double kG = Constants.Turret.kKG;
+  private final double maxVelocity = Constants.Turret.kMaxVelocity;
+  private final double maxAcceleration = Constants.Turret.kMaxAcceleration;
+  private final boolean brakeMode = Constants.Turret.kBrakeMode;
+  private final boolean enableStatorLimit = Constants.Turret.kEnableStatorLimit;
+  private final double statorCurrentLimit = Constants.Turret.kStatorCurrentLimit;
+  private final boolean enableSupplyLimit = Constants.Turret.kEnableSupplyLimit;
+  private final double supplyCurrentLimit = Constants.Turret.kSupplyCurrentLimit;
 
   // Feedforward
   private final ArmFeedforward feedforward = new ArmFeedforward(

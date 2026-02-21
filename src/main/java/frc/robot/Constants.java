@@ -238,6 +238,23 @@ public class Constants {
         // Shooting range limits (meters)
         public static final double kMinShootingDistance = 1.0;
         public static final double kMaxShootingDistance = 5.5;
+
+        // Motor and control constants
+        public static final double kGearRatio = 15; // Gear ratio (dimensionless)
+        public static final double kKP = 8; // Proportional gain (dimensionless)
+        public static final double kKI = 0; // Integral gain (dimensionless)
+        public static final double kKD = 0.1; // Derivative gain (dimensionless)
+        public static final double kKS = 0; // Static friction feedforward (volts)
+        public static final double kKV = 0; // Velocity feedforward (volt-seconds per radian)
+        public static final double kKA = 0; // Acceleration feedforward (volt-seconds² per radian)
+        public static final double kKG = 0; // Gravity feedforward (volts) - Unused for turrets
+        public static final double kMaxVelocity = 4; // Maximum velocity (rad/s)
+        public static final double kMaxAcceleration = 4; // Maximum acceleration (rad/s²)
+        public static final boolean kBrakeMode = true; // Brake mode enabled (boolean)
+        public static final boolean kEnableStatorLimit = true; // Stator current limit enabled (boolean)
+        public static final double kStatorCurrentLimit = 40; // Stator current limit (amperes)
+        public static final boolean kEnableSupplyLimit = false; // Supply current limit enabled (boolean)
+        public static final double kSupplyCurrentLimit = 40; // Supply current limit (amperes)
     }
 
      public static class Shooter {
