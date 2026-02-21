@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.utils.TurretUtil;
 import java.util.function.Supplier;
 
@@ -74,6 +75,10 @@ public class Turret extends SubsystemBase {
   private final StatusSignal<Voltage> voltageSignal;
   private final StatusSignal<Current> statorCurrentSignal;
   private final StatusSignal<Temperature> temperatureSignal;
+
+  // Target tracking for telemetry
+  private double targetAngleDegrees = 0.0;
+  private double targetVelocityDegPerSec = 0.0;
 
   // Simulation
   private final SingleJointedArmSim pivotSim;
@@ -232,6 +237,34 @@ public class Turret extends SubsystemBase {
   }
 
   /**
+   * Get the target angle in degrees.
+   * @return Target angle in degrees
+   */
+  @Logged(name = "Target/AngleDegrees")
+  public double getTargetAngleDegrees() {
+    return targetAngleDegrees;
+  }
+
+  /**
+   * Get the target velocity in degrees per second.
+   * @return Target velocity in degrees per second
+   */
+  @Logged(name = "Target/VelocityDegPerSec")
+  public double getTargetVelocityDegPerSec() {
+    return targetVelocityDegPerSec;
+  }
+
+  /**
+   * Get the position error in degrees (target - current).
+   * @return Position error in degrees
+   */
+  @Logged(name = "Error/AngleDegrees")
+  public double getErrorDegrees() {
+    double currentAngleDegrees = Units.rotationsToDegrees(getPosition());
+    return targetAngleDegrees - currentAngleDegrees;
+  }
+
+  /**
    * Set pivot angle.
    * @param angleDegrees The target angle in degrees
    */
@@ -245,6 +278,10 @@ public class Turret extends SubsystemBase {
    * @param acceleration The acceleration in rad/s²
    */
   public void setAngle(double angleDegrees, double acceleration) {
+    // Track target for telemetry
+    this.targetAngleDegrees = angleDegrees;
+    this.targetVelocityDegPerSec = 0; // Position control, not velocity control
+    
     // Convert degrees to rotations
     double angleRadians = Units.degreesToRadians(angleDegrees);
     double positionRotations = angleRadians / (2.0 * Math.PI);
@@ -268,6 +305,11 @@ public class Turret extends SubsystemBase {
    * @param acceleration The acceleration in degrees per second squared
    */
   public void setVelocity(double velocityDegPerSec, double acceleration) {
+    // Track target for telemetry
+    this.targetVelocityDegPerSec = velocityDegPerSec;
+    // Keep target angle at current position when doing velocity control
+    this.targetAngleDegrees = Units.rotationsToDegrees(getPosition());
+    
     // Convert degrees/sec to rotations/sec
     double velocityRadPerSec = Units.degreesToRadians(velocityDegPerSec);
     double velocityRotations = velocityRadPerSec / (2.0 * Math.PI);
@@ -282,6 +324,10 @@ public class Turret extends SubsystemBase {
    * @param voltage The voltage to apply
    */
   public void setVoltage(double voltage) {
+    // When using direct voltage control, track current position as target
+    this.targetAngleDegrees = Units.rotationsToDegrees(getPosition());
+    this.targetVelocityDegPerSec = 0;
+    
     motor.setVoltage(voltage);
   }
 
@@ -355,6 +401,62 @@ public class Turret extends SubsystemBase {
         setAngle(solution.turretAngleDegrees);
       }
     }).withName("AutoAim-" + target.toString());
+  }
+
+  //------------------------ Tuning -----------------------//
+
+  /**
+   * Sets turret angle and velocity using tunable PID values and setpoints from dashboard.
+   * Updates PID gains in real-time and uses Setpoint1 for angle and Setpoint2 for velocity.
+   * @param dashboard The dashboard publisher for retrieving tunable values
+   */
+  private void turretTunable(DashboardPublisher dashboard) {
+    if (dashboard == null) {
+      return; // Skip if no dashboard publisher
+    }
+
+    // Get tunable PID values
+    double kP = dashboard.getTunableKP();
+    double kI = dashboard.getTunableKI();
+    double kD = dashboard.getTunableKD();
+    double kV = dashboard.getTunableKV();
+    double kA = dashboard.getTunableKA();
+    double angleSetpoint = dashboard.getTunableSetpoint1();
+    double velocitySetpoint = dashboard.getTunableSetpoint2();
+
+    // Update PID gains in slot 0
+    Slot0Configs slot0 = new Slot0Configs();
+    slot0.kP = kP;
+    slot0.kI = kI;
+    slot0.kD = kD;
+    slot0.kV = kV;
+    slot0.kA = kA;
+    slot0.kS = kS; // Keep original kS
+    
+    motor.getConfigurator().apply(slot0);
+
+    // Set angle or velocity based on which setpoint is non-zero
+    // Priority: if angle setpoint is non-zero, use angle control
+    // Otherwise, use velocity control if velocity setpoint is non-zero
+    if (Math.abs(angleSetpoint) > 0.01) {
+      setAngle(angleSetpoint);
+    } else if (Math.abs(velocitySetpoint) > 0.01) {
+      setVelocity(velocitySetpoint);
+    } else {
+      // Both are zero, stop the motor
+      setVelocity(0);
+    }
+  }
+
+  /**
+   * Command to tune turret using dashboard values.
+   * Continuously updates PID and setpoints from dashboard.
+   * Setpoint1 controls angle (degrees), Setpoint2 controls velocity (deg/s).
+   * @param dashboard The dashboard publisher for retrieving tunable values
+   * @return A command that tunes the turret using dashboard values
+   */
+  public Command TurretTunableCommand(DashboardPublisher dashboard) {
+    return run(() -> turretTunable(dashboard));
   }
 
 }

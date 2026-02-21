@@ -58,5 +58,19 @@ public class TurretSim extends SubsystemBase {
       turret.getCurrent()
     );
     
+    // Add target and error telemetry
+    SmartDashboard.putNumber(
+      "TURRET/Target Angle (deg)",
+      turret.getTargetAngleDegrees()
+    );
+    SmartDashboard.putNumber(
+      "TURRET/Target Velocity (deg/s)",
+      turret.getTargetVelocityDegPerSec()
+    );
+    SmartDashboard.putNumber(
+      "TURRET/Error (deg)",
+      turret.getErrorDegrees()
+    );
+    
   }
 }
