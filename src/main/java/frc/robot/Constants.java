@@ -271,11 +271,11 @@ public class Constants {
         public static final double kHoodRezeroAngleDegrees = 90.0; // Rezero position in degrees
         
         // Hood PID Constants
-        public static final double kHoodKP = 0.1;
+        public static final double kHoodKP = 1;
         public static final double kHoodKI = 0;
         public static final double kHoodKD = 0;
         public static final double kHoodKS = 0;
-        public static final double kHoodKV = 0;
+        public static final double kHoodKV = 1;
         public static final double kHoodKA = 0;
         
         // Hood Current Limits

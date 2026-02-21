@@ -38,7 +38,7 @@ public class IntakeSim extends SubsystemBase {
 
     // Create the simulation display
     mech = new Mechanism2d(1, 1);
-    root = mech.getRoot("intakeRoot", 0.1, 0.2);
+    root = mech.getRoot("intakeRoot", 0.8, 0);
 
     // Add base
     MechanismLigament2d base = root.append(
@@ -87,6 +87,10 @@ public class IntakeSim extends SubsystemBase {
     SmartDashboard.putNumber(
       "INTAKE/pivot Angle (deg)",
       Units.rotationsToDegrees(currentAngleRad)
+    );
+    SmartDashboard.putNumber(
+      "INTAKE/pivot Target Angle (deg)",
+      intake.GetPivotTargetAngleDegrees()
     );
     SmartDashboard.putNumber(
       "INTAKE/pivot Velocity (deg/s)",

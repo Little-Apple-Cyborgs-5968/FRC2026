@@ -44,7 +44,7 @@ public class Visualizer extends SubsystemBase {
     // The turret rotates in place, it does not move
     Pose3d turretPose = new Pose3d(
       new Translation3d(turretOffsetX, turretOffsetY, turretOffsetZ), 
-      new Rotation3d(0, hoodAngleRad, currentAngleRad)
+      new Rotation3d(0, hoodAngleRad, currentAngleRad) // Add 180 degrees to match physical orientation
     );
     turretPosePublisher.set(turretPose);
   }

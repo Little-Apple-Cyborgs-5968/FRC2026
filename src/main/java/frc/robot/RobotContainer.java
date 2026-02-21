@@ -211,31 +211,62 @@ public class RobotContainer {
         joystick.rightTrigger().onTrue(
             intake.SpinnerTunableCommand(dashboard)
         );
-// INTAKE PIVOT TEMP BINDINGS
+
         joystick.leftBumper().onTrue(
-            intake.StowCommand()
+            intake.PivotStopCommand()
         );
         joystick.rightBumper().onTrue(
-            intake.DeployCommand()
-            
+            intake.PivotTunableCommand(dashboard)
         );
-// SPINDEXER TEMP BINDINGS
-        joystick.x().onTrue(
+
+        joystick.leftBumper().onTrue(
             spindexer.stopCommand()
         );
 
-        joystick.b().onTrue(
-            spindexer.runCommand()
+        joystick.rightBumper().onTrue(
+            spindexer.tunableCommand(dashboard)
         );
 
-//SHOOTER TEMP BINDINGS
-        joystick.y().whileTrue(
-            shooter.runFlywheelsAtSpeedCommand(MaxAngularRate)
+        joystick.leftBumper().whileTrue(
+            feeder.stopCommand()
         );
 
-        joystick.a().whileTrue(
-            shooter.setHoodAngleCommand(65)
+        joystick.rightBumper().whileTrue(
+            feeder.tunableCommand(dashboard)
         );
+
+         joystick.leftBumper().whileTrue(
+            shooter.stopCommand()
+        );
+
+        joystick.rightBumper().whileTrue(
+             shooter.flywheelTunableCommand(dashboard)
+        );
+// // INTAKE PIVOT TEMP BINDINGS
+//         joystick.leftBumper().onTrue(
+//             intake.StowCommand()
+//         );
+//         joystick.rightBumper().onTrue(
+//             intake.DeployCommand()
+            
+//         );
+// // SPINDEXER TEMP BINDINGS
+//         joystick.x().onTrue(
+//             spindexer.stopCommand()
+//         );
+
+//         joystick.b().onTrue(
+//             spindexer.runCommand()
+//         );
+
+// //SHOOTER TEMP BINDINGS
+//         joystick.y().whileTrue(
+//             shooter.runFlywheelsAtSpeedCommand(10)
+//         );
+
+//         joystick.a().onTrue(
+//             shooter.setHoodAngleCommand(65)
+//         );
 // FEEDER TEMP BINDINGS
         // joystick.leftBumper().onTrue(
         //     feeder.stopCommand()

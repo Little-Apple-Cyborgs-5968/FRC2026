@@ -190,6 +190,7 @@ public class ShooterSim extends SubsystemBase {
     SmartDashboard.putNumber("SHOOTER/Flywheel Voltage", shooter.getFlywheelVoltage());
     SmartDashboard.putNumber("SHOOTER/Flywheel Current", shooter.getFlywheelCurrent());
     SmartDashboard.putNumber("SHOOTER/Hood Angle (deg)", hoodAngle);
+    SmartDashboard.putNumber("SHOOTER/Hood Target Angle (deg)", shooter.getTargetHoodAngle());
     SmartDashboard.putNumber("SHOOTER/Hood Velocity (deg/s)", shooter.getHoodVelocity());
     SmartDashboard.putBoolean("SHOOTER/Hood At Target", shooter.isHoodAtTarget());
     SmartDashboard.putNumber(

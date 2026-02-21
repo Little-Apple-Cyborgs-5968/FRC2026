@@ -134,6 +134,9 @@ public class Intake extends SubsystemBase {
   private final SingleJointedArmSim intakeSim;
   private final FlywheelSim spinnerSim;
 
+  // Target tracking for telemetry
+  private double targetPivotAngleDegrees = 0.0;
+
   /**
    * Creates a new intake Subsystem.
    */
@@ -345,6 +348,15 @@ public class Intake extends SubsystemBase {
   }
 
   /**
+   * Get the target pivot angle in degrees.
+   * @return Target angle in degrees
+   */
+  @Logged(name = "Pivot Target/Degrees")
+  public double GetPivotTargetAngleDegrees() {
+    return targetPivotAngleDegrees;
+  }
+
+  /**
    * Get the current velocity in rotations per second.
    * @return Velocity in rotations per second
    */
@@ -392,6 +404,9 @@ public class Intake extends SubsystemBase {
    * @param acceleration The acceleration in rad/s²
    */
   private void PivotSetAngle(double angleDegrees, double acceleration) {
+    // Track target for telemetry
+    this.targetPivotAngleDegrees = angleDegrees;
+    
     // Convert degrees to rotations
     double angleRadians = Units.degreesToRadians(angleDegrees);
     double positionRotations = angleRadians / (2.0 * Math.PI);

@@ -18,8 +18,10 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -87,11 +89,14 @@ public class Shooter extends SubsystemBase {
   // Hood Motor
   private final SparkMax hoodMotor;
   private final RelativeEncoder hoodEncoder;
+  private final SparkClosedLoopController hoodController;
+  private double targetHoodAngle = Constants.Shooter.kHoodStartAngleDegrees;
 
   // Simulation
   private final FlywheelSim leftFlywheelSim;
   private final FlywheelSim rightFlywheelSim;
   private final SingleJointedArmSim hoodSim;
+  private final PIDController hoodSimPID;
 
   /**
    * Creates a new Shooter Subsystem.
@@ -165,6 +170,7 @@ public class Shooter extends SubsystemBase {
     // Initialize hood motor (NEO 550 on SparkMax)
     hoodMotor = new SparkMax(hoodCanID, MotorType.kBrushless);
     hoodEncoder = hoodMotor.getEncoder();
+    hoodController = hoodMotor.getClosedLoopController();
 
     // Configure hood - using simplified API
     SparkMaxConfig hoodConfig = new SparkMaxConfig();
@@ -212,6 +218,15 @@ public class Shooter extends SubsystemBase {
       true, // Simulate gravity
       Units.degreesToRadians(Constants.Shooter.kHoodStartAngleDegrees)
     );
+
+    // PID controller for hood simulation (matches SparkMax PID settings)
+    // Note: WPILib PID works in units, not rotations, so we need to scale
+    // The hood position is in degrees, so PID needs to be scaled accordingly
+    hoodSimPID = new PIDController(
+      hoodKP / hoodGearRatio, //* 360.0, // Scale from rotations to degrees
+      hoodKI / hoodGearRatio, //* 360.0,
+      hoodKD / hoodGearRatio //* 360.0
+    );
   }
 
   @Override
@@ -246,8 +261,32 @@ public class Shooter extends SubsystemBase {
     rightFlywheel.getSimState().setRotorVelocity(rightVelocity);
 
     // Simulate hood
-    hoodSim.setInput(hoodMotor.getAppliedOutput() * 12.0); // Convert to voltage
+    // SparkMax doesn't have native simulation support like TalonFX
+    // We need to manually calculate PID output for simulation
+    double currentHoodAngleDeg = Units.radiansToDegrees(hoodSim.getAngleRads());
+    double pidOutput = hoodSimPID.calculate(currentHoodAngleDeg, targetHoodAngle);
+    
+    // Clamp output to -12V to +12V
+    double batteryVoltage = RoboRioSim.getVInVoltage();
+    if (batteryVoltage < 6.0) batteryVoltage = 12.0; // Default if not set
+    double hoodVoltage = Math.max(-batteryVoltage, Math.min(batteryVoltage, pidOutput));
+    
+    hoodSim.setInput(hoodVoltage);
     hoodSim.update(0.020);
+
+    // Update hood encoder with simulated position
+    double hoodAngleRadians = hoodSim.getAngleRads();
+    double hoodAngleDegrees = Units.radiansToDegrees(hoodAngleRadians);
+    double hoodPositionRotations = hoodAngleDegrees / 360.0 * hoodGearRatio;
+    hoodEncoder.setPosition(hoodPositionRotations);
+
+    // Debug output for hood simulation
+    if (Math.abs(targetHoodAngle - hoodAngleDegrees) > 1.0) {
+      System.out.println(String.format(
+        "Hood Sim - Target: %.1f deg, Actual: %.1f deg, PID Output: %.2f V, Voltage: %.2f V, Battery: %.2f V",
+        targetHoodAngle, hoodAngleDegrees, pidOutput, hoodVoltage, batteryVoltage
+      ));
+    }
 
     // Update battery voltage
     RoboRioSim.setVInVoltage(
@@ -363,12 +402,20 @@ public class Shooter extends SubsystemBase {
   /**
    * Set hood angle in degrees.
    */
+  @SuppressWarnings("deprecation")
   private void setHoodAngle(double angleDegrees) {
+    targetHoodAngle = angleDegrees;
     double positionRotations = angleDegrees / 360.0 * hoodGearRatio;
     // Use deprecated API for now - still functional in 2026
-    @SuppressWarnings("deprecation")
-    var controller = hoodMotor.getClosedLoopController();
-    controller.setReference(positionRotations, ControlType.kPosition);
+    hoodController.setReference(positionRotations, ControlType.kPosition);
+  }
+
+  /**
+   * Get target hood angle in degrees.
+   */
+  @Logged(name = "Hood/Target Angle Degrees")
+  public double getTargetHoodAngle() {
+    return targetHoodAngle;
   }
 
   /**
@@ -410,7 +457,7 @@ public class Shooter extends SubsystemBase {
    * Set hood to specific angle.
    */
   public Command setHoodAngleCommand(double angleDegrees) {
-    return runOnce(() -> setHoodAngle(angleDegrees));
+    return run(() -> setHoodAngle(angleDegrees));
   }
 
   //------------------------ Tuning -----------------------//
