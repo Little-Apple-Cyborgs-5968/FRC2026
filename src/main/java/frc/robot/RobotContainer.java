@@ -30,7 +30,7 @@ import frc.robot.subsystems.simulation.FeederSim;
 import frc.robot.subsystems.simulation.IntakeSim;
 import frc.robot.subsystems.simulation.ShooterSim;
 import frc.robot.subsystems.simulation.SpindexerSim;
-import frc.robot.subsystems.simulation.TurretShooterSim;
+import frc.robot.subsystems.simulation.TurretSim;
 import frc.robot.subsystems.simulation.Visualizer;
 import frc.robot.utils.GameState;
 import frc.robot.utils.TurretUtil;
@@ -80,7 +80,7 @@ public class RobotContainer {
 
     // Turret subsystem
     private final Turret turret = new Turret();
-    private final TurretShooterSim turretSim = new TurretShooterSim(turret);
+    private final TurretSim turretSim = new TurretSim(turret);
 
     // Intake Subsystem
     private final Intake intake = new Intake();

@@ -13,16 +13,16 @@ import frc.robot.subsystems.Turret;
 /**
  * Visualization for the turret subsystem in simulation.
  */
-public class TurretShooterSim extends SubsystemBase {
+public class TurretSim extends SubsystemBase {
 
   
 
   private final Turret turret;
 
   // Simulation display
-  private final Mechanism2d mech;
-  private final MechanismRoot2d root;
-  private final MechanismLigament2d turretMech;
+  // private final Mechanism2d mech;
+  // private final MechanismRoot2d root;
+  // private final MechanismLigament2d turretMech;
 
 
 
@@ -35,44 +35,14 @@ public class TurretShooterSim extends SubsystemBase {
    *
    * @param turretSubsystem The turret subsystem to visualize
    */
-  public TurretShooterSim(Turret turretSubsystem) {
+  public TurretSim(Turret turretSubsystem) {
     this.turret = turretSubsystem;
-
-    // Create the simulation display
-    mech = new Mechanism2d(1, 1);
-    root = mech.getRoot("turretRoot", 0.5, 0.5);
-
-    // Add a small base to represent the pivot point
-    MechanismLigament2d base = root.append(
-      new MechanismLigament2d(
-        "Base",
-        0, // Small length to represent the pivot
-        0,
-        2.5, // Small height
-        new Color8Bit(Color.kDarkGray)
-      )
-    );
-
-    // Add the turret mechanism rotating around the base
-    turretMech = base.append(
-      new MechanismLigament2d(
-        "Turret",
-        turret_LENGTH,
-        0, // Initial angle
-        turret_WIDTH,
-        new Color8Bit(Color.kRed)
-      )
-    );
-
-    // Initialize visualization
-    SmartDashboard.putData("TURRET/turret Sim", mech);  
   }
 
   @Override
   public void periodic() {
     // Update turret angle (convert from rotations to radians for mechanism display)
     double currentAngleRad = turret.getPosition() * 2.0 * Math.PI;
-    turretMech.setAngle(Units.radiansToDegrees(currentAngleRad));
 
     // Add telemetry data
     SmartDashboard.putNumber(
