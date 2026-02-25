@@ -136,8 +136,8 @@ public class Constants {
         public static final double kPivotKV = 1.12; // Velocity feedforward (volt-seconds per radian)
         public static final double kPivotKA = 0.08; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kPivotKG = 0; // Gravity feedforward (volts)
-        public static final double kPivotMaxVelocity = 1; // Maximum velocity (rad/s)
-        public static final double kPivotMaxAcceleration = 2; // Maximum acceleration (rad/s²)
+        public static final double kPivotMaxVelocity = 1; // Maximum velocity for Motion Magic (rotations/s, mechanism-side)
+        public static final double kPivotMaxAcceleration = 2.0; // Maximum acceleration for Motion Magic (rotations/s², mechanism-side)
         public static final boolean kPivotBrakeEnabled = true; // Brake mode enabled (boolean)
         public static final double kPivotForwardSoftLimit = 1000; // Maximum angle (degrees)
         public static final double kPivotReverseSoftLimit = -1000; // Minimum angle (degrees)
@@ -167,11 +167,11 @@ public class Constants {
         public static final double kSpinnerSupplyCurrentLimit = 25; // Supply current limit (amperes)
         
         // Simulation constants
-        public static final double kSimArmMomentOfInertia = 0.01; // Arm moment of inertia
-        public static final double kSimArmLength = 0.1; // Arm length (m)
-        public static final double kSimMinAngleDegrees = -90; // Min angle (degrees)
-        public static final double kSimMaxAngleDegrees = 90; // Max angle (degrees)
-        public static final boolean kSimulateGravity = false; // Simulate gravity
+        public static final double kSimArmMomentOfInertia = 0.3; // Arm moment of inertia (kg·m²)
+        public static final double kSimArmLength = 0.4; // Arm length (m) - ~16 inches
+        public static final double kSimMinAngleDegrees = -60; // Min angle (degrees)
+        public static final double kSimMaxAngleDegrees = 30; // Max angle (degrees)
+        public static final boolean kSimulateGravity = true; // Simulate gravity
         public static final double kSimStartingPositionDegrees = 0; // Starting position (degrees)
         
         // Spinner simulation constants
@@ -249,8 +249,8 @@ public class Constants {
         public static final double kKV = 0; // Velocity feedforward (volt-seconds per radian)
         public static final double kKA = 0; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kKG = 0; // Gravity feedforward (volts) - Unused for turrets
-        public static final double kMaxVelocity = 4; // Maximum velocity (rad/s)
-        public static final double kMaxAcceleration = 4; // Maximum acceleration (rad/s²)
+        public static final double kMaxVelocity = 1.0; // Maximum velocity for Motion Magic (rotations/s, mechanism-side)
+        public static final double kMaxAcceleration = 2.0; // Maximum acceleration for Motion Magic (rotations/s², mechanism-side)
         public static final boolean kBrakeMode = true; // Brake mode enabled (boolean)
         public static final boolean kEnableStatorLimit = true; // Stator current limit enabled (boolean)
         public static final double kStatorCurrentLimit = 40; // Stator current limit (amperes)

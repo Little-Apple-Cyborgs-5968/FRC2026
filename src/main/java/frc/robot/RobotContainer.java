@@ -219,47 +219,47 @@ public class RobotContainer {
             intake.PivotTunableCommand(dashboard)
         );
 
-        joystick.leftBumper().onTrue(
-            spindexer.stopCommand()
-        );
+        // joystick.leftBumper().onTrue(
+        //     spindexer.stopCommand()
+        // );
 
-        joystick.rightBumper().onTrue(
-            spindexer.tunableCommand(dashboard)
-        );
+        // joystick.rightBumper().onTrue(
+        //     spindexer.tunableCommand(dashboard)
+        // );
 
-        joystick.leftBumper().onTrue(
-            feeder.stopCommand()
-        );
+        // joystick.leftBumper().onTrue(
+        //     feeder.stopCommand()
+        // );
 
-        joystick.rightBumper().onTrue(
-            feeder.tunableCommand(dashboard)
-        );
+        // joystick.rightBumper().onTrue(
+        //     feeder.tunableCommand(dashboard)
+        // );
 
-         joystick.leftBumper().onTrue(
-            shooter.stopCommand()
-        );
+        //  joystick.leftBumper().onTrue(
+        //     shooter.stopCommand()
+        // );
 
-        joystick.rightBumper().onTrue(
-             shooter.flywheelTunableCommand(dashboard)
-        );
+        // joystick.rightBumper().onTrue(
+        //      shooter.flywheelTunableCommand(dashboard)
+        // );
 
-        joystick.a().onTrue(
-            shooter.autoAimCommandShooter(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB).alongWith(
-                turret.autoAimCommandTurret(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB)
-            )
+        // joystick.a().onTrue(
+        //     shooter.autoAimCommandShooter(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB).alongWith(
+        //         turret.autoAimCommandTurret(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB)
+        //     )
         
-        );
+        // );
         
 
 
-// // INTAKE PIVOT TEMP BINDINGS
-//         joystick.leftBumper().onTrue(
-//             intake.StowCommand()
-//         );
-//         joystick.rightBumper().onTrue(
-//             intake.DeployCommand()
+// INTAKE PIVOT TEMP BINDINGS
+        // joystick.leftBumper().onTrue(
+        //     intake.StowCommand()
+        // );
+        // joystick.rightBumper().onTrue(
+        //     intake.DeployCommand()
             
-//         );
+        // );
 // // SPINDEXER TEMP BINDINGS
 //         joystick.x().onTrue(
 //             spindexer.stopCommand()

@@ -8,15 +8,15 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.sim.TalonFXSimState.MotorType;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -112,7 +112,7 @@ public class Intake extends SubsystemBase {
 
   //pivot Motor controller
   private final TalonFX PivotMotor;
-  private final PositionVoltage pivotPositionRequest;
+  private final MotionMagicVoltage pivotPositionRequest;
   private final VelocityVoltage pivotVelocityRequest;
   private final StatusSignal<Angle> pivotPositionSignal;
   private final StatusSignal<AngularVelocity> pivotVelocitySignal;
@@ -148,7 +148,7 @@ public class Intake extends SubsystemBase {
     SpinnerMotor = new TalonFX(spinnerCanID);
 
     //pivot Create control requests
-    pivotPositionRequest = new PositionVoltage(0).withSlot(0);
+    pivotPositionRequest = new MotionMagicVoltage(0).withSlot(0);
     pivotVelocityRequest = new VelocityVoltage(0).withSlot(0);
 
     // Spinner create control requests
@@ -180,6 +180,11 @@ public class Intake extends SubsystemBase {
     slot0.kS = PivotkS;
     slot0.kV = PivotkV;
     slot0.kA = PivotkA;
+
+    // Configure pivot Motion Magic velocity/acceleration limits
+    MotionMagicConfigs pivotMotionMagic = PivotMotorConfig.MotionMagic;
+    pivotMotionMagic.MotionMagicCruiseVelocity = PivotMaxVelocity;     // rotations/s (mechanism-side)
+    pivotMotionMagic.MotionMagicAcceleration   = PivotMaxAcceleration; // rotations/s² (mechanism-side)
 
     // Spinner Configure PID for slot 0
     Slot0Configs spinnerSlot0 = SpinnerMotorConfig.Slot0;

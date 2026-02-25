@@ -7,13 +7,11 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -23,7 +21,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -69,7 +66,7 @@ public class Turret extends SubsystemBase {
 
   // Motor controller
   private final TalonFX motor;
-  private final PositionVoltage positionRequest;
+  private final MotionMagicVoltage positionRequest;
   private final VelocityVoltage velocityRequest;
   private final StatusSignal<Angle> positionSignal;
   private final StatusSignal<AngularVelocity> velocitySignal;
@@ -92,7 +89,7 @@ public class Turret extends SubsystemBase {
     motor = new TalonFX(canID);
 
     // Create control requests
-    positionRequest = new PositionVoltage(0).withSlot(0);
+    positionRequest = new MotionMagicVoltage(0).withSlot(0);
     velocityRequest = new VelocityVoltage(0).withSlot(0);
 
     // get status signals
@@ -112,6 +109,11 @@ public class Turret extends SubsystemBase {
     slot0.kS = kS;
     slot0.kV = kV;
     slot0.kA = kA;
+
+    // Configure Motion Magic velocity/acceleration limits
+    MotionMagicConfigs motionMagic = config.MotionMagic;
+    motionMagic.MotionMagicCruiseVelocity = maxVelocity;     // rotations/s (mechanism-side)
+    motionMagic.MotionMagicAcceleration   = maxAcceleration; // rotations/s² (mechanism-side)
 
     // Set current limits
     CurrentLimitsConfigs currentLimits = config.CurrentLimits;
