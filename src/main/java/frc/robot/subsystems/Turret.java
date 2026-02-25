@@ -393,7 +393,7 @@ public class Turret extends SubsystemBase {
    * @param target The target to aim at (HUB, LEFT_PASS, or RIGHT_PASS)
    * @return A command that continuously aims the turret at the target
    */
-  public Command autoAimCommand(Supplier<Pose2d> robotPoseSupplier, TurretUtil.TargetType target) {
+  public Command autoAimCommandTurret(Supplier<Pose2d> robotPoseSupplier, TurretUtil.TargetType target) {
     return run(() -> {
       Pose2d robotPose = robotPoseSupplier.get();
       TurretUtil.ShotSolution solution = TurretUtil.computeShotSolution(robotPose, target);

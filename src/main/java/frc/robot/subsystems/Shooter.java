@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -23,6 +25,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -41,6 +44,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import frc.robot.Constants;
 import frc.robot.driverIO.DashboardPublisher;
+import frc.robot.utils.TurretUtil;
 
 /**
  * Shooter subsystem with dual Kraken X60 flywheels and NEO 550 adjustable hood
@@ -547,5 +551,17 @@ public class Shooter extends SubsystemBase {
    */
   public Command RezeroCommand() {
     return runOnce(() -> rezero());
+  }
+
+    public Command autoAimCommandShooter(Supplier<Pose2d> robotPoseSupplier, TurretUtil.TargetType target) {
+    return run(() -> {
+      Pose2d robotPose = robotPoseSupplier.get();
+      TurretUtil.ShotSolution solution = TurretUtil.computeShotSolution(robotPose, target);
+      
+      if (solution.isValid) {
+        setHoodAngle(solution.trajectoryAngleDegrees);
+        setFlywheelVelocity(solution.shooterSpeedRPS);
+      }
+    }).withName("AutoAimShooter-" + target.toString());
   }
 }

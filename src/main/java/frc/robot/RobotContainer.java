@@ -227,21 +227,31 @@ public class RobotContainer {
             spindexer.tunableCommand(dashboard)
         );
 
-        joystick.leftBumper().whileTrue(
+        joystick.leftBumper().onTrue(
             feeder.stopCommand()
         );
 
-        joystick.rightBumper().whileTrue(
+        joystick.rightBumper().onTrue(
             feeder.tunableCommand(dashboard)
         );
 
-         joystick.leftBumper().whileTrue(
+         joystick.leftBumper().onTrue(
             shooter.stopCommand()
         );
 
-        joystick.rightBumper().whileTrue(
+        joystick.rightBumper().onTrue(
              shooter.flywheelTunableCommand(dashboard)
         );
+
+        joystick.a().onTrue(
+            shooter.autoAimCommandShooter(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB).alongWith(
+                turret.autoAimCommandTurret(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB)
+            )
+        
+        );
+        
+
+
 // // INTAKE PIVOT TEMP BINDINGS
 //         joystick.leftBumper().onTrue(
 //             intake.StowCommand()
