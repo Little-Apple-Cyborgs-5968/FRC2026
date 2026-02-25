@@ -131,10 +131,12 @@ public class Turret extends SubsystemBase {
     // Apply configuration
     motor.getConfigurator().apply(config);
 
-    // Reset encoder position
-    motor.setPosition(0);
+    // Set encoder to the physical starting angle (0 = forward, but turret may start elsewhere)
+    double startAngleDegrees = Constants.Turret.kTurretStartAngleDegrees;
+    double startPositionRotations = Units.degreesToRadians(startAngleDegrees) / (2.0 * Math.PI);
+    motor.setPosition(startPositionRotations);
 
-    // Initialize simulation
+    // Initialize simulation — start at the same physical angle so sim matches reality
     pivotSim = new SingleJointedArmSim(
       dcMotor, // Motor type
       gearRatio,
@@ -143,7 +145,7 @@ public class Turret extends SubsystemBase {
       Units.degreesToRadians(-180), // Min angle (rad)
       Units.degreesToRadians(180), // Max angle (rad)
       false, // Simulate gravity - Disable gravity for pivot
-      Units.degreesToRadians(0) // Starting position (rad)
+      Units.degreesToRadians(startAngleDegrees) // Starting position matches physical start angle
     );
   }
 

@@ -229,7 +229,7 @@ public class Constants {
         public static final double kTurretOffsetX  = -0.2; // X offset (forward +X, backward -X) from robot center to turret (meters) 
         public static final double kTurretOffsetY = -0.2; // Y offset (left +Y, right -Y) from robot center to turret (meters)
         public static final double kTurretOffsetZ = 0.3; // Z offset (up +Z, down -Z) from robot center to turret (meters)
-        public static final double kTurretStartAngleDegrees = 90; // Physical starting angle (encoder will be set to this value at init)
+        public static final double kTurretStartAngleDegrees = 21; // Physical starting angle (encoder will be set to this value at init)
         public static final double kTurretRezeroAngleDegrees = 0.0; // Angle to set encoder to when rezeroing (0 = forward)
 
         // Turret mechanical limits (degrees, relative to robot forward)

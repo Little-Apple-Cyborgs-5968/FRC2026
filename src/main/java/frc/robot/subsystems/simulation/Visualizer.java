@@ -31,7 +31,9 @@ public class Visualizer extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double currentAngleRad = turret.getSimulation().getAngleRads();
+    // Use the motor encoder angle (0 = forward convention) rather than raw sim physics angle,
+    // so the visualizer stays correct regardless of the physical starting position.
+    double currentAngleRad = turret.getPosition() * 2.0 * Math.PI;
     double hoodAngleDeg = shooter.getHoodAngle();
     double hoodAngleRad = Units.degreesToRadians(hoodAngleDeg);
     
