@@ -11,6 +11,7 @@ import java.util.List;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.commands.PathFindCommands;
+import frc.robot.commands.SetYawCommand;
 import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -100,7 +102,7 @@ public class RobotContainer {
 
     // Shooter Subsystem
     private final Shooter shooter = new Shooter();
-    //private final ShooterSim shooterSim = new ShooterSim(shooter);
+    private final ShooterSim shooterSim = new ShooterSim(shooter);
 
     
     private final Visualizer visualizer = new Visualizer(turret,shooter);
@@ -245,12 +247,32 @@ public class RobotContainer {
         //      shooter.flywheelTunableCommand(dashboard)
         // );
 
-        // joystick.a().onTrue(
+        //HOOD TUNABLE
+        joystick.rightBumper().onTrue(
+            shooter.hoodTunableCommand(dashboard)
+        );
+
+
+
+
+        // joystick.b().onTrue(
         //     shooter.autoAimCommandShooter(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB).alongWith(
         //         turret.autoAimCommandTurret(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB)
         //     )
         
         // );
+
+        // B button: snap to nearest 45° and hold while held.
+        // Uses the same deadband (10 % of MaxSpeed) as the default drive command.
+        joystick.b().whileTrue(
+            SetYawCommand.snapToNearest45(
+                drivetrain,
+                () -> -MathUtil.applyDeadband(joystick.getLeftY(), 0.1) * MaxSpeed,
+                () -> -MathUtil.applyDeadband(joystick.getLeftX(), 0.1) * MaxSpeed,
+                MaxSpeed
+            )
+        );
+
         
 
 

@@ -14,11 +14,36 @@ import edu.wpi.first.math.util.Units;
 public class Constants {
     public static class Swerve {
         public static final double kRobotCentricSpeed = 0.5; // how fast robot centric drive speed is in m/s
-        
+
         // SYOMDrive (Synchronized Yaw-Optimized Motion Drive) constants
         public static final double kSYOMDriveMinVelocity = 0.33; // Minimum velocity (m/s) before rotation activates
         public static final double kSYOMDriveRotationKp = 8.0; // Proportional gain for smooth rotation to travel direction
         public static final double kSYOMDriveMaxRotationalVelocity = Units.degreesToRadians(180); // Max rotational velocity (rad/s) to prevent spinning
+
+        // ==================== SET-YAW / HEADING LOCK CONSTANTS ====================
+        // Used by SetYawCommand with CTRE's FieldCentricFacingAngle request.
+        // The request feeds these gains into its built-in PhoenixPIDController which
+        // runs a standard PID + MotionMagicExpo profile on the robot heading.
+
+        // Heading PID gains (units: rotations → rotations/s output)
+        public static final double kHeadingKP = 7.0;   // Proportional gain  (tune on robot)
+        public static final double kHeadingKI = 0.0;   // Integral gain
+        public static final double kHeadingKD = 0.3;   // Derivative gain
+
+        // Heading MotionMagic Expo cruise constraints
+        // Cruise velocity in rotations per second (≈ 540 °/s)
+        public static final double kHeadingMaxVelocityRps   = 1.5;
+        // Expo feedforward coefficient (rotations/s per √(rotation)) – shapes the
+        // acceleration curve; higher = snappier acceleration
+        public static final double kHeadingExpoKV = 0.1;
+        public static final double kHeadingExpoKA = 0.005;
+
+        // Tolerance: command finishes when heading error is within this value
+        public static final double kHeadingToleranceDegrees = 2.0;
+
+        // Translation deadband applied to the FacingAngle request (fraction of MaxSpeed)
+        // Matches the 10 % deadband used by the default field-centric drive command
+        public static final double kFacingAngleTranslationDeadband = 0.1; // 10 %
     }
 
     public static class PathFinding {
