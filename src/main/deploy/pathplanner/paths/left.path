@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 5.541756876663709,
+        "y": 7.411100266193433
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0,
-        "y": 7.0
+        "x": 3.68812399615613,
+        "y": 7.422871630220715
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.8857586512866025,
-        "y": 7.6283939662821645
+        "x": 3.6585448092280384,
+        "y": 0.635
       },
       "prevControl": {
-        "x": 5.8857586512866025,
-        "y": 7.6283939662821645
+        "x": 4.377313309215038,
+        "y": 0.6294132103233105
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "ethan folder",
+  "folder": null,
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 1.0,
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

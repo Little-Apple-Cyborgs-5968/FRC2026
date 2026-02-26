@@ -24,8 +24,8 @@
         "y": 0.6669476486246662
       },
       "nextControl": {
-        "x": 6.489994935016924,
-        "y": 0.8025792249072828
+        "x": 6.489994935016926,
+        "y": 0.8025792249072832
       },
       "isLocked": false,
       "linkedName": null
@@ -73,7 +73,7 @@
       },
       "nextControl": {
         "x": 5.538450544066996,
-        "y": 0.48381149956492425
+        "y": 0.4838114995649243
       },
       "isLocked": false,
       "linkedName": null
@@ -114,7 +114,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "autos",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

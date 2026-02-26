@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.List;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.generated.TunerConstants;
+import frc.robot.commands.PathFindCommands;
 import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -32,6 +35,7 @@ import frc.robot.subsystems.simulation.ShooterSim;
 import frc.robot.subsystems.simulation.SpindexerSim;
 import frc.robot.subsystems.simulation.TurretSim;
 import frc.robot.subsystems.simulation.Visualizer;
+import frc.robot.utils.FieldConstants;
 import frc.robot.utils.GameState;
 import frc.robot.utils.TurretUtil;
 
@@ -182,10 +186,8 @@ public class RobotContainer {
             driveRobotCentric.withVelocityX(0).withVelocityY(robotCentricDriveSpeed))
         );
 
-        // Example usage of PathFindCommands to go to preset locations
-        // joystick.a().and(joystick.y()).onTrue(
-        //     PathFindCommands.pathfindToPath("hub_front")
-        // );
+        // Pathfind to the nearest trench shooting position (left or right)
+
 
         // Example usage of rumble command (controller rumble for driver feedback)
         // Moved to start+back combo to avoid conflict with auto-aim
@@ -306,12 +308,15 @@ public class RobotContainer {
 
         new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 5).onTrue(rumble.lightPulse());
         new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 0).onTrue(rumble.doublePulse());
-        // joystick.b().onTrue(
-        //     PathFindCommands.pathfindAndDo("score_barge", drivetrain.runOnce(() -> System.out.println("run reef motors")))
-        // );
-        // joystick.y().onTrue(
-        //     PathFindCommands.pathfindToPath("still")
-        // );
+
+        
+        // Pathfind to nearest trench shoot pose; cancelled by pressing either joystick stick
+        joystick.a().and(joystick.y()).onTrue(
+            PathFindCommands.pathfindToNearestPose(
+                () -> drivetrain.getState().Pose,
+                List.of(FieldConstants.getLeftTrenchShoot(), FieldConstants.getRightTrenchShoot())
+            ).until(joystick.leftStick().or(joystick.rightStick()))
+        );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.

@@ -4,6 +4,10 @@
 
 package frc.robot.commands;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Supplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -69,6 +73,47 @@ public class PathFindCommands {
   */
   public static Command pathfindToPath(String pathName) {
       return pathfindToPath(pathName, DEFAULT_CONSTRAINTS);
+  }
+
+  /**
+   * Pathfind directly to a pose with custom constraints
+   */
+  public static Command pathfindToPose(Pose2d targetPose, PathConstraints constraints) {
+      return AutoBuilder.pathfindToPose(targetPose, constraints);
+  }
+
+  /**
+   * Pathfind directly to a pose with default constraints
+   */
+  public static Command pathfindToPose(Pose2d targetPose) {
+      return pathfindToPose(targetPose, DEFAULT_CONSTRAINTS);
+  }
+
+  /**
+   * Pathfind to the nearest pose from a list with custom constraints.
+   * The robot pose supplier is evaluated when the command is scheduled,
+   * not when this method is called.
+   */
+  public static Command pathfindToNearestPose(Supplier<Pose2d> robotPoseSupplier, List<Pose2d> candidatePoses, PathConstraints constraints) {
+      if (candidatePoses == null || candidatePoses.isEmpty()) {
+          return Commands.print("No candidate poses provided");
+      }
+      return Commands.defer(() -> {
+          Pose2d robotPose = robotPoseSupplier.get();
+          Pose2d nearest = candidatePoses.stream()
+              .min(Comparator.comparingDouble(p -> p.getTranslation().getDistance(robotPose.getTranslation())))
+              .get();
+          return pathfindToPose(nearest, constraints);
+      }, java.util.Set.of());
+  }
+
+  /**
+   * Pathfind to the nearest pose from a list with default constraints.
+   * The robot pose supplier is evaluated when the command is scheduled,
+   * not when this method is called.
+   */
+  public static Command pathfindToNearestPose(Supplier<Pose2d> robotPoseSupplier, List<Pose2d> candidatePoses) {
+      return pathfindToNearestPose(robotPoseSupplier, candidatePoses, DEFAULT_CONSTRAINTS);
   }
 
 }
