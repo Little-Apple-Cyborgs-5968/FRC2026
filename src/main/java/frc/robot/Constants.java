@@ -32,7 +32,7 @@ public class Constants {
     public static class Vision {
         // ==================== LIMELIGHT NAMES ====================
         // Network table names for each Limelight (must match what's configured in the Limelight web interface)
-        public static final String kLimelightLeftName = "limelight-two"; //left and two
+        public static final String kLimelightLeftName = "limelight-left"; //left and two
         public static final String kLimelightRightName = "limelight-right"; // everytihn called back actually right
         public static final String kLimelightGamepieceName = "limelight-gp";
 

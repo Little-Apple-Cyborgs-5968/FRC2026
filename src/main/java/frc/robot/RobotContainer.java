@@ -84,19 +84,19 @@ public class RobotContainer {
 
     // Intake Subsystem
     private final Intake intake = new Intake();
-    private final IntakeSim intakeSim = new IntakeSim(intake);
+    //private final IntakeSim intakeSim = new IntakeSim(intake);
 
     // Spindexer Subsystem
     private final Spindexer spindexer = new Spindexer();
-    private final SpindexerSim spindexerSim = new SpindexerSim(spindexer);
+    //private final SpindexerSim spindexerSim = new SpindexerSim(spindexer);
 
     // Feeder Subsystem
     private final Feeder feeder = new Feeder();
-    private final FeederSim feederSim = new FeederSim(feeder);
+    //private final FeederSim feederSim = new FeederSim(feeder);
 
     // Shooter Subsystem
     private final Shooter shooter = new Shooter();
-    private final ShooterSim shooterSim = new ShooterSim(shooter);
+    //private final ShooterSim shooterSim = new ShooterSim(shooter);
 
     
     private final Visualizer visualizer = new Visualizer(turret,shooter);
