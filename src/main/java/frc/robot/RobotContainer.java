@@ -86,11 +86,11 @@ public class RobotContainer {
 
     // Turret subsystem
     private final Turret turret = new Turret();
-    //private final TurretSim turretSim = new TurretSim(turret);
+    private final TurretSim turretSim = new TurretSim(turret);
 
     // Intake Subsystem
     private final Intake intake = new Intake();
-    private final IntakeSim intakeSim = new IntakeSim(intake);
+    //private final IntakeSim intakeSim = new IntakeSim(intake);
 
     // Spindexer Subsystem
     private final Spindexer spindexer = new Spindexer();
@@ -102,7 +102,7 @@ public class RobotContainer {
 
     // Shooter Subsystem
     private final Shooter shooter = new Shooter();
-    //private final ShooterSim shooterSim = new ShooterSim(shooter);
+    private final ShooterSim shooterSim = new ShooterSim(shooter);
 
     
     private final Visualizer visualizer = new Visualizer(turret,shooter);
@@ -139,12 +139,12 @@ public class RobotContainer {
                     double vy = -joystick.getLeftX() * MaxSpeed;
                     
                     // Calculate velocity magnitude
-                    double velocityMagnitude = Math.sqrt(vx * vx + vy * vy);
+                    double doubleVelocityMagnitude = Math.sqrt(vx * vx + vy * vy);
                     
                     // Calculate rotational rate
                     double rotationalRate = 0;
                     
-                    if (velocityMagnitude > Constants.Swerve.kSYOMDriveMinVelocity) {
+                    if (doubleVelocityMagnitude > Constants.Swerve.kSYOMDriveMinVelocity) {
                         // Calculate the direction of travel (desired heading)
                         Rotation2d desiredHeading = new Rotation2d(vx, vy);
                         
@@ -231,34 +231,39 @@ public class RobotContainer {
             intake.DeployCommand()
         );
 
-        // joystick.leftBumper().onTrue(
+        // joystick.leftTrigger().onTrue(
         //     spindexer.stopCommand()
         // );
 
-        // joystick.rightBumper().onTrue(
+        // joystick.rightTrigger().onTrue(
         //     spindexer.tunableCommand(dashboard)
         // );
 
-        // joystick.leftBumper().onTrue(
-        //     feeder.stopCommand()
+        shooter.setDefaultCommand(shooter.stopCommand());
+        spindexer.setDefaultCommand(spindexer.stopCommand());
+        feeder.setDefaultCommand(feeder.stopCommand());
+
+        joystick.y().whileTrue(
+            shooter.runFlywheelsCommand());
+        
+        joystick.b().whileTrue(
+            spindexer.runCommand().alongWith(feeder.runCommand())
+
+        );
+
+        // joystick.rightTrigger().whileTrue(
+        //     turret.TurretTunableCommand(dashboard)
+        //     );
+        // joystick.leftTrigger().onTrue(
+        //     turret.stopCommand()
         // );
 
-        // joystick.rightBumper().onTrue(
-        //     feeder.tunableCommand(dashboard)
-        // );
 
-        //  joystick.leftBumper().onTrue(
-        //     shooter.stopCommand()
-        // );
+        // HOOD TUNABLE
 
-        // joystick.rightBumper().onTrue(
-        //      shooter.flywheelTunableCommand(dashboard)
-        // );
-
-        //HOOD TUNABLE
-        // joystick.rightBumper().onTrue(
-        //     shooter.hoodTunableCommand(dashboard)
-        // );
+        joystick.rightTrigger().onTrue(
+            shooter.hoodTunableCommand(dashboard)
+        );
 
 
 

@@ -1,6 +1,5 @@
 package frc.robot.subsystems.simulation;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -41,36 +40,11 @@ public class TurretSim extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Update turret angle (convert from rotations to radians for mechanism display)
-    double currentAngleRad = turret.getPosition() * 2.0 * Math.PI;
-
-    // Add telemetry data
-    SmartDashboard.putNumber(
-      "TURRET/turret Angle (deg)",
-      Units.radiansToDegrees(currentAngleRad)
-    );
-    SmartDashboard.putNumber(
-      "TURRET/turret Velocity (deg/s)",
-      Units.rotationsToDegrees(turret.getVelocity())
-    );
-    SmartDashboard.putNumber(
-      "TURRET/turret Current (A)",
-      turret.getCurrent()
-    );
-    
-    // Add target and error telemetry
-    SmartDashboard.putNumber(
-      "TURRET/Target Angle (deg)",
-      turret.getTargetAngleDegrees()
-    );
-    SmartDashboard.putNumber(
-      "TURRET/Target Velocity (deg/s)",
-      turret.getTargetVelocityDegPerSec()
-    );
-    SmartDashboard.putNumber(
-      "TURRET/Error (deg)",
-      turret.getErrorDegrees()
-    );
-    
+    SmartDashboard.putNumber("TURRET/turret Angle (deg)", turret.getAngleDegrees());
+    SmartDashboard.putNumber("TURRET/turret Velocity (deg/s)", turret.getVelocityDegreesPerSec());
+    SmartDashboard.putNumber("TURRET/turret Current (A)", turret.getCurrent());
+    SmartDashboard.putNumber("TURRET/Target Angle (deg)", turret.getTargetAngleDegrees());
+    SmartDashboard.putNumber("TURRET/Target Velocity (deg/s)", turret.getTargetVelocityDegPerSec());
+    SmartDashboard.putNumber("TURRET/Error (deg)", turret.getErrorDegrees());
   }
 }

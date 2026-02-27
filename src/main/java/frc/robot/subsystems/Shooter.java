@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.function.Supplier;
@@ -14,20 +13,20 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -72,13 +71,6 @@ public class Shooter extends SubsystemBase {
   private final double hoodKP = Constants.Shooter.kHoodKP;
   private final double hoodKI = Constants.Shooter.kHoodKI;
   private final double hoodKD = Constants.Shooter.kHoodKD;
-
-  // Feedforward
-  private final SimpleMotorFeedforward flywheelFeedforward = new SimpleMotorFeedforward(
-    flywheelKS,
-    flywheelKV,
-    flywheelKA
-  );
 
   // Flywheel Motors
   private final TalonFX leftFlywheel;
@@ -191,8 +183,8 @@ public class Shooter extends SubsystemBase {
     hoodConfig.softLimit.reverseSoftLimitEnabled(true);
     
     // Apply configuration (simplified - no reset/persist mode needed in 2026 API)
-    hoodMotor.configure(hoodConfig, com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters, 
-                        com.revrobotics.spark.SparkBase.PersistMode.kPersistParameters);
+    hoodMotor.configure(hoodConfig, ResetMode.kResetSafeParameters,
+                        PersistMode.kPersistParameters);
 
     // Set hood starting position (assume it starts at 90 degrees)
     hoodEncoder.setPosition(Constants.Shooter.kHoodStartAngleDegrees / 360.0 * hoodGearRatio);
@@ -406,12 +398,10 @@ public class Shooter extends SubsystemBase {
   /**
    * Set hood angle in degrees.
    */
-  @SuppressWarnings("deprecation")
   private void setHoodAngle(double angleDegrees) {
     targetHoodAngle = angleDegrees;
     double positionRotations = angleDegrees / 360.0 * hoodGearRatio;
-    // Use deprecated API for now - still functional in 2026
-    hoodController.setReference(positionRotations, ControlType.kPosition);
+    hoodController.setSetpoint(positionRotations, ControlType.kPosition);
   }
 
   /**
@@ -498,22 +488,29 @@ public class Shooter extends SubsystemBase {
     return run(() -> runFlywheelTunable(dashboard));
   }
 
+  // Cached tunable hood kP — used to detect changes so we don't spam CAN bus every loop
+  private double lastHoodTunableKP = Double.NaN;
+
   /**
    * Tunable command for hood.
+   * Only re-applies PID config when kP changes to avoid flooding the CAN bus.
    */
-  @SuppressWarnings("deprecation")
   private void runHoodTunable(DashboardPublisher dashboard) {
     if (dashboard == null) return;
 
     double tunableKP = dashboard.getTunableKP();
     double setpoint = dashboard.getTunableSetpoint1();
 
-    SparkMaxConfig config = new SparkMaxConfig();
-    config.closedLoop.pid(tunableKP, hoodKI, hoodKD);
-    hoodMotor.configure(config, 
-      com.revrobotics.spark.SparkBase.ResetMode.kNoResetSafeParameters, 
-      com.revrobotics.spark.SparkBase.PersistMode.kNoPersistParameters);
-    
+    // Only reconfigure when kP actually changes
+    if (tunableKP != lastHoodTunableKP) {
+      lastHoodTunableKP = tunableKP;
+      SparkMaxConfig config = new SparkMaxConfig();
+      config.closedLoop.pid(tunableKP, hoodKI, hoodKD);
+      hoodMotor.configure(config,
+        ResetMode.kNoResetSafeParameters,
+        PersistMode.kNoPersistParameters);
+    }
+
     setHoodAngle(setpoint);
   }
 

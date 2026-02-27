@@ -205,20 +205,20 @@ public class Constants {
 
     public static class Spindexer {
         // Operational constants
-        public static final double kSpinnerSpeed = -25; // Target spinner speed in rotations per second (RPS)
+        public static final double kSpinnerSpeed = -1.8; // Target spinner speed in rotations per second (RPS)
         
         // Motor Constants
         public static final int kMotorCanID = 11; // CAN ID (dimensionless)
         public static final double kGearRatio = 15; // Gear ratio (dimensionless)
-        public static final double kKP = 1; // Proportional gain (dimensionless)
+        public static final double kKP = 11; // Proportional gain (dimensionless)
         public static final double kKI = 0; // Integral gain (dimensionless)
         public static final double kKD = 0; // Derivative gain (dimensionless)
         public static final double kKS = 0; // Static friction feedforward (volts)
-        public static final double kKV = 0; // Velocity feedforward (volt-seconds per radian)
-        public static final double kKA = 0; // Acceleration feedforward (volt-seconds² per radian)
+        public static final double kKV = 1.9; // Velocity feedforward (volt-seconds per radian)
+        public static final double kKA = 1; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kMaxVelocity = 50; // Maximum velocity (rotations/s)
         public static final double kMaxAcceleration = 100; // Maximum acceleration (rotations/s²)
-        public static final boolean kBrakeMode = false; // Brake mode enabled (boolean)
+        public static final boolean kBrakeMode = true; // Brake mode enabled (boolean)
         public static final boolean kEnableStatorLimit = true; // Stator current limit enabled (boolean)
         public static final int kStatorCurrentLimit = 40; // Stator current limit (amperes)
         public static final boolean kEnableSupplyLimit = false; // Supply current limit enabled (boolean)
@@ -227,17 +227,17 @@ public class Constants {
 
     public static class Feeder {
         // Operational constants
-        public static final double kSpinnerSpeed = 20; // Target spinner speed in rotations per second (RPS)
+        public static final double kSpinnerSpeed = -25; // Target spinner speed in rotations per second (RPS)
         
         // Motor Constants
         public static final int kMotorCanID = 12; // CAN ID (dimensionless)
         public static final double kGearRatio = 1; // Gear ratio (dimensionless)
-        public static final double kKP = 3; // Proportional gain (dimensionless)
+        public static final double kKP = 10; // Proportional gain (dimensionless)
         public static final double kKI = 0; // Integral gain (dimensionless)
         public static final double kKD = 0; // Derivative gain (dimensionless)
         public static final double kKS = 0; // Static friction feedforward (volts)
-        public static final double kKV = 0; // Velocity feedforward (volt-seconds per radian)
-        public static final double kKA = 0.; // Acceleration feedforward (volt-seconds² per radian)
+        public static final double kKV = 0.12; // Velocity feedforward (volt-seconds per radian)
+        public static final double kKA = 1; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kMaxVelocity = 60; // Maximum velocity (rotations/s)
         public static final double kMaxAcceleration = 120; // Maximum acceleration (rotations/s²)
         public static final boolean kBrakeMode = true; // Brake mode enabled (boolean)
@@ -254,24 +254,24 @@ public class Constants {
         public static final double kTurretOffsetX  = -0.2; // X offset (forward +X, backward -X) from robot center to turret (meters) 
         public static final double kTurretOffsetY = -0.2; // Y offset (left +Y, right -Y) from robot center to turret (meters)
         public static final double kTurretOffsetZ = 0.3; // Z offset (up +Z, down -Z) from robot center to turret (meters)
-        public static final double kTurretStartAngleDegrees = 21; // Physical starting angle (encoder will be set to this value at init)
+        public static final double kTurretStartAngleDegrees = 0.1; // Physical starting angle (encoder will be set to this value at init)
         public static final double kTurretRezeroAngleDegrees = 0.0; // Angle to set encoder to when rezeroing (0 = forward)
 
         // Turret mechanical limits (degrees, relative to robot forward)
-        public static final double kMinAngleDegrees = -360.0;
-        public static final double kMaxAngleDegrees = 360.0;
+        public static final double kMinAngleDegrees = -200.0;
+        public static final double kMaxAngleDegrees = 180.0;
 
         // Shooting range limits (meters)
         public static final double kMinShootingDistance = 1.0;
         public static final double kMaxShootingDistance = 5.5;
 
         // Motor and control constants
-        public static final double kGearRatio = 15; // Gear ratio (dimensionless)
-        public static final double kKP = 8; // Proportional gain (dimensionless)
-        public static final double kKI = 0; // Integral gain (dimensionless)
-        public static final double kKD = 0.1; // Derivative gain (dimensionless)
+        public static final double kGearRatio = 11.111; // Gear ratio (dimensionless)
+        public static final double kKP = 140; // Proportional gain (dimensionless)
+        public static final double kKI = 0.01; // Integral gain (dimensionless)
+        public static final double kKD = 0; // Derivative gain (dimensionless)
         public static final double kKS = 0; // Static friction feedforward (volts)
-        public static final double kKV = 0; // Velocity feedforward (volt-seconds per radian)
+        public static final double kKV = 1; // Velocity feedforward (volt-seconds per radian)
         public static final double kKA = 0; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kKG = 0; // Gravity feedforward (volts) - Unused for turrets
         public static final double kMaxVelocity = 1.0; // Maximum velocity for Motion Magic (rotations/s, mechanism-side)
@@ -288,15 +288,15 @@ public class Constants {
         public static final int kLeftFlywheelCanID = 14; // CAN ID for left flywheel
         public static final int kRightFlywheelCanID = 15; // CAN ID for right flywheel
         public static final double kFlywheelGearRatio = 2.0; // 2:1 gear ratio
-        public static final double kDefaultFlywheelSpeed = 30.0; // Default speed in RPS
+        public static final double kDefaultFlywheelSpeed = -4.0; // Default speed in RPS
         
         // Flywheel PID Constants
-        public static final double kFlywheelKP = 0.6;
+        public static final double kFlywheelKP = 0.24;
         public static final double kFlywheelKI = 0;
         public static final double kFlywheelKD = 0;
         public static final double kFlywheelKS = 0.1;
-        public static final double kFlywheelKV = 0.12;
-        public static final double kFlywheelKA = 0.01;
+        public static final double kFlywheelKV = 0.105;
+        public static final double kFlywheelKA = 2.32;
         
         // Flywheel Current Limits
         public static final boolean kFlywheelEnableStatorLimit = true;
@@ -306,19 +306,19 @@ public class Constants {
         public static final boolean kFlywheelBrakeMode = false; // Coast mode for flywheels
         
         // Hood Constants
-        public static final int kHoodCanID = 16; // CAN ID for hood SparkMax
-        public static final double kHoodGearRatio = 9.0; // 1:9 gear ratio
+        public static final int kHoodCanID = 1; // CAN ID for hood SparkMax
+        public static final double kHoodGearRatio =115.3476; // experimentall determined gear ratio (motor rotations per hood rotation)
         public static final double kHoodMinAngleDegrees = 45.0; // Minimum hood angle
-        public static final double kHoodMaxAngleDegrees = 90.0; // Maximum hood angle (shooting straight up)
-        public static final double kHoodStartAngleDegrees = 90.0; // Starting position
-        public static final double kHoodRezeroAngleDegrees = 90.0; // Rezero position in degrees
+        public static final double kHoodMaxAngleDegrees = 80.0; // Maximum hood angle (shooting straight up)
+        public static final double kHoodStartAngleDegrees = 80.0; // Starting position
+        public static final double kHoodRezeroAngleDegrees = 80.0; // Rezero position in degrees
         
         // Hood PID Constants
-        public static final double kHoodKP = 1;
-        public static final double kHoodKI = 0;
+        public static final double kHoodKP =  1;
+        public static final double kHoodKI = 0.01;
         public static final double kHoodKD = 0;
         public static final double kHoodKS = 0;
-        public static final double kHoodKV = 1;
+        public static final double kHoodKV = 0;
         public static final double kHoodKA = 0;
         
         // Hood Current Limits

@@ -133,10 +133,11 @@ public class Turret extends SubsystemBase {
     // Apply configuration
     motor.getConfigurator().apply(config);
 
-    // Set encoder to the physical starting angle (0 = forward, but turret may start elsewhere)
+    // Set encoder to the physical starting angle
     double startAngleDegrees = Constants.Turret.kTurretStartAngleDegrees;
-    double startPositionRotations = Units.degreesToRadians(startAngleDegrees) / (2.0 * Math.PI);
-    motor.setPosition(startPositionRotations);
+    double startMechanismRotations = startAngleDegrees / 360.0;
+    // motor.setPosition takes rotor rotations; SensorToMechanismRatio is applied to reads only
+    motor.setPosition(startMechanismRotations * gearRatio);
 
     // Initialize simulation — start at the same physical angle so sim matches reality
     pivotSim = new SingleJointedArmSim(
@@ -198,22 +199,39 @@ public class Turret extends SubsystemBase {
   }
 
   /**
-   * Get the current position in Rotations.
+   * Get the current position in Rotations (mechanism-side).
    * @return Position in Rotations
    */
   @Logged(name = "Position/Rotations")
   public double getPosition() {
-    // Rotations
     return positionSignal.getValueAsDouble();
   }
 
   /**
-   * Get the current velocity in rotations per second.
+   * Get the current angle in degrees (mechanism-side).
+   * @return Angle in degrees
+   */
+  @Logged(name = "Position/Degrees")
+  public double getAngleDegrees() {
+    return Units.rotationsToDegrees(getPosition());
+  }
+
+  /**
+   * Get the current velocity in rotations per second (mechanism-side).
    * @return Velocity in rotations per second
    */
   @Logged(name = "Velocity")
   public double getVelocity() {
     return velocitySignal.getValueAsDouble();
+  }
+
+  /**
+   * Get the current velocity in degrees per second (mechanism-side).
+   * @return Velocity in degrees per second
+   */
+  @Logged(name = "Velocity/DegreesPerSec")
+  public double getVelocityDegreesPerSec() {
+    return Units.rotationsToDegrees(getVelocity());
   }
 
   /**
@@ -410,45 +428,57 @@ public class Turret extends SubsystemBase {
 
   //------------------------ Tuning -----------------------//
 
+  // Cached tunable PID values — used to detect changes so we don't spam CAN bus
+  private double lastTunableKP = Double.NaN;
+  private double lastTunableKI = Double.NaN;
+  private double lastTunableKD = Double.NaN;
+  private double lastTunableKV = Double.NaN;
+  private double lastTunableKA = Double.NaN;
+
   /**
    * Sets turret angle and velocity using tunable PID values and setpoints from dashboard.
-   * Updates PID gains in real-time and uses Setpoint1 for angle and Setpoint2 for velocity.
+   * Only re-applies PID config when values change (avoids flooding the CAN bus).
+   * Setpoint1 controls angle (degrees), Setpoint2 controls velocity (deg/s).
    * @param dashboard The dashboard publisher for retrieving tunable values
    */
   private void turretTunable(DashboardPublisher dashboard) {
     if (dashboard == null) {
-      return; // Skip if no dashboard publisher
+      return;
     }
 
-    // Get tunable PID values
-    double kP = dashboard.getTunableKP();
-    double kI = dashboard.getTunableKI();
-    double kD = dashboard.getTunableKD();
-    double kV = dashboard.getTunableKV();
-    double kA = dashboard.getTunableKA();
-    double angleSetpoint = dashboard.getTunableSetpoint1();
-    double velocitySetpoint = dashboard.getTunableSetpoint2();
+    double newKP = dashboard.getTunableKP();
+    double newKI = dashboard.getTunableKI();
+    double newKD = dashboard.getTunableKD();
+    double newKV = dashboard.getTunableKV();
+    double newKA = dashboard.getTunableKA();
+    double angleSetpoint = dashboard.getTunableSetpoint1();    // degrees
+    double velocitySetpoint = dashboard.getTunableSetpoint2(); // degrees per second
 
-    // Update PID gains in slot 0
-    Slot0Configs slot0 = new Slot0Configs();
-    slot0.kP = kP;
-    slot0.kI = kI;
-    slot0.kD = kD;
-    slot0.kV = kV;
-    slot0.kA = kA;
-    slot0.kS = kS; // Keep original kS
-    
-    motor.getConfigurator().apply(slot0);
+    // Only apply new PID config when values actually change to avoid CAN bus flooding
+    if (newKP != lastTunableKP || newKI != lastTunableKI || newKD != lastTunableKD
+        || newKV != lastTunableKV || newKA != lastTunableKA) {
+      lastTunableKP = newKP;
+      lastTunableKI = newKI;
+      lastTunableKD = newKD;
+      lastTunableKV = newKV;
+      lastTunableKA = newKA;
 
-    // Set angle or velocity based on which setpoint is non-zero
-    // Priority: if angle setpoint is non-zero, use angle control
-    // Otherwise, use velocity control if velocity setpoint is non-zero
+      Slot0Configs slot0 = new Slot0Configs();
+      slot0.kP = newKP;
+      slot0.kI = newKI;
+      slot0.kD = newKD;
+      slot0.kV = newKV;
+      slot0.kA = newKA;
+      slot0.kS = kS;
+      motor.getConfigurator().apply(slot0);
+    }
+
+    // Setpoint1 = target angle in degrees, Setpoint2 = target velocity in deg/s
     if (Math.abs(angleSetpoint) > 0.01) {
-      setAngle(angleSetpoint);
+      setAngle(angleSetpoint); // accepts degrees, converts to rotations internally
     } else if (Math.abs(velocitySetpoint) > 0.01) {
-      setVelocity(velocitySetpoint);
+      setVelocity(velocitySetpoint); // accepts deg/s, converts to rot/s internally
     } else {
-      // Both are zero, stop the motor
       setVelocity(0);
     }
   }
@@ -468,8 +498,9 @@ public class Turret extends SubsystemBase {
    * Rezero the turret encoder to 0 degrees.
    */
   private void rezero() {
-    double rezeroPositionRotations = Units.degreesToRadians(Constants.Turret.kTurretRezeroAngleDegrees) / (2.0 * Math.PI);
-    motor.setPosition(rezeroPositionRotations);
+    double rezeroMechanismRotations = Constants.Turret.kTurretRezeroAngleDegrees / 360.0;
+    // motor.setPosition takes rotor rotations
+    motor.setPosition(rezeroMechanismRotations * gearRatio);
   }
 
   /**
