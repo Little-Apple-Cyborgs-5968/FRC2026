@@ -71,6 +71,8 @@ public class Shooter extends SubsystemBase {
   private final double hoodKP = Constants.Shooter.kHoodKP;
   private final double hoodKI = Constants.Shooter.kHoodKI;
   private final double hoodKD = Constants.Shooter.kHoodKD;
+  private final double hoodMaxVelocity = Constants.Shooter.kHoodMaxVelocity;
+  private final double hoodMaxAcceleration = Constants.Shooter.kHoodMaxAcceleration;
 
   // Flywheel Motors
   private final TalonFX leftFlywheel;
@@ -175,6 +177,16 @@ public class Shooter extends SubsystemBase {
     
     // PID configuration
     hoodConfig.closedLoop.pid(hoodKP, hoodKI, hoodKD);
+
+    // MAXMotion (motion profiling) configuration
+    // cruiseVelocity is in motor RPM, maxAcceleration is in motor RPM/s
+    // Convert mechanism degrees/s → motor RPM:  (deg/s) / 360 * gearRatio * 60
+    double hoodCruiseVelocityRPM = hoodMaxVelocity / 360.0 * hoodGearRatio * 60.0;
+    double hoodMaxAccelRPMPerSec = hoodMaxAcceleration / 360.0 * hoodGearRatio * 60.0;
+    hoodConfig.closedLoop.maxMotion
+        .cruiseVelocity(hoodCruiseVelocityRPM)
+        .maxAcceleration(hoodMaxAccelRPMPerSec)
+        .allowedProfileError(1.0 / 360.0 * hoodGearRatio); // 1 degree tolerance in motor rotations
     
     // Soft limits
     hoodConfig.softLimit.forwardSoftLimit(hoodMaxAngle / 360.0 * hoodGearRatio);
@@ -401,7 +413,7 @@ public class Shooter extends SubsystemBase {
   private void setHoodAngle(double angleDegrees) {
     targetHoodAngle = angleDegrees;
     double positionRotations = angleDegrees / 360.0 * hoodGearRatio;
-    hoodController.setSetpoint(positionRotations, ControlType.kPosition);
+    hoodController.setSetpoint(positionRotations, ControlType.kMAXMotionPositionControl);
   }
 
   /**

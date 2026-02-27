@@ -288,7 +288,7 @@ public class Constants {
         public static final int kLeftFlywheelCanID = 14; // CAN ID for left flywheel
         public static final int kRightFlywheelCanID = 15; // CAN ID for right flywheel
         public static final double kFlywheelGearRatio = 2.0; // 2:1 gear ratio
-        public static final double kDefaultFlywheelSpeed = -4.0; // Default speed in RPS
+        public static final double kDefaultFlywheelSpeed = -1.0; // Default speed in RPS
         
         // Flywheel PID Constants
         public static final double kFlywheelKP = 0.24;
@@ -320,7 +320,11 @@ public class Constants {
         public static final double kHoodKS = 0;
         public static final double kHoodKV = 0;
         public static final double kHoodKA = 0;
-        
+
+        // Hood MAXMotion (motion profiling) constraints
+        public static final double kHoodMaxVelocity = 20.0;     // Maximum hood velocity (degrees/s)
+        public static final double kHoodMaxAcceleration = 100.0; // Maximum hood acceleration (degrees/s²)
+
         // Hood Current Limits
         public static final int kHoodCurrentLimit = 20; // Amps for NEO 550
         public static final boolean kHoodBrakeMode = true;
