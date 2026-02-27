@@ -86,11 +86,11 @@ public class RobotContainer {
 
     // Turret subsystem
     private final Turret turret = new Turret();
-    private final TurretSim turretSim = new TurretSim(turret);
+    //private final TurretSim turretSim = new TurretSim(turret);
 
     // Intake Subsystem
     private final Intake intake = new Intake();
-    //private final IntakeSim intakeSim = new IntakeSim(intake);
+    private final IntakeSim intakeSim = new IntakeSim(intake);
 
     // Spindexer Subsystem
     private final Spindexer spindexer = new Spindexer();
@@ -102,7 +102,7 @@ public class RobotContainer {
 
     // Shooter Subsystem
     private final Shooter shooter = new Shooter();
-    private final ShooterSim shooterSim = new ShooterSim(shooter);
+    //private final ShooterSim shooterSim = new ShooterSim(shooter);
 
     
     private final Visualizer visualizer = new Visualizer(turret,shooter);
@@ -208,19 +208,27 @@ public class RobotContainer {
         
         // Map bumpers/triggers to intake commands
 
-        joystick.leftTrigger().onTrue(
+        // joystick.leftTrigger().onTrue(
+        //     intake.SpinnerStopCommand()
+        // );
+
+        // joystick.rightTrigger().onTrue(
+        //     intake.SpinnerTunableCommand(dashboard)
+        // );
+
+        // Both bumpers together: stow intake
+        joystick.rightBumper().and(joystick.leftBumper()).onTrue(
+            intake.StowCommand()
+        );
+
+        // Left bumper only (not right): stop spinner
+        joystick.leftBumper().and(joystick.rightBumper().negate()).onTrue(
             intake.SpinnerStopCommand()
         );
 
-        joystick.rightTrigger().onTrue(
-            intake.SpinnerTunableCommand(dashboard)
-        );
-
-        joystick.leftBumper().onTrue(
-            intake.PivotStopCommand()
-        );
-        joystick.rightBumper().onTrue(
-            intake.PivotTunableCommand(dashboard)
+        // Right bumper only (not left): deploy intake
+        joystick.rightBumper().and(joystick.leftBumper().negate()).onTrue(
+            intake.DeployCommand()
         );
 
         // joystick.leftBumper().onTrue(
@@ -248,9 +256,9 @@ public class RobotContainer {
         // );
 
         //HOOD TUNABLE
-        joystick.rightBumper().onTrue(
-            shooter.hoodTunableCommand(dashboard)
-        );
+        // joystick.rightBumper().onTrue(
+        //     shooter.hoodTunableCommand(dashboard)
+        // );
 
 
 

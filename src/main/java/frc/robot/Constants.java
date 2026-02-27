@@ -126,17 +126,17 @@ public class Constants {
 
         // ==================== FILTERING THRESHOLDS ====================
         // Maximum distance to accept AprilTag readings (meters)
-        public static final double kMaxTagDistance = 4.5;
+        public static final double kMaxTagDistance = 10;
         
         // Maximum ambiguity to accept AprilTag readings (0-1, lower is better)
         public static final double kMaxAmbiguity = 0.3;
         
         // Minimum tag area to accept readings (percentage of image)
-        public static final double kMinTagArea = 0.1;
+        public static final double kMinTagArea = 0.02;
 
         // ==================== MEGATAG2 CONFIG ====================
         // Whether to use MegaTag2 (recommended for better accuracy)
-        public static final boolean kUseMegaTag2 = true;
+        public static final boolean kUseMegaTag2 = false;
 
         // ==================== CAMERA POSE CONFIG ====================
         // Set to true to override web GUI camera poses with code values
@@ -148,7 +148,7 @@ public class Constants {
         // Operational constants
         public static final double kSpinnerSpeed = -20; // Target spinner speed in rotations per second (RPS)
         public static final double kIntakeAngleDeployed = -55; // Deployed angle in degrees
-        public static final double kIntakeAngleStowed = 1; // Stowed angle in degrees
+        public static final double kIntakeAngleStowed = 40; // Stowed angle in degrees
         public static final double kPivotRezeroAngleDegrees = 0.0; // Rezero position in degrees
         
         // Pivot Constants
@@ -158,37 +158,37 @@ public class Constants {
         public static final double kPivotKI = 0; // Integral gain (dimensionless)
         public static final double kPivotKD = 0; // Derivative gain (dimensionless)
         public static final double kPivotKS = 0; // Static friction feedforward (volts)
-        public static final double kPivotKV = 1.12; // Velocity feedforward (volt-seconds per radian)
+        public static final double kPivotKV = 20; // Velocity feedforward (volt-seconds per radian)
         public static final double kPivotKA = 0.08; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kPivotKG = 0; // Gravity feedforward (volts)
         public static final double kPivotMaxVelocity = 1; // Maximum velocity for Motion Magic (rotations/s, mechanism-side)
         public static final double kPivotMaxAcceleration = 2.0; // Maximum acceleration for Motion Magic (rotations/s², mechanism-side)
         public static final boolean kPivotBrakeEnabled = true; // Brake mode enabled (boolean)
-        public static final double kPivotForwardSoftLimit = 1000; // Maximum angle (degrees)
-        public static final double kPivotReverseSoftLimit = -1000; // Minimum angle (degrees)
+        public static final double kPivotForwardSoftLimit = 100; // Maximum angle (degrees)
+        public static final double kPivotReverseSoftLimit = -100; // Minimum angle (degrees)
         public static final boolean kPivotStatorLimitEnabled = true; // Stator current limit enabled (boolean)
-        public static final double kPivotStatorCurrentLimit = 60; // Stator current limit (amperes)
-        public static final boolean kPivotSupplyLimitEnabled = false; // Supply current limit enabled (boolean)
-        public static final double kPivotSupplyCurrentLimit = 40; // Supply current limit (amperes)
+        public static final double kPivotStatorCurrentLimit = 100; // Stator current limit (amperes)
+        public static final boolean kPivotSupplyLimitEnabled = true; // Supply current limit enabled (boolean)
+        public static final double kPivotSupplyCurrentLimit = 30; // Supply current limit (amperes)
 
         // Spinner constants
         public static final int kSpinnerCanID = 9; // CAN ID (dimensionless)
         public static final double kSpinnerGearRatio = 2; // Gear ratio (dimensionless)
-        public static final double kSpinnerKP = 0.6; // Proportional gain (dimensionless) // 0.6 works fine for 1:2
+        public static final double kSpinnerKP = 16; // Proportional gain (dimensionless) // 0.6 works fine for 1:2
         public static final double kSpinnerKI = 0; // Integral gain (dimensionless)
         public static final double kSpinnerKD = 0; // Derivative gain (dimensionless)
         public static final double kSpinnerKS = 0; // Static friction feedforward (volts)
-        public static final double kSpinnerKV = 0.244; // Velocity feedforward (volt-seconds per radian)
+        public static final double kSpinnerKV = 0.235; // Velocity feedforward (volt-seconds per radian)
         public static final double kSpinnerKA = 0; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kSpinnerKG = 0; // Gravity feedforward (volts)
-        public static final double kSpinnerMaxVelocity = 100; // Maximum velocity (rad/s)
+        public static final double kSpinnerMaxVelocity = 40; // Maximum velocity (rad/s)
         public static final double kSpinnerMaxAcceleration = 100; // Maximum acceleration (rad/s²)
         public static final boolean kSpinnerBrakeMode = true; // Brake mode enabled (boolean)
         public static final double kSpinnerForwardSoftLimit = 0; // Maximum angle (degrees)
         public static final double kSpinnerReverseSoftLimit = 0; // Minimum angle (degrees)
         public static final boolean kSpinnerEnableStatorLimit = true; // Stator current limit enabled (boolean)
         public static final int kSpinnerStatorCurrentLimit = 30; // Stator current limit (amperes)
-        public static final boolean kSpinnerEnableSupplyLimit = false; // Supply current limit enabled (boolean)
+        public static final boolean kSpinnerEnableSupplyLimit = true; // Supply current limit enabled (boolean)
         public static final double kSpinnerSupplyCurrentLimit = 25; // Supply current limit (amperes)
         
         // Simulation constants
