@@ -11,7 +11,6 @@ import java.util.List;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.commands.PathFindCommands;
-import frc.robot.commands.SetYawCommand;
 import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -243,13 +241,19 @@ public class RobotContainer {
         spindexer.setDefaultCommand(spindexer.stopCommand());
         feeder.setDefaultCommand(feeder.stopCommand());
 
-        joystick.y().whileTrue(
+        joystick.rightTrigger().whileTrue(
             shooter.runFlywheelsCommand());
         
-        joystick.b().whileTrue(
+        joystick.leftTrigger().whileTrue(
             spindexer.runCommand().alongWith(feeder.runCommand())
 
         );
+
+        joystick.start().whileTrue(
+            spindexer.reverseCommand().alongWith(feeder.reverseCommand())
+        );
+
+
 
         // joystick.rightTrigger().whileTrue(
         //     turret.TurretTunableCommand(dashboard)
@@ -261,9 +265,9 @@ public class RobotContainer {
 
         // HOOD TUNABLE
 
-        joystick.rightTrigger().onTrue(
-            shooter.hoodTunableCommand(dashboard)
-        );
+        // joystick.rightTrigger().onTrue(
+        //     shooter.hoodTunableCommand(dashboard)
+        // );
 
 
 
@@ -275,16 +279,36 @@ public class RobotContainer {
         
         // );
 
-        // B button: snap to nearest 45° and hold while held.
-        // Uses the same deadband (10 % of MaxSpeed) as the default drive command.
-        joystick.b().whileTrue(
-            SetYawCommand.snapToNearest45(
-                drivetrain,
-                () -> -MathUtil.applyDeadband(joystick.getLeftY(), 0.1) * MaxSpeed,
-                () -> -MathUtil.applyDeadband(joystick.getLeftX(), 0.1) * MaxSpeed,
-                MaxSpeed
-            )
+        // A button: set hood to 79 degrees
+        joystick.a().onTrue(
+            shooter.setHoodAngleCommand(79)
         );
+
+        // Y button: set hood to 45 degrees
+        joystick.y().onTrue(
+            shooter.setHoodAngleCommand(45)
+        );
+
+        // B button: rotate turret to -90 degrees
+        joystick.b().onTrue(
+            turret.setAngleCommand(90)
+        );
+
+        joystick.x().onTrue(
+            turret.setAngleCommand(-90)
+        );
+
+
+                // B button: snap to nearest 45° and hold while held.
+        // // Uses the same deadband (10 % of MaxSpeed) as the default drive command.
+        // joystick.b().whileTrue(
+        //     SetYawCommand.snapToNearest45(
+        //         drivetrain,
+        //         () -> -MathUtil.applyDeadband(joystick.getLeftY(), 0.1) * MaxSpeed,
+        //         () -> -MathUtil.applyDeadband(joystick.getLeftX(), 0.1) * MaxSpeed,
+        //         MaxSpeed
+        // );
+
 
         
 
@@ -346,12 +370,13 @@ public class RobotContainer {
 
         
         // Pathfind to nearest trench shoot pose; cancelled by pressing either joystick stick
-        joystick.a().and(joystick.y()).onTrue(
-            PathFindCommands.pathfindToNearestPose(
-                () -> drivetrain.getState().Pose,
-                List.of(FieldConstants.getLeftTrenchShoot(), FieldConstants.getRightTrenchShoot())
-            ).until(joystick.leftStick().or(joystick.rightStick()))
-        );
+
+        // joystick.a().and(joystick.y()).onTrue(
+        //     PathFindCommands.pathfindToNearestPose(
+        //         () -> drivetrain.getState().Pose,
+        //         List.of(FieldConstants.getLeftTrenchShoot(), FieldConstants.getRightTrenchShoot())
+        //     ).until(joystick.leftStick().or(joystick.rightStick()))
+        // );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
