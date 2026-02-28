@@ -299,6 +299,11 @@ public class RobotContainer {
         Trigger warmUpActive  = shootModeOn.and(triggerHeld);   // ON + held  → warm up
         Trigger firingActive  = shootModeOn.and(triggerHeld.negate()); // ON + released → fire
 
+        // Rumble when flywheel reaches target speed (rising edge only — one buzz per spin-up)
+        new Trigger(shooter::isFlywheelAtSpeed).onTrue(
+            rumble.lightPulse()
+        );
+
         // Warm-up phase: turret + flywheel only (no hood, no feed)
         warmUpActive.whileTrue(
             turret.autoAimCommandTurret(

@@ -322,6 +322,9 @@ public class Constants {
         public static final double kHoodKV = 0;
         public static final double kHoodKA = 0;
 
+        // Flywheel at-speed tolerance
+        public static final double kFlywheelAtSpeedToleranceRPS = 1.0; // ±1 RPS triggers "at speed" rumble
+
         // Hood MAXMotion (motion profiling) constraints
         public static final double kHoodMaxVelocity = 60.0;     // Maximum hood velocity (degrees/s)
         public static final double kHoodMaxAcceleration = 100.0; // Maximum hood acceleration (degrees/s²)
@@ -331,7 +334,7 @@ public class Constants {
         public static final boolean kHoodBrakeMode = true;
         
         // Simulation Constants
-        public static final double kSimFlywheelMomentOfInertia = 0.00005; // kg·m²
+        public static final double kSimFlywheelMomentOfInertia = 0.005; // kg·m² — realistic for shooter flywheels
         public static final double kSimHoodMomentOfInertia = 0.004; // kg·m²
         public static final double kSimHoodLength = 0.3; // meters
     }

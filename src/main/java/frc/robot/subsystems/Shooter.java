@@ -367,7 +367,7 @@ public class Shooter extends SubsystemBase {
   @Logged(name = "Flywheel/At Speed")
   public boolean isFlywheelAtSpeed() {
     double error = Math.abs(getTargetFlywheelVelocity() - getAverageFlywheelVelocity());
-    return error < 2.0; // 2 RPS tolerance
+    return error < Constants.Shooter.kFlywheelAtSpeedToleranceRPS;
   }
 
   /**
