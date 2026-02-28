@@ -466,6 +466,14 @@ public class Shooter extends SubsystemBase {
     return run(() -> setHoodAngle(angleDegrees));
   }
 
+  /**
+   * Set hood to 80 degrees to pass under ]trench
+   * @param dashboard
+   */
+    public Command setHoodToTrenchCommand() {
+      return run(() -> setHoodAngle(Constants.Shooter.kHoodTrenchAngleDegrees));
+    }
+
   //------------------------ Tuning -----------------------//
 
   /**

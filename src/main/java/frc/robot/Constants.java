@@ -312,6 +312,7 @@ public class Constants {
         public static final double kHoodMaxAngleDegrees = 80.0; // Maximum hood angle (shooting straight up)
         public static final double kHoodStartAngleDegrees = 80.0; // Starting position
         public static final double kHoodRezeroAngleDegrees = 80.0; // Rezero position in degrees
+        public static final double kHoodTrenchAngleDegrees = 80.0; // Trench position in degrees
         
         // Hood PID Constants
         public static final double kHoodKP =  1;

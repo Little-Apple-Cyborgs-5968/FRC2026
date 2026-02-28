@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -108,6 +109,21 @@ public class RobotContainer {
     
 
     public RobotContainer() {
+        // Register named commands for PathPlanner autos
+
+        NamedCommands.registerCommand("INTAKE_DEPLOY", intake.DeployCommand());
+        NamedCommands.registerCommand("INTAKE_STOW", intake.StowCommand());
+        NamedCommands.registerCommand("INTAKE_STOP_SPINNER", intake.SpinnerStopCommand());
+
+        NamedCommands.registerCommand("SPINDEXER_RUN", spindexer.runCommand());
+        NamedCommands.registerCommand("SPINDEXER_STOP", spindexer.stopCommand());
+
+
+        NamedCommands.registerCommand("FEEDER_RUN", feeder.runCommand());
+        NamedCommands.registerCommand("FEEDER_STOP", feeder.stopCommand());
+        
+        NamedCommands.registerCommand("HOOD_TRENCH", shooter.setHoodToTrenchCommand());
+        NamedCommands.registerCommand("SHOOTER_RUN", shooter.runFlywheelsCommand());
         // Initialize Vision subsystem with drivetrain integration
         vision = new Vision(
             // Pose supplier - gets current robot pose from drivetrain

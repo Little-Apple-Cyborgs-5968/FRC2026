@@ -120,22 +120,43 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "",
+      "name": "HOOD_TRENCH",
       "waypointRelativePos": 0.041946308724832224,
       "endWaypointRelativePos": 0.5536912751677853,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "HOOD_TRENCH"
+        }
+      }
     },
     {
-      "name": "",
+      "name": "INTAKE_DEPLOY",
       "waypointRelativePos": 1.535234899328859,
       "endWaypointRelativePos": 3.657718120805376,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "INTAKE_DEPLOY"
+        }
+      }
     },
     {
-      "name": "",
+      "name": "INTAKE_STOP_SPINNER",
       "waypointRelativePos": 3.8590604026845603,
       "endWaypointRelativePos": null,
       "command": null
+    },
+    {
+      "name": "HOOD_TRENCH",
+      "waypointRelativePos": 4.303691275167785,
+      "endWaypointRelativePos": 4.899328859060402,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "HOOD_TRENCH"
+        }
+      }
     }
   ],
   "globalConstraints": {
