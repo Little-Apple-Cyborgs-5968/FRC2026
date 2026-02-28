@@ -134,6 +134,10 @@ public class Turret extends SubsystemBase {
       ? NeutralModeValue.Brake
       : NeutralModeValue.Coast;
 
+    // Invert motor direction so positive angles are CCW (left) as expected by the code convention.
+    // The physical motor spins opposite to the code's positive direction, so we flip it here.
+    config.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.Clockwise_Positive;
+
     // Apply gear ratio
     config.Feedback.SensorToMechanismRatio = gearRatio;
 

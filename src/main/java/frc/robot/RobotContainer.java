@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.commands.PathFindCommands;
+import frc.robot.commands.WhiskerPickupCommand;
 import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -67,6 +68,9 @@ public class RobotContainer {
     // Shoot-on-the-move toggle — same pattern as isShootModeActive but uses lead-compensated commands
     // Swap this in place of isShootModeActive + its trigger block below to enable shoot-on-the-move
     private boolean isShootOnMoveActive = false;
+
+    // Whisker pickup mode toggle — B button cycles on/off
+    private boolean isPickupModeActive = false;
     
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -477,6 +481,19 @@ public class RobotContainer {
             turret.setAngleCommand(-90)
         );
 
+        // ── B BUTTON: Toggle whisker ball-pickup mode ─────────────────────────────
+        // Press once → robot drives forward using the whisker algorithm to collect Fuel balls.
+        // Press again → stops and returns drivetrain to default teleop command.
+        joystick.b().onTrue(
+            Commands.runOnce(() -> {
+                isPickupModeActive = !isPickupModeActive;
+                SmartDashboard.putBoolean("DASHBOARD/Pickup Mode Active", isPickupModeActive);
+            })
+        );
+
+        Trigger pickupModeOn = new Trigger(() -> isPickupModeActive);
+        pickupModeOn.whileTrue(new WhiskerPickupCommand(drivetrain, vision));
+
 
                 // B button: snap to nearest 45° and hold while held.
         // // Uses the same deadband (10 % of MaxSpeed) as the default drive command.
@@ -597,6 +614,8 @@ public class RobotContainer {
         SmartDashboard.putBoolean("DASHBOARD/SYOMDrive Enabled", isSYOMDriveEnabled);
         // Update shoot mode toggle status on SmartDashboard
         SmartDashboard.putBoolean("DASHBOARD/Shoot Mode Active", isShootModeActive);
+        // Update whisker pickup mode toggle status on SmartDashboard
+        SmartDashboard.putBoolean("DASHBOARD/Pickup Mode Active", isPickupModeActive);
     }
 
     /** Gets the current tunable value from the dashboard - use this for testing/tuning! */

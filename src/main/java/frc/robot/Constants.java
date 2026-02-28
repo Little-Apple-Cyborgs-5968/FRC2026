@@ -94,17 +94,21 @@ public class Constants {
             )
         );
 
-        // Gamepiece Limelight 2 - Neural network camera (adjust these values to your robot)
+        // Gamepiece Limelight 2 + Google Coral — looking down at floor from front-top of robot
+        // Position: 0.19685 m forward, 0.04445 m right, 0.5147818 m up from robot center (floor)
+        // Angle: 20° below horizontal (pitch = -20°), mounted UPSIDE DOWN (roll = 180°), yaw = 0°
+        // NOTE: Also set "Camera Rotation = 180°" in the Limelight web interface so the
+        //       firmware flips the image — txnc/tync will then be reported correctly.
         public static final Transform3d kLimelightGamepiecePosition = new Transform3d(
             new Translation3d(
-                Units.inchesToMeters(12.0),  // X: 
-                Units.inchesToMeters(0.0),   // Y: centered left-right
-                Units.inchesToMeters(20.0)   // Z: 20 inches up from ground
+                0.19685,    // X: forward (meters)
+                0.04445,    // Y: right   (meters) — positive Y is right in robot space
+                0.5147818   // Z: up      (meters)
             ),
             new Rotation3d(
-                0.0,                          // Roll: 0 degrees
-                Units.degreesToRadians(25.0), // Pitch: 25 degrees down to see floor
-                0.0                           // Yaw: facing forward
+                Units.degreesToRadians(180.0),  // Roll: 180° — camera is physically upside down
+                Units.degreesToRadians(-20.0),  // Pitch: -20° (angled down toward floor)
+                0.0                             // Yaw:   0° (facing straight forward)
             )
         );
 
@@ -142,6 +146,52 @@ public class Constants {
         // Set to true to override web GUI camera poses with code values
         // Set to false to use values configured in Limelight web interface
         public static final boolean kSetCameraPosesFromCode = false;
+
+        // ==================== GAMEPIECE DETECTION CONFIG ====================
+        // Class ID assigned to "Fuel" (yellow ball) by the trained Coral model
+        public static final int kFuelClassId = 0;
+
+        // Minimum detection area (% of image) to accept a ball detection — filters distant/noisy hits
+        public static final double kMinDetectionArea = 0.05;
+
+        // Horizontal field-of-view of the Limelight 2 (degrees) — used for 3D projection
+        public static final double kGamepieceCameraHFovDeg = 62.5;
+
+        // Vertical field-of-view of the Limelight 2 (degrees)
+        public static final double kGamepieceCameraVFovDeg = 48.9;
+
+        // Diameter of a Fuel ball (meters)
+        public static final double kBallDiameterMeters = 0.15;
+
+        // ==================== WHISKER PICKUP ALGORITHM CONFIG ====================
+        // Width of the intake opening (meters) — determines how wide each whisker is
+        public static final double kIntakeWidthMeters = 0.6096;
+
+        // How far ahead each whisker projects to score balls (meters)
+        public static final double kWhiskerLengthMeters = 3.0;
+
+        // Angular resolution of the whisker fan — one whisker every N degrees
+        // Smaller = finer resolution but slightly more CPU; 5° is a good balance
+        public static final double kWhiskerAngleStepDeg = 5.0;
+
+        // Half-angle of the forward fan — whiskers sweep ±kWhiskerFanHalfAngleDeg from robot forward
+        // 60° gives a ±60° (120° total) forward cone
+        public static final double kWhiskerFanHalfAngleDeg = 60.0;
+
+        // Value awarded per ball captured by a whisker path (points)
+        public static final double kWhiskerBallValue = 1.0;
+
+        // Drive speed used during auto ball pickup (m/s)
+        public static final double kPickupDriveSpeed = 1.5;
+
+        // Rotation P-gain used during whisker pickup to align robot heading to best whisker angle
+        public static final double kPickupRotationKp = 5.0;
+
+        // Maximum rotational rate allowed during pickup (rad/s)
+        public static final double kPickupMaxRotationalRateRadS = Math.toRadians(180.0);
+
+        // Minimum score a best whisker must have for the robot to chase it; prevents chasing nothing
+        public static final double kPickupMinScoreThreshold = 0.5;
     }
 
     public static class Intake {

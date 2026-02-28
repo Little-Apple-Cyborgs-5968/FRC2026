@@ -12,8 +12,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -66,10 +68,17 @@ public class Vision extends SubsystemBase {
     // Detected AprilTag positions (for AdvantageScope)
     private final StructArrayPublisher<Pose3d> leftTagsPublisher;
     private final StructArrayPublisher<Pose3d> rightTagsPublisher;
-    
+
+    // Detected ball positions relative to robot, published as flat [x0,y0, x1,y1, ...] array
+    private final DoubleArrayPublisher ballPositionsPublisher;
+
     // ==================== LATEST ESTIMATES ====================
     private PoseEstimate latestLeftEstimate = null;
     private PoseEstimate latestRightEstimate = null;
+
+    // ==================== LATEST BALL DATA ====================
+    /** Latest ball positions in robot-relative space (updated every periodic). */
+    private List<Translation2d> latestBallPositions = new ArrayList<>();
 
     /**
      * Functional interface for adding vision measurements to the drivetrain.
@@ -103,6 +112,7 @@ public class Vision extends SubsystemBase {
         
         leftTagsPublisher = visionTable.getStructArrayTopic("LeftDetectedTags", Pose3d.struct).publish();
         rightTagsPublisher = visionTable.getStructArrayTopic("RightDetectedTags", Pose3d.struct).publish();
+        ballPositionsPublisher = visionTable.getDoubleArrayTopic("BallPositions").publish();
 
         // Load AprilTag field map from .fmap file
         loadAprilTagFieldMap();
@@ -245,23 +255,8 @@ public class Vision extends SubsystemBase {
         // Log detected AprilTags to NetworkTables
         logDetectedTags();
         
-        // ==================== GAMEPIECE DETECTION ====================
-        // TODO: Implement gamepiece detection using Limelight 2 with Google Coral
-        // 
-        // The gamepiece detection should:
-        // 1. Use LimelightHelpers.getRawDetections(Constants.Vision.kLimelightGamepieceName)
-        //    to get neural network detections
-        // 2. Filter detections by confidence and class ID
-        // 3. Calculate 3D position of gamepieces relative to robot
-        // 4. Publish detected gamepiece positions to NetworkTables for logging
-        // 5. Provide methods for commands to query:
-        //    - hasGamepiece() - whether a gamepiece is detected
-        //    - getClosestGamepiece() - Translation2d to nearest gamepiece
-        //    - getGamepieceAngle() - angle to gamepiece for auto-alignment
-        //
-        // Example structure:
-        // processGamepieceDetection();
-        // logGamepieceDetections();
+        // Process and log gamepiece (Fuel ball) detections
+        processGamepieceDetection();
     }
 
     /**
@@ -485,37 +480,152 @@ public class Vision extends SubsystemBase {
         return count;
     }
 
-    // ==================== GAMEPIECE DETECTION PLACEHOLDER METHODS ====================
-    // TODO: Implement these methods when adding gamepiece detection
-    
+    // ==================== GAMEPIECE DETECTION ====================
+
     /**
-     * Checks if a gamepiece is currently detected.
-     * @return true if a gamepiece is visible
+     * Reads raw neural-network detections from the gamepiece Limelight, filters for
+     * Fuel balls, projects each detection to a robot-relative 2D floor position, and
+     * publishes the results to NetworkTables.
+     *
+     * <p>Coordinate maths overview:
+     * <ol>
+     *   <li>Limelight reports (txnc, tync) — horizontal and vertical angles from the
+     *       camera optical centre to the centre of the bounding box (degrees).</li>
+     *   <li>We know the camera is mounted {@code kCameraHeightMeters} above the floor
+     *       and tilted {@code kCameraPitchDeg} below horizontal.</li>
+     *   <li>The angle to the floor from the camera optical-centre for a pixel at vertical
+     *       angle {@code tync} is: {@code floorAngle = kCameraPitchDeg + tync} (both
+     *       measured downward-positive from horizontal).</li>
+     *   <li>Ground distance: {@code d = cameraHeight / tan(floorAngle)}.</li>
+     *   <li>Lateral offset: {@code lateral = d * tan(txnc)}.</li>
+     *   <li>The camera is offset from the robot centre by the Transform3d in Constants;
+     *       we add those offsets to get the ball's position in the robot frame.</li>
+     * </ol>
      */
-    public boolean hasGamepieceTarget() {
-        // TODO: Implement gamepiece detection
-        // Use LimelightHelpers.getRawDetections(Constants.Vision.kLimelightGamepieceName)
-        // Filter by confidence threshold and class ID
-        return false;
+    private void processGamepieceDetection() {
+        List<Translation2d> balls = new ArrayList<>();
+
+        LimelightHelpers.RawDetection[] detections =
+            LimelightHelpers.getRawDetections(Constants.Vision.kLimelightGamepieceName);
+
+        for (LimelightHelpers.RawDetection det : detections) {
+            // Filter: must be the correct class and large enough to be reliable
+            if (det.classId != Constants.Vision.kFuelClassId) continue;
+            if (det.ta < Constants.Vision.kMinDetectionArea)   continue;
+
+            Translation2d ballRobotRelative = projectBallToFloor(det.txnc, det.tync);
+            if (ballRobotRelative != null) {
+                balls.add(ballRobotRelative);
+            }
+        }
+
+        // Replace list atomically — only currently-seen balls are kept
+        latestBallPositions = balls;
+
+        // Publish as flat [x0, y0, x1, y1, ...] array for NetworkTables / AdvantageScope
+        double[] flat = new double[balls.size() * 2];
+        for (int i = 0; i < balls.size(); i++) {
+            flat[i * 2]     = balls.get(i).getX();
+            flat[i * 2 + 1] = balls.get(i).getY();
+        }
+        ballPositionsPublisher.set(flat);
     }
 
     /**
-     * Gets the horizontal angle to the closest detected gamepiece.
+     * Projects a single Limelight detection (horizontal/vertical pixel angles) to a
+     * robot-relative floor position using the known camera geometry.
+     *
+     * @param txnc Horizontal angle to target from image centre (degrees, +left)
+     * @param tync Vertical angle to target from image centre (degrees, +up in LL convention)
+     * @return Robot-relative Translation2d (X = forward, Y = left), or {@code null} if
+     *         the geometry gives a physically impossible result (e.g. target is above horizon)
+     */
+    private Translation2d projectBallToFloor(double txnc, double tync) {
+        // Camera mount geometry from Constants
+        double cameraHeightM  = Constants.Vision.kLimelightGamepiecePosition.getZ();   // metres above floor
+        double cameraPitchDeg = -Math.toDegrees(
+            Constants.Vision.kLimelightGamepiecePosition.getRotation().getY());        // positive = nose-down
+        double cameraForwardOffsetM = Constants.Vision.kLimelightGamepiecePosition.getX();
+        double cameraLateralOffsetM = Constants.Vision.kLimelightGamepiecePosition.getY();
+
+        // Limelight tync is positive-UP; convert to positive-DOWN for our geometry
+        double tyncDown = -tync;
+
+        // Total depression angle from horizontal to the detected pixel
+        double totalDepressionDeg = cameraPitchDeg + tyncDown;
+
+        // Guard: if total depression ≤ 0 the ray points above or along the horizon — reject
+        if (totalDepressionDeg <= 0.0) return null;
+
+        double totalDepressionRad = Math.toRadians(totalDepressionDeg);
+        double txncRad            = Math.toRadians(txnc);
+
+        // Horizontal (forward) distance from the camera to the ball contact point on the floor
+        double forwardDistFromCamera = cameraHeightM / Math.tan(totalDepressionRad);
+
+        // Lateral offset from the camera centre line (positive = left in robot frame)
+        double lateralDistFromCamera = forwardDistFromCamera * Math.tan(txncRad);
+
+        // Translate from camera frame to robot centre frame
+        // Camera +X is robot forward; camera +Y is robot right, so we negate for robot +Y (left)
+        double xRobot = forwardDistFromCamera + cameraForwardOffsetM;
+        double yRobot = -lateralDistFromCamera + (-cameraLateralOffsetM); // negate both: LL +right, robot +left
+
+        return new Translation2d(xRobot, yRobot);
+    }
+
+    // ==================== PUBLIC GAMEPIECE ACCESSOR METHODS ====================
+
+    /**
+     * Returns whether at least one Fuel ball is currently detected.
+     *
+     * @return {@code true} if one or more balls are visible
+     */
+    public boolean hasGamepieceTarget() {
+        return !latestBallPositions.isEmpty();
+    }
+
+    /**
+     * Returns a snapshot of all currently-detected ball positions in robot-relative
+     * space (X = forward, Y = left, both in metres).
+     *
+     * @return Unmodifiable list of {@link Translation2d} ball positions; empty if none seen
+     */
+    public List<Translation2d> getBallPositions() {
+        return List.copyOf(latestBallPositions);
+    }
+
+    /**
+     * Returns the robot-relative position of the closest detected ball, or
+     * {@code null} if no balls are visible.
+     *
+     * @return Closest ball {@link Translation2d}, or {@code null}
+     */
+    public Translation2d getClosestBall() {
+        return latestBallPositions.stream()
+            .min((a, b) -> Double.compare(a.getNorm(), b.getNorm()))
+            .orElse(null);
+    }
+
+    /**
+     * Gets the horizontal angle to the closest detected ball.
+     *
      * @return Angle in degrees (positive = left, negative = right), or 0 if none detected
      */
     public double getGamepieceAngle() {
-        // TODO: Implement gamepiece detection
-        // Return LimelightHelpers.getTX(Constants.Vision.kLimelightGamepieceName) if valid
-        return 0.0;
+        Translation2d closest = getClosestBall();
+        if (closest == null) return 0.0;
+        return Math.toDegrees(Math.atan2(closest.getY(), closest.getX()));
     }
 
     /**
-     * Gets the vertical angle to the closest detected gamepiece.
-     * @return Angle in degrees (positive = up, negative = down), or 0 if none detected
+     * Gets the forward distance to the closest detected ball.
+     *
+     * @return Distance in metres, or 0 if none detected
      */
     public double getGamepieceVerticalAngle() {
-        // TODO: Implement gamepiece detection
-        // Return LimelightHelpers.getTY(Constants.Vision.kLimelightGamepieceName) if valid
-        return 0.0;
+        Translation2d closest = getClosestBall();
+        if (closest == null) return 0.0;
+        return closest.getX();
     }
 }
