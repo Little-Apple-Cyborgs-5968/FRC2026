@@ -138,6 +138,9 @@ public class RobotContainer {
         dashboard = new DashboardPublisher(drivetrain);
 
         configureBindings();
+
+        // Register drivetrain pose supplier with turret for distance-to-target telemetry
+        turret.setPoseSupplier(() -> drivetrain.getState().Pose);
     }
 
     private void configureBindings() {

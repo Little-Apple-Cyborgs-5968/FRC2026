@@ -25,6 +25,7 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -78,6 +79,11 @@ public class Turret extends SubsystemBase {
   // Target tracking for telemetry
   private double targetAngleDegrees = 0.0;
   private double targetVelocityDegPerSec = 0.0;
+
+  // Pose supplier — injected by RobotContainer to enable distance-to-target telemetry
+  private Supplier<Pose2d> robotPoseSupplier = null;
+  // Cached distance to hub, updated every periodic()
+  private double distanceToTargetMeters = 0.0;
 
   // Simulation
   private final SingleJointedArmSim pivotSim;
@@ -165,6 +171,15 @@ public class Turret extends SubsystemBase {
       statorCurrentSignal,
       temperatureSignal
     );
+
+    // Compute and publish distance to hub whenever a pose supplier is registered
+    if (robotPoseSupplier != null) {
+      Pose2d pose = robotPoseSupplier.get();
+      if (pose != null) {
+        distanceToTargetMeters = TurretUtil.getDistance(pose, TurretUtil.TargetType.HUB);
+        SmartDashboard.putNumber("DASHBOARD/Turret Distance To Hub (m)", distanceToTargetMeters);
+      }
+    }
   }
 
   /**
@@ -286,6 +301,25 @@ public class Turret extends SubsystemBase {
   public double getErrorDegrees() {
     double currentAngleDegrees = Units.rotationsToDegrees(getPosition());
     return targetAngleDegrees - currentAngleDegrees;
+  }
+
+  /**
+   * Distance from the turret to the hub, in meters.
+   * Returns 0 until a pose supplier is registered via {@link #setPoseSupplier}.
+   */
+  @Logged(name = "Target/DistanceMeters")
+  public double getDistanceToTargetMeters() {
+    return distanceToTargetMeters;
+  }
+
+  /**
+   * Registers the robot pose supplier so the turret can compute distance-to-target telemetry.
+   * Call this once from RobotContainer after all subsystems are constructed.
+   *
+   * @param poseSupplier Supplier that returns the current robot field pose
+   */
+  public void setPoseSupplier(Supplier<Pose2d> poseSupplier) {
+    this.robotPoseSupplier = poseSupplier;
   }
 
   /**
