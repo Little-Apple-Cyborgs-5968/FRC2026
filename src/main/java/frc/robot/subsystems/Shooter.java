@@ -26,6 +26,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -542,6 +543,30 @@ public class Shooter extends SubsystemBase {
   }
 
   /**
+   * "Shot tunable" command — simultaneously controls flywheel speed and hood angle
+   * from the dashboard, updating both every loop.
+   *
+   * <p>Setpoint1 → flywheel speed (RPS)<br>
+   * Setpoint2 → hood angle (degrees)
+   *
+   * <p>Uses suppliers so the values are read fresh on every execute() call rather
+   * than being captured once at command construction time.
+   *
+   * @param speedSupplier     Supplier that returns the desired flywheel speed in RPS
+   *                          (e.g. {@code dashboard::getTunableSetpoint1})
+   * @param hoodAngleSupplier Supplier that returns the desired hood angle in degrees
+   *                          (e.g. {@code dashboard::getTunableSetpoint2})
+   * @return A command that continuously applies both setpoints while held
+   */
+  public Command shotTunableCommand(java.util.function.DoubleSupplier speedSupplier,
+                                     java.util.function.DoubleSupplier hoodAngleSupplier) {
+    return run(() -> {
+      setFlywheelVelocity(speedSupplier.getAsDouble());
+      setHoodAngle(hoodAngleSupplier.getAsDouble());
+    }).withName("ShotTunable");
+  }
+
+  /**
    * Get flywheel sim for testing.
    */
   public FlywheelSim getLeftFlywheelSim() {
@@ -580,5 +605,30 @@ public class Shooter extends SubsystemBase {
         setFlywheelVelocity(solution.shooterSpeedRPS);
       }
     }).withName("AutoAimShooter-" + target.toString());
+  }
+
+  /**
+   * Continuously sets the hood angle and flywheel speed using the "shoot on the move"
+   * iterative lead algorithm.
+   *
+   * @param robotPoseSupplier     Supplier for the current robot field pose
+   * @param chassisSpeedsSupplier Supplier for the current field-relative chassis speeds
+   * @param target                Which target to shoot at
+   * @return A command that continuously updates hood and flywheel with motion compensation
+   */
+  public Command shootOnMoveCommandShooter(Supplier<Pose2d> robotPoseSupplier,
+                                            Supplier<ChassisSpeeds> chassisSpeedsSupplier,
+                                            TurretUtil.TargetType target) {
+    return run(() -> {
+      Pose2d robotPose = robotPoseSupplier.get();
+      ChassisSpeeds speeds = chassisSpeedsSupplier.get();
+      TurretUtil.ShotSolution solution = TurretUtil.computeLeadShotSolution(
+          robotPose, speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, target);
+
+      if (solution.isValid) {
+        setHoodAngle(solution.trajectoryAngleDegrees);
+        setFlywheelVelocity(solution.shooterSpeedRPS);
+      }
+    }).withName("ShootOnMove-Shooter-" + target.toString());
   }
 }

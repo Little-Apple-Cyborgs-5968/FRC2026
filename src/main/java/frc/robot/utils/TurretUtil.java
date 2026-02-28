@@ -175,50 +175,76 @@ public class TurretUtil {
     }
 
     // =========================
-    // MOVING-TARGET LEAD
+    // SHOOT ON THE MOVE
     // =========================
 
     /**
-     * Computes a lead-compensated shot solution for a robot that is moving while shooting.
-     * Predicts where the ball will arrive using the time-of-flight from a static solution,
-     * then adjusts the turret angle to aim at the lead-corrected target point.
+     * Computes a "shoot on the move" solution using 5 iterations of virtual-target refinement.
      *
-     * @param robotPose    Current robot field pose
-     * @param robotVelX    Robot X velocity on the field (m/s)
-     * @param robotVelY    Robot Y velocity on the field (m/s)
-     * @param target       Which target to shoot at
-     * @return A lead-adjusted {@link ShotSolution}
+     * <p>Each iteration:
+     * <ol>
+     *   <li>Uses the current time-of-flight estimate to predict where the turret will be
+     *       when the ball arrives (virtual turret position).</li>
+     *   <li>Computes the distance from that virtual position to the (stationary) target.</li>
+     *   <li>Looks up a new time-of-flight, shooter speed, and trajectory angle for that
+     *       virtual distance.</li>
+     *   <li>Feeds the new time-of-flight back into the next iteration.</li>
+     * </ol>
+     * After 5 iterations the solution has converged. The final turret angle is computed from
+     * the robot's <em>current</em> pose aiming at the virtual target so the shot compensates
+     * for motion during flight.
+     *
+     * @param robotPose  Current robot field pose
+     * @param robotVelX  Robot field-relative X velocity (m/s), e.g. from {@code ChassisSpeeds}
+     * @param robotVelY  Robot field-relative Y velocity (m/s), e.g. from {@code ChassisSpeeds}
+     * @param target     Which target to shoot at
+     * @return A motion-compensated {@link ShotSolution}
      */
     public static ShotSolution computeLeadShotSolution(Pose2d robotPose,
                                                         double robotVelX,
                                                         double robotVelY,
                                                         TargetType target) {
-        // 1) Get a first-pass static solution for time-of-flight estimate
-        double staticDist = getDistance(robotPose, target);
-        double tof = getTimeOfFlight(staticDist, target);
-
-        // 2) Predict where the turret will be after time-of-flight
-        Pose2d turretNow = getTurretPose(robotPose);
-        double futureTurretX = turretNow.getX() + robotVelX * tof;
-        double futureTurretY = turretNow.getY() + robotVelY * tof;
-
-        // 3) Recalculate distance from predicted turret position to target
-        Translation2d futureTranslation = new Translation2d(futureTurretX, futureTurretY);
+        Translation2d turretNow = getTurretPose(robotPose).getTranslation();
         Translation2d goalTranslation = getTargetPose(target).getTranslation();
-        double leadDist = futureTranslation.getDistance(goalTranslation);
 
-        // 4) Turret angle to hit target from current pose, aiming where the ball needs to go
-        double dx = goalTranslation.getX() - futureTurretX;
-        double dy = goalTranslation.getY() - futureTurretY;
+        // Seed: static time-of-flight from current turret position
+        double tof = getTimeOfFlight(turretNow.getDistance(goalTranslation), target);
+
+        // Iterative virtual-target refinement (5 passes)
+        double virtualX = turretNow.getX();
+        double virtualY = turretNow.getY();
+        HubLookUpTable.ShootingParameters params = null;
+
+        for (int i = 0; i < 5; i++) {
+            // Predict turret position when ball arrives
+            virtualX = turretNow.getX() + robotVelX * tof;
+            virtualY = turretNow.getY() + robotVelY * tof;
+
+            // Distance from virtual turret position to the stationary target
+            double virtualDist = new Translation2d(virtualX, virtualY).getDistance(goalTranslation);
+
+            // Look up shot parameters for this virtual distance
+            params = getTableParams(virtualDist, target);
+
+            // Refine time-of-flight for next iteration
+            tof = params.timeOfFlight;
+        }
+
+        // Final virtual distance (from the last iteration's virtual position)
+        double finalDist = new Translation2d(virtualX, virtualY).getDistance(goalTranslation);
+
+        // Turret must point from *current* turret position toward the virtual target
+        // (the ball is fired now; it arrives at the target when the robot reaches virtualX/Y)
+        double dx = goalTranslation.getX() - virtualX;
+        double dy = goalTranslation.getY() - virtualY;
         double leadFieldAngle = Math.atan2(dy, dx);
         double turretAngle = normalizeDegrees(
                 Math.toDegrees(leadFieldAngle - robotPose.getRotation().getRadians()));
 
-        var params = getTableParams(leadDist, target);
-        boolean valid = isWithinShootingRange(leadDist) && isTurretAngleReachable(turretAngle);
+        boolean valid = isWithinShootingRange(finalDist) && isTurretAngleReachable(turretAngle);
 
         return new ShotSolution(
-                leadDist,
+                finalDist,
                 turretAngle,
                 params.trajectoryAngle,
                 params.shooterSpeed,

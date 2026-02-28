@@ -18,6 +18,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
@@ -424,6 +425,31 @@ public class Turret extends SubsystemBase {
         setAngle(solution.turretAngleDegrees);
       }
     }).withName("AutoAim-" + target.toString());
+  }
+
+  /**
+   * Continuously aims the turret using the "shoot on the move" iterative lead algorithm.
+   * Velocity is supplied as a field-relative {@link ChassisSpeeds} (e.g. from the drivetrain
+   * state converted via {@code ChassisSpeeds.fromRobotRelativeSpeeds}).
+   *
+   * @param robotPoseSupplier    Supplier for the current robot field pose
+   * @param chassisSpeedsSupplier Supplier for the current field-relative chassis speeds
+   * @param target               Which target to aim at
+   * @return A command that continuously updates the turret angle with motion compensation
+   */
+  public Command shootOnMoveCommandTurret(Supplier<Pose2d> robotPoseSupplier,
+                                           Supplier<ChassisSpeeds> chassisSpeedsSupplier,
+                                           TurretUtil.TargetType target) {
+    return run(() -> {
+      Pose2d robotPose = robotPoseSupplier.get();
+      ChassisSpeeds speeds = chassisSpeedsSupplier.get();
+      TurretUtil.ShotSolution solution = TurretUtil.computeLeadShotSolution(
+          robotPose, speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, target);
+
+      if (solution.isValid) {
+        setAngle(solution.turretAngleDegrees);
+      }
+    }).withName("ShootOnMove-Turret-" + target.toString());
   }
 
   //------------------------ Tuning -----------------------//

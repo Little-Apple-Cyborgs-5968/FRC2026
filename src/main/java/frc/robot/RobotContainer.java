@@ -300,15 +300,48 @@ public class RobotContainer {
             shooter.setHoodAngleCommand(79)
         );
 
-        // Y button: set hood to 45 degrees
-        joystick.y().onTrue(
-            shooter.setHoodAngleCommand(45)
+        // Y button: shot tunable — setpoint1 = flywheel speed (RPS), setpoint2 = hood angle (deg)
+        // Suppliers are evaluated every loop so dashboard changes take effect immediately.
+        joystick.y().whileTrue(
+            shooter.shotTunableCommand(
+                dashboard::getTunableSetpoint1,
+                dashboard::getTunableSetpoint2
+            )
         );
 
-        // B button: rotate turret to -90 degrees
-        joystick.b().onTrue(
-            turret.setAngleCommand(90)
+        // B button: Auto-aim at hub (stationary) — continuously updates turret angle, hood, and flywheel
+        // while held. Release to stop. Pair with leftTrigger to feed.
+        joystick.b().whileTrue(
+            turret.autoAimCommandTurret(
+                () -> drivetrain.getState().Pose,
+                TurretUtil.TargetType.HUB
+            ).alongWith(
+                shooter.autoAimCommandShooter(
+                    () -> drivetrain.getState().Pose,
+                    TurretUtil.TargetType.HUB
+                )
+            )
         );
+
+        // B button: Shoot on the move — continuously lead-compensates turret angle, hood, and flywheel
+        // while held. Release to stop. Pair with leftTrigger to feed.
+        // joystick.b().whileTrue(
+        //     turret.shootOnMoveCommandTurret(
+        //         () -> drivetrain.getState().Pose,
+        //         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+        //                 drivetrain.getState().Speeds,
+        //                 drivetrain.getState().Pose.getRotation()),
+        //         TurretUtil.TargetType.HUB
+        //     ).alongWith(
+        //         shooter.shootOnMoveCommandShooter(
+        //             () -> drivetrain.getState().Pose,
+        //             () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+        //                     drivetrain.getState().Speeds,
+        //                     drivetrain.getState().Pose.getRotation()),
+        //             TurretUtil.TargetType.HUB
+        //         )
+        //     )
+        // );
 
         joystick.x().onTrue(
             turret.setAngleCommand(-90)
