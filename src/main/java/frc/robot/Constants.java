@@ -322,7 +322,7 @@ public class Constants {
         public static final double kHoodKA = 0;
 
         // Hood MAXMotion (motion profiling) constraints
-        public static final double kHoodMaxVelocity = 20.0;     // Maximum hood velocity (degrees/s)
+        public static final double kHoodMaxVelocity = 60.0;     // Maximum hood velocity (degrees/s)
         public static final double kHoodMaxAcceleration = 100.0; // Maximum hood acceleration (degrees/s²)
 
         // Hood Current Limits
