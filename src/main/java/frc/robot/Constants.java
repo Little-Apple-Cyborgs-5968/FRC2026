@@ -331,8 +331,8 @@ public class Constants {
         public static final boolean kHoodBrakeMode = true;
         
         // Simulation Constants
-        public static final double kSimFlywheelMomentOfInertia = 0.005; // kg·m²
-        public static final double kSimHoodMomentOfInertia = 0.01; // kg·m²
+        public static final double kSimFlywheelMomentOfInertia = 0.00005; // kg·m²
+        public static final double kSimHoodMomentOfInertia = 0.004; // kg·m²
         public static final double kSimHoodLength = 0.3; // meters
     }
 }

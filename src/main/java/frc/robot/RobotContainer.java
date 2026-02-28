@@ -15,6 +15,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -59,6 +60,13 @@ public class RobotContainer {
     
     // SYOMDrive (Synchronized Yaw-Optimized Motion Drive) - auto-rotates to face travel direction
     private boolean isSYOMDriveEnabled = false;
+
+    // Shoot-mode toggle — right trigger turns on auto-aim warm-up; releasing fires; second press cancels
+    private boolean isShootModeActive = false;
+
+    // Shoot-on-the-move toggle — same pattern as isShootModeActive but uses lead-compensated commands
+    // Swap this in place of isShootModeActive + its trigger block below to enable shoot-on-the-move
+    private boolean isShootOnMoveActive = false;
     
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -93,11 +101,11 @@ public class RobotContainer {
 
     // Spindexer Subsystem
     private final Spindexer spindexer = new Spindexer();
-    //private final SpindexerSim spindexerSim = new SpindexerSim(spindexer);
+    private final SpindexerSim spindexerSim = new SpindexerSim(spindexer);
 
     // Feeder Subsystem
     private final Feeder feeder = new Feeder();
-    //private final FeederSim feederSim = new FeederSim(feeder);
+    private final FeederSim feederSim = new FeederSim(feeder);
 
     // Shooter Subsystem
     private final Shooter shooter = new Shooter();
@@ -219,7 +227,7 @@ public class RobotContainer {
         // joystick.a().onTrue(
         //     drivetrain.runOnce(() -> {
         //         isSYOMDriveEnabled = !isSYOMDriveEnabled;
-        //         System.out.println("SYOMDrive " + (isSYOMDriveEnabled ? "ENABLED" : "DISABLED"));
+        //         
         //     })
         // );
         
@@ -260,12 +268,68 @@ public class RobotContainer {
         spindexer.setDefaultCommand(spindexer.stopCommand());
         feeder.setDefaultCommand(feeder.stopCommand());
 
-        joystick.rightTrigger().whileTrue(
-            shooter.runFlywheelsCommand());
-        
-        joystick.leftTrigger().whileTrue(
-            spindexer.runCommand().alongWith(feeder.runCommand())
+        // ── RIGHT TRIGGER: Toggle shoot mode ──────────────────────────────────────
+        //
+        // PRESS 1 (toggle ON, trigger held):
+        //   • Turret   → auto-aim continuously
+        //   • Flywheel → spun to correct speed (flywheel-only, no hood movement)
+        //   • Hood     → stays put
+        //   • Feeder / Spindexer → NOT running yet
+        //
+        // PRESS 1 RELEASE (shoot mode still ON):
+        //   • Turret + Flywheel + Hood → all auto-aim continuously
+        //   • Feeder + Spindexer → start running (balls feed into shooter)
+        //   Continues until toggled off.
+        //
+        // PRESS 2 (toggle OFF):
+        //   • Everything stops (default commands take over)
+        //   • Hood moves to trench position
 
+        // Toggle the flag on every right-trigger press
+        joystick.rightTrigger().onTrue(
+            Commands.runOnce(() -> {
+                isShootModeActive = !isShootModeActive;
+                SmartDashboard.putBoolean("DASHBOARD/Shoot Mode Active", isShootModeActive);
+            })
+        );
+
+        // Derive Trigger objects from the flag — the scheduler reacts to these every loop
+        Trigger shootModeOn   = new Trigger(() -> isShootModeActive);
+        Trigger triggerHeld   = joystick.rightTrigger();
+        Trigger warmUpActive  = shootModeOn.and(triggerHeld);   // ON + held  → warm up
+        Trigger firingActive  = shootModeOn.and(triggerHeld.negate()); // ON + released → fire
+
+        // Warm-up phase: turret + flywheel only (no hood, no feed)
+        warmUpActive.whileTrue(
+            turret.autoAimCommandTurret(
+                () -> drivetrain.getState().Pose,
+                TurretUtil.TargetType.HUB
+            ).alongWith(
+                shooter.autoAimFlywheelOnlyCommand(
+                    () -> drivetrain.getState().Pose,
+                    TurretUtil.TargetType.HUB
+                )
+            ).withName("ShootMode-WarmUp")
+        );
+
+        // Firing phase: turret + full shooter auto-aim (hood+flywheel) + spindexer + feeder
+        firingActive.whileTrue(
+            turret.autoAimCommandTurret(
+                () -> drivetrain.getState().Pose,
+                TurretUtil.TargetType.HUB
+            ).alongWith(
+                shooter.autoAimCommandShooter(
+                    () -> drivetrain.getState().Pose,
+                    TurretUtil.TargetType.HUB
+                ),
+                spindexer.runCommand(),
+                feeder.runCommand()
+            ).withName("ShootMode-Firing")
+        );
+
+        // When shoot mode is toggled OFF, move hood to trench position
+        shootModeOn.onFalse(
+            shooter.setHoodToTrenchCommand()
         );
 
         joystick.start().whileTrue(
@@ -312,23 +376,74 @@ public class RobotContainer {
             )
         );
 
-        // B button: Auto-aim at hub (stationary) — continuously updates turret angle, hood, and flywheel
-        // while held. Release to stop. Pair with leftTrigger to feed.
-        joystick.b().whileTrue(
-            turret.autoAimCommandTurret(
-                () -> drivetrain.getState().Pose,
-                TurretUtil.TargetType.HUB
-            ).alongWith(
-                shooter.autoAimCommandShooter(
-                    () -> drivetrain.getState().Pose,
-                    TurretUtil.TargetType.HUB
-                )
-            )
-        );
-
-        // B button: Shoot on the move — continuously lead-compensates turret angle, hood, and flywheel
-        // while held. Release to stop. Pair with leftTrigger to feed.
+        // B button: Auto-aim at hub (stationary) — moved to RIGHT TRIGGER toggle.
+        // See shoot-mode toggle block above.
         // joystick.b().whileTrue(
+        //     turret.autoAimCommandTurret(
+        //         () -> drivetrain.getState().Pose,
+        //         TurretUtil.TargetType.HUB
+        //     ).alongWith(
+        //         shooter.autoAimCommandShooter(
+        //             () -> drivetrain.getState().Pose,
+        //             TurretUtil.TargetType.HUB
+        //         )
+        //     )
+        // );
+
+        // ── B BUTTON: Shoot-on-the-move toggle (READY TO ENABLE — currently commented out) ──────
+        //
+        // Identical toggle pattern to the right-trigger stationary shoot mode above, but uses
+        // lead-compensated commands (shootOnMove*) so the turret, hood, and flywheel all
+        // account for robot velocity when computing the shot solution.
+        //
+        // To activate: uncomment this block AND comment out the right-trigger stationary block.
+        //
+        // PRESS 1 (toggle ON, B held):
+        //   • Turret   → lead-compensated auto-aim continuously
+        //   • Flywheel → lead-compensated speed (flywheel only, no hood movement)
+        //   • Hood / Feeder / Spindexer → NOT running yet
+        //
+        // PRESS 1 RELEASE (shoot mode still ON):
+        //   • Turret + Flywheel + Hood → all lead-compensated continuously
+        //   • Feeder + Spindexer → start running
+        //   Continues until toggled off.
+        //
+        // PRESS 2 (toggle OFF):
+        //   • Everything stops, hood moves to trench position
+
+        // joystick.b().onTrue(
+        //     Commands.runOnce(() -> {
+        //         isShootOnMoveActive = !isShootOnMoveActive;
+        //         SmartDashboard.putBoolean("DASHBOARD/Shoot On Move Active", isShootOnMoveActive);
+        //     })
+        // );
+        //
+        // Trigger shootOnMoveOn      = new Trigger(() -> isShootOnMoveActive);
+        // Trigger bHeld              = joystick.b();
+        // Trigger somWarmUpActive    = shootOnMoveOn.and(bHeld);
+        // Trigger somFiringActive    = shootOnMoveOn.and(bHeld.negate());
+        //
+        // // Warm-up: turret + flywheel only, both lead-compensated
+        // somWarmUpActive.whileTrue(
+        //     turret.shootOnMoveCommandTurret(
+        //         () -> drivetrain.getState().Pose,
+        //         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+        //                 drivetrain.getState().Speeds,
+        //                 drivetrain.getState().Pose.getRotation()),
+        //         TurretUtil.TargetType.HUB
+        //     ).alongWith(
+        //         shooter.shootOnMoveFlywheelOnlyCommand(
+        //             () -> drivetrain.getState().Pose,
+        //             () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+        //                     drivetrain.getState().Speeds,
+        //                     drivetrain.getState().Pose.getRotation()),
+        //             TurretUtil.TargetType.HUB
+        //         )
+        //     ).withName("ShootOnMove-WarmUp")
+        // );
+        //
+        // // Firing: turret + full shooter (hood+flywheel) + spindexer + feeder, all lead-compensated
+        // somFiringActive.whileTrue(
         //     turret.shootOnMoveCommandTurret(
         //         () -> drivetrain.getState().Pose,
         //         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
@@ -342,8 +457,15 @@ public class RobotContainer {
         //                     drivetrain.getState().Speeds,
         //                     drivetrain.getState().Pose.getRotation()),
         //             TurretUtil.TargetType.HUB
-        //         )
-        //     )
+        //         ),
+        //         spindexer.runCommand(),
+        //         feeder.runCommand()
+        //     ).withName("ShootOnMove-Firing")
+        // );
+        //
+        // // When shoot-on-the-move mode is toggled OFF, stop flywheels and move hood to trench
+        // shootOnMoveOn.onFalse(
+        //     shooter.setHoodToTrenchCommand()
         // );
 
         joystick.x().onTrue(
@@ -468,6 +590,8 @@ public class RobotContainer {
         dashboard.update();
         // Update SYOMDrive status on SmartDashboard
         SmartDashboard.putBoolean("DASHBOARD/SYOMDrive Enabled", isSYOMDriveEnabled);
+        // Update shoot mode toggle status on SmartDashboard
+        SmartDashboard.putBoolean("DASHBOARD/Shoot Mode Active", isShootModeActive);
     }
 
     /** Gets the current tunable value from the dashboard - use this for testing/tuning! */

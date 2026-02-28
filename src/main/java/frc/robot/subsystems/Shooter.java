@@ -84,6 +84,7 @@ public class Shooter extends SubsystemBase {
   private final StatusSignal<Voltage> leftVoltageSignal;
   private final StatusSignal<Current> leftCurrentSignal;
   private final StatusSignal<Temperature> leftTempSignal;
+  private final StatusSignal<Double> leftClosedLoopReferenceSignal;
 
   // Hood Motor
   private final SparkMax hoodMotor;
@@ -165,6 +166,7 @@ public class Shooter extends SubsystemBase {
     leftVoltageSignal = leftFlywheel.getMotorVoltage();
     leftCurrentSignal = leftFlywheel.getStatorCurrent();
     leftTempSignal = leftFlywheel.getDeviceTemp();
+    leftClosedLoopReferenceSignal = leftFlywheel.getClosedLoopReference();
 
     // Initialize hood motor (NEO 550 on SparkMax)
     hoodMotor = new SparkMax(hoodCanID, MotorType.kBrushless);
@@ -245,7 +247,8 @@ public class Shooter extends SubsystemBase {
       rightVelocitySignal,
       leftVoltageSignal,
       leftCurrentSignal,
-      leftTempSignal
+      leftTempSignal,
+      leftClosedLoopReferenceSignal
     );
   }
 
@@ -289,13 +292,6 @@ public class Shooter extends SubsystemBase {
     double hoodPositionRotations = hoodAngleDegrees / 360.0 * hoodGearRatio;
     hoodEncoder.setPosition(hoodPositionRotations);
 
-    // Debug output for hood simulation
-    if (Math.abs(targetHoodAngle - hoodAngleDegrees) > 1.0) {
-      System.out.println(String.format(
-        "Hood Sim - Target: %.1f deg, Actual: %.1f deg, PID Output: %.2f V, Voltage: %.2f V, Battery: %.2f V",
-        targetHoodAngle, hoodAngleDegrees, pidOutput, hoodVoltage, batteryVoltage
-      ));
-    }
 
     // Update battery voltage
     RoboRioSim.setVInVoltage(
@@ -338,7 +334,7 @@ public class Shooter extends SubsystemBase {
    */
   @Logged(name = "Flywheel/Target Velocity RPS")
   public double getTargetFlywheelVelocity() {
-    return leftFlywheel.getClosedLoopReference().getValueAsDouble();
+    return leftClosedLoopReferenceSignal.getValueAsDouble();
   }
 
   /**
@@ -472,7 +468,13 @@ public class Shooter extends SubsystemBase {
    * @param dashboard
    */
     public Command setHoodToTrenchCommand() {
-      return run(() -> setHoodAngle(Constants.Shooter.kHoodTrenchAngleDegrees));
+      // Immediately stop flywheels, then continuously hold hood at trench angle.
+      // Using run() (not runOnce) so the hood actively holds position and the
+      // Shooter subsystem stays claimed — preventing other commands from
+      // interfering until this is explicitly cancelled or superseded.
+      return runOnce(() -> stopFlywheels())
+          .andThen(run(() -> setHoodAngle(Constants.Shooter.kHoodTrenchAngleDegrees)))
+          .withName("HoodToTrench");
     }
 
   //------------------------ Tuning -----------------------//
@@ -595,7 +597,7 @@ public class Shooter extends SubsystemBase {
     return runOnce(() -> rezero());
   }
 
-    public Command autoAimCommandShooter(Supplier<Pose2d> robotPoseSupplier, TurretUtil.TargetType target) {
+  public Command autoAimCommandShooter(Supplier<Pose2d> robotPoseSupplier, TurretUtil.TargetType target) {
     return run(() -> {
       Pose2d robotPose = robotPoseSupplier.get();
       TurretUtil.ShotSolution solution = TurretUtil.computeShotSolution(robotPose, target);
@@ -605,6 +607,44 @@ public class Shooter extends SubsystemBase {
         setFlywheelVelocity(solution.shooterSpeedRPS);
       }
     }).withName("AutoAimShooter-" + target.toString());
+  }
+
+  /**
+   * Auto-aim: runs ONLY the flywheel (no hood). Use while warming up before firing.
+   * Hood is left in its current position.
+   *
+   * @param robotPoseSupplier Supplier for the current robot field pose
+   * @param target            Which target to aim at
+   * @return A command that continuously spins the flywheel to the correct speed
+   */
+  public Command autoAimFlywheelOnlyCommand(Supplier<Pose2d> robotPoseSupplier, TurretUtil.TargetType target) {
+    return run(() -> {
+      Pose2d robotPose = robotPoseSupplier.get();
+      TurretUtil.ShotSolution solution = TurretUtil.computeShotSolution(robotPose, target);
+
+      if (solution.isValid) {
+        setFlywheelVelocity(solution.shooterSpeedRPS);
+      }
+    }).withName("AutoAimFlywheelOnly-" + target.toString());
+  }
+
+  /**
+   * Auto-aim: runs ONLY the hood (no flywheel). Use when the trigger is released to move the
+   * hood to the correct firing angle while keeping the flywheel running separately.
+   *
+   * @param robotPoseSupplier Supplier for the current robot field pose
+   * @param target            Which target to aim at
+   * @return A command that continuously moves the hood to the correct angle
+   */
+  public Command autoAimHoodOnlyCommand(Supplier<Pose2d> robotPoseSupplier, TurretUtil.TargetType target) {
+    return run(() -> {
+      Pose2d robotPose = robotPoseSupplier.get();
+      TurretUtil.ShotSolution solution = TurretUtil.computeShotSolution(robotPose, target);
+
+      if (solution.isValid) {
+        setHoodAngle(solution.trajectoryAngleDegrees);
+      }
+    }).withName("AutoAimHoodOnly-" + target.toString());
   }
 
   /**
@@ -630,5 +670,54 @@ public class Shooter extends SubsystemBase {
         setFlywheelVelocity(solution.shooterSpeedRPS);
       }
     }).withName("ShootOnMove-Shooter-" + target.toString());
+  }
+
+  /**
+   * Shoot-on-the-move: runs ONLY the flywheel with lead compensation (no hood).
+   * Use while warming up before firing.
+   *
+   * @param robotPoseSupplier     Supplier for the current robot field pose
+   * @param chassisSpeedsSupplier Supplier for the current field-relative chassis speeds
+   * @param target                Which target to shoot at
+   * @return A command that continuously spins the flywheel with motion compensation
+   */
+  public Command shootOnMoveFlywheelOnlyCommand(Supplier<Pose2d> robotPoseSupplier,
+                                                 Supplier<ChassisSpeeds> chassisSpeedsSupplier,
+                                                 TurretUtil.TargetType target) {
+    return run(() -> {
+      Pose2d robotPose = robotPoseSupplier.get();
+      ChassisSpeeds speeds = chassisSpeedsSupplier.get();
+      TurretUtil.ShotSolution solution = TurretUtil.computeLeadShotSolution(
+          robotPose, speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, target);
+
+      if (solution.isValid) {
+        setFlywheelVelocity(solution.shooterSpeedRPS);
+      }
+    }).withName("ShootOnMove-FlywheelOnly-" + target.toString());
+  }
+
+  /**
+   * Shoot-on-the-move: runs ONLY the hood with lead compensation (no flywheel).
+   * Use when the trigger is released to move the hood to the correct firing angle
+   * while keeping the flywheel running separately.
+   *
+   * @param robotPoseSupplier     Supplier for the current robot field pose
+   * @param chassisSpeedsSupplier Supplier for the current field-relative chassis speeds
+   * @param target                Which target to shoot at
+   * @return A command that continuously moves the hood with motion compensation
+   */
+  public Command shootOnMoveHoodOnlyCommand(Supplier<Pose2d> robotPoseSupplier,
+                                             Supplier<ChassisSpeeds> chassisSpeedsSupplier,
+                                             TurretUtil.TargetType target) {
+    return run(() -> {
+      Pose2d robotPose = robotPoseSupplier.get();
+      ChassisSpeeds speeds = chassisSpeedsSupplier.get();
+      TurretUtil.ShotSolution solution = TurretUtil.computeLeadShotSolution(
+          robotPose, speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, target);
+
+      if (solution.isValid) {
+        setHoodAngle(solution.trajectoryAngleDegrees);
+      }
+    }).withName("ShootOnMove-HoodOnly-" + target.toString());
   }
 }
