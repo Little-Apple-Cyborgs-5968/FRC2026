@@ -265,10 +265,12 @@ public class Feeder extends SubsystemBase {
 
   /**
    * Creates a command to stop the feeder.
+   * Uses run() (not runOnce) so the command never finishes and the subsystem
+   * stays claimed as the default command.
    * @return A command that stops the feeder
    */
   public Command stopCommand() {
-    return runOnce(() -> {
+    return run(() -> {
       motor.stopMotor();
     });
   }

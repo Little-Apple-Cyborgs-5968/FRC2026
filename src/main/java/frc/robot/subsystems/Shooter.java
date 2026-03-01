@@ -85,6 +85,8 @@ public class Shooter extends SubsystemBase {
   private final StatusSignal<Current> leftCurrentSignal;
   private final StatusSignal<Temperature> leftTempSignal;
   private final StatusSignal<Double> leftClosedLoopReferenceSignal;
+  // Software-tracked target — reliable on real hardware and sim alike
+  private double targetFlywheelVelocityRPS = 0.0;
 
   // Hood Motor
   private final SparkMax hoodMotor;
@@ -334,7 +336,7 @@ public class Shooter extends SubsystemBase {
    */
   @Logged(name = "Flywheel/Target Velocity RPS")
   public double getTargetFlywheelVelocity() {
-    return leftClosedLoopReferenceSignal.getValueAsDouble();
+    return targetFlywheelVelocityRPS;
   }
 
   /**
@@ -363,10 +365,12 @@ public class Shooter extends SubsystemBase {
 
   /**
    * Check if flywheel is at target speed.
+   * Returns false when not actively spinning (target == 0) to prevent false triggers.
    */
   @Logged(name = "Flywheel/At Speed")
   public boolean isFlywheelAtSpeed() {
-    double error = Math.abs(getTargetFlywheelVelocity() - getAverageFlywheelVelocity());
+    if (targetFlywheelVelocityRPS == 0.0) return false;
+    double error = Math.abs(targetFlywheelVelocityRPS - getAverageFlywheelVelocity());
     return error < Constants.Shooter.kFlywheelAtSpeedToleranceRPS;
   }
 
@@ -374,6 +378,7 @@ public class Shooter extends SubsystemBase {
    * Set flywheel velocity (controls both motors with same speed, inverted via configuration).
    */
   private void setFlywheelVelocity(double velocityRPS) {
+    targetFlywheelVelocityRPS = velocityRPS;
     leftFlywheel.setControl(velocityRequest.withVelocity(velocityRPS));
     rightFlywheel.setControl(velocityRequest.withVelocity(velocityRPS)); // Right is inverted in config
   }
@@ -382,6 +387,7 @@ public class Shooter extends SubsystemBase {
    * Stop flywheels.
    */
   private void stopFlywheels() {
+    targetFlywheelVelocityRPS = 0.0;
     leftFlywheel.stopMotor();
     rightFlywheel.stopMotor();
   }
@@ -434,9 +440,12 @@ public class Shooter extends SubsystemBase {
 
   /**
    * Stop shooter (flywheels and hood).
+   * Uses run() (not runOnce) so the command never finishes and the subsystem
+   * stays claimed as the default command, preventing the scheduler from
+   * repeatedly restarting it and interfering with other commands.
    */
   public Command stopCommand() {
-    return runOnce(() -> {
+    return run(() -> {
       stopFlywheels();
       hoodMotor.stopMotor();
     });
@@ -464,17 +473,16 @@ public class Shooter extends SubsystemBase {
   }
 
   /**
-   * Set hood to 80 degrees to pass under ]trench
-   * @param dashboard
+   * Set hood to 80 degrees to pass under trench.
+   * Uses runOnce so the command finishes immediately after sending the setpoint,
+   * releasing the subsystem back to the default command. This prevents it from
+   * blocking shotTunableCommand or other commands that need the Shooter subsystem.
    */
     public Command setHoodToTrenchCommand() {
-      // Immediately stop flywheels, then continuously hold hood at trench angle.
-      // Using run() (not runOnce) so the hood actively holds position and the
-      // Shooter subsystem stays claimed — preventing other commands from
-      // interfering until this is explicitly cancelled or superseded.
-      return runOnce(() -> stopFlywheels())
-          .andThen(run(() -> setHoodAngle(Constants.Shooter.kHoodTrenchAngleDegrees)))
-          .withName("HoodToTrench");
+      return runOnce(() -> {
+        stopFlywheels();
+        setHoodAngle(Constants.Shooter.kHoodTrenchAngleDegrees);
+      }).withName("HoodToTrench");
     }
 
   //------------------------ Tuning -----------------------//

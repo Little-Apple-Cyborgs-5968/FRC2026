@@ -13,6 +13,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -22,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.commands.PathFindCommands;
-import frc.robot.commands.WhiskerPickupCommand;
+// import frc.robot.commands.WhiskerPickupCommand;
 import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -62,11 +63,7 @@ public class RobotContainer {
     // SYOMDrive (Synchronized Yaw-Optimized Motion Drive) - auto-rotates to face travel direction
     private boolean isSYOMDriveEnabled = false;
 
-    // Shoot-mode toggle — right trigger turns on auto-aim warm-up; releasing fires; second press cancels
-    private boolean isShootModeActive = false;
-
-    // Shoot-on-the-move toggle — same pattern as isShootModeActive but uses lead-compensated commands
-    // Swap this in place of isShootModeActive + its trigger block below to enable shoot-on-the-move
+    // Shoot-on-the-move toggle — right trigger turns on lead-compensated warm-up; releasing fires; second press cancels
     private boolean isShootOnMoveActive = false;
 
     // Whisker pickup mode toggle — B button cycles on/off
@@ -289,55 +286,67 @@ public class RobotContainer {
         //   • Everything stops (default commands take over)
         //   • Hood moves to trench position
 
-        // Toggle the flag on every right-trigger press
+        // Toggle the flag on every right-trigger press (shoot-on-the-move)
         joystick.rightTrigger().onTrue(
             Commands.runOnce(() -> {
-                isShootModeActive = !isShootModeActive;
-                SmartDashboard.putBoolean("DASHBOARD/Shoot Mode Active", isShootModeActive);
+                isShootOnMoveActive = !isShootOnMoveActive;
+                SmartDashboard.putBoolean("DASHBOARD/Shoot On Move Active", isShootOnMoveActive);
             })
         );
 
         // Derive Trigger objects from the flag — the scheduler reacts to these every loop
-        Trigger shootModeOn   = new Trigger(() -> isShootModeActive);
-        Trigger triggerHeld   = joystick.rightTrigger();
-        Trigger warmUpActive  = shootModeOn.and(triggerHeld);   // ON + held  → warm up
-        Trigger firingActive  = shootModeOn.and(triggerHeld.negate()); // ON + released → fire
+        Trigger shootOnMoveOn   = new Trigger(() -> isShootOnMoveActive);
+        Trigger triggerHeld     = joystick.rightTrigger();
+        Trigger warmUpActive    = shootOnMoveOn.and(triggerHeld);         // ON + held  → warm up
+        Trigger firingActive    = shootOnMoveOn.and(triggerHeld.negate()); // ON + released → fire
 
         // Rumble when flywheel reaches target speed (rising edge only — one buzz per spin-up)
         new Trigger(shooter::isFlywheelAtSpeed).onTrue(
             rumble.lightPulse()
         );
 
-        // Warm-up phase: turret + flywheel only (no hood, no feed)
+        // Warm-up phase: turret + flywheel only, both lead-compensated
         warmUpActive.whileTrue(
-            turret.autoAimCommandTurret(
+            turret.shootOnMoveCommandTurret(
                 () -> drivetrain.getState().Pose,
+                () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                        drivetrain.getState().Speeds,
+                        drivetrain.getState().Pose.getRotation()),
                 TurretUtil.TargetType.HUB
             ).alongWith(
-                shooter.autoAimFlywheelOnlyCommand(
+                shooter.shootOnMoveFlywheelOnlyCommand(
                     () -> drivetrain.getState().Pose,
+                    () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                            drivetrain.getState().Speeds,
+                            drivetrain.getState().Pose.getRotation()),
                     TurretUtil.TargetType.HUB
                 )
-            ).withName("ShootMode-WarmUp")
+            ).withName("ShootOnMove-WarmUp")
         );
 
-        // Firing phase: turret + full shooter auto-aim (hood+flywheel) + spindexer + feeder
+        // Firing phase: turret + full shooter (hood+flywheel) + spindexer + feeder, all lead-compensated
         firingActive.whileTrue(
-            turret.autoAimCommandTurret(
+            turret.shootOnMoveCommandTurret(
                 () -> drivetrain.getState().Pose,
+                () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                        drivetrain.getState().Speeds,
+                        drivetrain.getState().Pose.getRotation()),
                 TurretUtil.TargetType.HUB
             ).alongWith(
-                shooter.autoAimCommandShooter(
+                shooter.shootOnMoveCommandShooter(
                     () -> drivetrain.getState().Pose,
+                    () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                            drivetrain.getState().Speeds,
+                            drivetrain.getState().Pose.getRotation()),
                     TurretUtil.TargetType.HUB
                 ),
                 spindexer.runCommand(),
                 feeder.runCommand()
-            ).withName("ShootMode-Firing")
+            ).withName("ShootOnMove-Firing")
         );
 
-        // When shoot mode is toggled OFF, move hood to trench position
-        shootModeOn.onFalse(
+        // When shoot-on-the-move mode is toggled OFF, move hood to trench position
+        shootOnMoveOn.onFalse(
             shooter.setHoodToTrenchCommand()
         );
 
@@ -372,9 +381,13 @@ public class RobotContainer {
         // );
 
         // A button: set hood to 79 degrees
-        joystick.a().onTrue(
-            shooter.setHoodAngleCommand(79)
-        );
+        // joystick.a().onTrue(
+        //     shooter.setHoodAngleCommand(79)
+        // );
+
+        // joystick.y().whileTrue(
+        //     shooter.flywheelTunableCommand(dashboard)
+        // );
 
         // Y button: shot tunable — setpoint1 = flywheel speed (RPS), setpoint2 = hood angle (deg)
         // Suppliers are evaluated every loop so dashboard changes take effect immediately.
@@ -484,15 +497,20 @@ public class RobotContainer {
         // ── B BUTTON: Toggle whisker ball-pickup mode ─────────────────────────────
         // Press once → robot drives forward using the whisker algorithm to collect Fuel balls.
         // Press again → stops and returns drivetrain to default teleop command.
-        joystick.b().onTrue(
-            Commands.runOnce(() -> {
-                isPickupModeActive = !isPickupModeActive;
-                SmartDashboard.putBoolean("DASHBOARD/Pickup Mode Active", isPickupModeActive);
-            })
-        );
+        // joystick.b().onTrue(
+        //     Commands.runOnce(() -> {
+        //         isPickupModeActive = !isPickupModeActive;
+        //         SmartDashboard.putBoolean("DASHBOARD/Pickup Mode Active", isPickupModeActive);
+        //     })
+        // );
 
-        Trigger pickupModeOn = new Trigger(() -> isPickupModeActive);
-        pickupModeOn.whileTrue(new WhiskerPickupCommand(drivetrain, vision));
+        // Trigger pickupModeOn = new Trigger(() -> isPickupModeActive);
+        // pickupModeOn.whileTrue(new WhiskerPickupCommand(drivetrain, vision));
+
+        // ── B BUTTON: Run spindexer + feeder while held ───────────────────────────
+        joystick.b().whileTrue(
+            spindexer.runCommand().alongWith(feeder.runCommand())
+        );
 
 
                 // B button: snap to nearest 45° and hold while held.
@@ -612,8 +630,8 @@ public class RobotContainer {
         dashboard.update();
         // Update SYOMDrive status on SmartDashboard
         SmartDashboard.putBoolean("DASHBOARD/SYOMDrive Enabled", isSYOMDriveEnabled);
-        // Update shoot mode toggle status on SmartDashboard
-        SmartDashboard.putBoolean("DASHBOARD/Shoot Mode Active", isShootModeActive);
+        // Update shoot-on-the-move mode toggle status on SmartDashboard
+        SmartDashboard.putBoolean("DASHBOARD/Shoot On Move Active", isShootOnMoveActive);
         // Update whisker pickup mode toggle status on SmartDashboard
         SmartDashboard.putBoolean("DASHBOARD/Pickup Mode Active", isPickupModeActive);
     }

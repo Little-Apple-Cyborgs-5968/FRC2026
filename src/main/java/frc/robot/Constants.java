@@ -196,9 +196,9 @@ public class Constants {
 
     public static class Intake {
         // Operational constants
-        public static final double kSpinnerSpeed = -20; // Target spinner speed in rotations per second (RPS)
+        public static final double kSpinnerSpeed = -28; // Target spinner speed in rotations per second (RPS)
         public static final double kIntakeAngleDeployed = -55; // Deployed angle in degrees
-        public static final double kIntakeAngleStowed = 40; // Stowed angle in degrees
+        public static final double kIntakeAngleStowed = 0; // Stowed angle in degrees
         public static final double kPivotRezeroAngleDegrees = 0.0; // Rezero position in degrees
         
         // Pivot Constants
@@ -345,7 +345,7 @@ public class Constants {
         public static final double kFlywheelKI = 0;
         public static final double kFlywheelKD = 0;
         public static final double kFlywheelKS = 0.1;
-        public static final double kFlywheelKV = 0.105;
+        public static final double kFlywheelKV = 0.235;
         public static final double kFlywheelKA = 2.32;
         
         // Flywheel Current Limits
@@ -376,8 +376,8 @@ public class Constants {
         public static final double kFlywheelAtSpeedToleranceRPS = 1.0; // ±1 RPS triggers "at speed" rumble
 
         // Hood MAXMotion (motion profiling) constraints
-        public static final double kHoodMaxVelocity = 60.0;     // Maximum hood velocity (degrees/s)
-        public static final double kHoodMaxAcceleration = 100.0; // Maximum hood acceleration (degrees/s²)
+        public static final double kHoodMaxVelocity = 120.0;     // Maximum hood velocity (degrees/s)
+        public static final double kHoodMaxAcceleration = 200.0; // Maximum hood acceleration (degrees/s²)
 
         // Hood Current Limits
         public static final int kHoodCurrentLimit = 20; // Amps for NEO 550
