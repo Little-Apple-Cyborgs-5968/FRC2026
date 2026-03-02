@@ -377,7 +377,7 @@ public class Constants {
 
         // Hood MAXMotion (motion profiling) constraints
         public static final double kHoodMaxVelocity = 120.0;     // Maximum hood velocity (degrees/s)
-        public static final double kHoodMaxAcceleration = 200.0; // Maximum hood acceleration (degrees/s²)
+        public static final double kHoodMaxAcceleration = 250.0; // Maximum hood acceleration (degrees/s²)
 
         // Hood Current Limits
         public static final int kHoodCurrentLimit = 20; // Amps for NEO 550

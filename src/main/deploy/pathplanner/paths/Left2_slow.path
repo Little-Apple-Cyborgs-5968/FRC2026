@@ -31,7 +31,30 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "SHOOTER_WARMUP",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": 0.35,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOTER_WARMUP"
+        }
+      }
+    },
+    {
+      "name": "SHOOT_ON_MOVE",
+      "waypointRelativePos": 0.35,
+      "endWaypointRelativePos": 1.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOT_ON_MOVE"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 0.75,
     "maxAcceleration": 3.0,

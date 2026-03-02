@@ -133,6 +133,46 @@ public class RobotContainer {
         
         NamedCommands.registerCommand("HOOD_TRENCH", shooter.setHoodToTrenchCommand());
         NamedCommands.registerCommand("SHOOTER_RUN", shooter.runFlywheelsCommand());
+
+        // Shoot-on-the-move warm-up: turret + flywheel only (lead-compensated, no feeder/spindexer)
+        NamedCommands.registerCommand("SHOOTER_WARMUP",
+            turret.shootOnMoveCommandTurret(
+                () -> drivetrain.getState().Pose,
+                () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                        drivetrain.getState().Speeds,
+                        drivetrain.getState().Pose.getRotation()),
+                TurretUtil.TargetType.HUB
+            ).alongWith(
+                shooter.shootOnMoveFlywheelOnlyCommand(
+                    () -> drivetrain.getState().Pose,
+                    () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                            drivetrain.getState().Speeds,
+                            drivetrain.getState().Pose.getRotation()),
+                    TurretUtil.TargetType.HUB
+                )
+            ).withName("ShootOnMove-WarmUp")
+        );
+
+        // Shoot-on-the-move full shot: turret + hood + flywheel + spindexer + feeder (lead-compensated)
+        NamedCommands.registerCommand("SHOOT_ON_MOVE",
+            turret.shootOnMoveCommandTurret(
+                () -> drivetrain.getState().Pose,
+                () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                        drivetrain.getState().Speeds,
+                        drivetrain.getState().Pose.getRotation()),
+                TurretUtil.TargetType.HUB
+            ).alongWith(
+                shooter.shootOnMoveCommandShooter(
+                    () -> drivetrain.getState().Pose,
+                    () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                            drivetrain.getState().Speeds,
+                            drivetrain.getState().Pose.getRotation()),
+                    TurretUtil.TargetType.HUB
+                ),
+                spindexer.runCommand(),
+                feeder.runCommand()
+            ).withName("ShootOnMove-Firing")
+        );
         // Initialize Vision subsystem with drivetrain integration
         vision = new Vision(
             // Pose supplier - gets current robot pose from drivetrain

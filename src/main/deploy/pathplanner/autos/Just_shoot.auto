@@ -7,13 +7,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 7.0
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "go_out1"
+            "name": "SHOOTER_WARMUP"
           }
         },
         {
@@ -23,21 +23,15 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "go_out2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "go_climb"
+            "name": "SHOOT_ON_MOVE"
           }
         }
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }
