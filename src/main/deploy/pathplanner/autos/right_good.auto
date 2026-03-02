@@ -9,27 +9,41 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "SHOOTER_WARMUP"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.3
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "SHOOTER_WARMUP"
+                      }
+                    }
+                  ]
                 }
               },
               {
-                "type": "wait",
+                "type": "race",
                 "data": {
-                  "waitTime": 0.3
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SHOOT_ON_MOVE"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 4.5
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 4.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "SHOOT_ON_MOVE"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -46,21 +60,41 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "SHOOTER_WARMUP"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.3
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "SHOOTER_WARMUP"
+                      }
+                    }
+                  ]
                 }
               },
               {
-                "type": "wait",
+                "type": "race",
                 "data": {
-                  "waitTime": 0.25
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SHOOT_ON_MOVE"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 10.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "SHOOT_ON_MOVE"
+                      }
+                    }
+                  ]
                 }
               }
             ]
