@@ -163,7 +163,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "autos",
+  "folder": "right",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
