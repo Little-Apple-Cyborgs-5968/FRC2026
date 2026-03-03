@@ -20,12 +20,11 @@ public class FieldConstants {
     private static final Pose2d leftTrenchBlue  = new Pose2d(3.650, 7.411, new Rotation2d(Math.PI));
     private static final Pose2d rightTrenchBlue = new Pose2d(3.650, 0.635, new Rotation2d(0));
 
-    private static final Pose2d leftNeutralBlue = new Pose2d(8.2, 7.2, new Rotation2d(-90));
-    private static final Pose2d rightNeutralBlue = new Pose2d(8.2, 0.8, new Rotation2d(90));
+    private static final Pose2d leftNeutralBlue = new Pose2d(8.2, 7.2, new Rotation2d(-Math.PI / 2));
+    private static final Pose2d rightNeutralBlue = new Pose2d(8.2, 0.8, new Rotation2d(Math.PI / 2));
 
     private static final Pose2d leftOppBlue = new Pose2d(13.4, 7.4, new Rotation2d(0));
-    private static final Pose2d rightOppBlue = new Pose2d(13.4, 0.627, new Rotation2d(180));
-
+    private static final Pose2d rightOppBlue = new Pose2d(13.4, 0.627, new Rotation2d(Math.PI));
     // -------------------------------------------------------------------------
     // Pose2d flip helpers
     // -------------------------------------------------------------------------
