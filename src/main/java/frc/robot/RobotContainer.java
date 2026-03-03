@@ -163,6 +163,26 @@ public class RobotContainer {
             ).withName("ShootOnMove-WarmUp")
         );
 
+        // Shoot-on-the-move warm-up with hood: turret + flywheel + hood (lead-compensated, no feeder/spindexer)
+        // Use this variant when you want the hood pre-positioned at the correct firing angle during warm-up.
+        NamedCommands.registerCommand("SHOOTER_WARMUP_WITH_HOOD",
+            turret.shootOnMoveCommandTurret(
+                () -> drivetrain.getState().Pose,
+                () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                        drivetrain.getState().Speeds,
+                        drivetrain.getState().Pose.getRotation()),
+                TurretUtil.TargetType.HUB
+            ).alongWith(
+                shooter.shootOnMoveCommandShooter(
+                    () -> drivetrain.getState().Pose,
+                    () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                            drivetrain.getState().Speeds,
+                            drivetrain.getState().Pose.getRotation()),
+                    TurretUtil.TargetType.HUB
+                )
+            ).withName("ShootOnMove-WarmUp-WithHood")
+        );
+
         // Shoot-on-the-move full shot: turret + hood + flywheel + spindexer + feeder (lead-compensated)
         NamedCommands.registerCommand("SHOOT_ON_MOVE",
             turret.shootOnMoveCommandTurret(
