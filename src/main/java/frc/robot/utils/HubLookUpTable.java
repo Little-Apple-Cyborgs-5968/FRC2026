@@ -40,11 +40,11 @@ public class HubLookUpTable {
         // Trajectory angles: 90° = straight up, 45° = maximum distance
         addEntry(1.1134,  -12.0, 89.0, 1.32);  // Close shot - nearly straight up
         addEntry(1.55,  -12, 75.0, 1.28);
-        addEntry(2.0,  -12, 71.0, 1.2);
-        addEntry(2.5,  -12.1, 67.0, 1.27);
-        addEntry(-3.0, -12.4, 62, 1.29);
-        addEntry(3.5,  -12.6, 57.0, 1.2);
-        addEntry(4.05,  -12.9, 54.0, 1.28);
+        addEntry(2.0,  -12, 70.0, 1.2);
+        addEntry(2.5,  -12.2, 65.0, 1.27);
+        addEntry(-3.0, -12.4, 60, 1.29);
+        addEntry(3.5, 0, 1.2);
+        addEntry(4.05,  -13.2, 54.0, 1.28);
         addEntry(4.55,  -14.35, 48.0, 1.4);
         // Max distance - lowest angle
     }

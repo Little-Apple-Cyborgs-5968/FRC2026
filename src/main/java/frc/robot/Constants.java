@@ -382,8 +382,8 @@ public class Constants {
         public static final double kFlywheelAtSpeedToleranceRPS = 1.0; // ±1 RPS triggers "at speed" rumble
 
         // Hood MAXMotion (motion profiling) constraints
-        public static final double kHoodMaxVelocity = 120.0;     // Maximum hood velocity (degrees/s)
-        public static final double kHoodMaxAcceleration = 250.0; // Maximum hood acceleration (degrees/s²)
+        public static final double kHoodMaxVelocity = 300.0;      // Maximum hood velocity (degrees/s)
+        public static final double kHoodMaxAcceleration = 300.0; // Maximum hood acceleration (degrees/s²)
 
         // Hood Current Limits
         public static final int kHoodCurrentLimit = 20; // Amps for NEO 550
