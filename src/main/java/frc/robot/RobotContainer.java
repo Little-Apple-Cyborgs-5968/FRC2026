@@ -338,7 +338,10 @@ public class RobotContainer {
 
 
 
-        // ── X BUTTON: Toggle SYOMDrive (Synchronized Yaw-Optimized Motion Drive) ─
+        // ── X BUTTON: Brake (lock wheels in X pattern while held) ───────────────
+        joystick.x().whileTrue(drivetrain.applyRequest(() -> brake));
+
+        // ── B BUTTON: Toggle SYOMDrive (Synchronized Yaw-Optimized Motion Drive) ─
         // Press once → robot auto-rotates to face travel direction.
         // Press again → returns to normal field-centric drive with manual rotation.
         joystick.b().toggleOnTrue(syomDriveCommand);
