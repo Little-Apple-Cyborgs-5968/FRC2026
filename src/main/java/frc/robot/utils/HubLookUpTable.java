@@ -43,7 +43,7 @@ public class HubLookUpTable {
         addEntry(2.0,  -12, 70.0, 1.2);
         addEntry(2.5,  -12.2, 65.0, 1.27);
         addEntry(-3.0, -12.4, 60, 1.29);
-        addEntry(3.5, 0, 1.2);
+        addEntry(3.5,  -12.9, 56.0, 1.2);
         addEntry(4.05,  -13.2, 54.0, 1.28);
         addEntry(4.55,  -14.35, 48.0, 1.4);
         // Max distance - lowest angle
