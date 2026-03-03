@@ -58,11 +58,6 @@ public class TurretUtil {
     private static final HubLookUpTable hubTable = new HubLookUpTable();
     private static final PassLookUpTable passTable = new PassLookUpTable();
 
-    /** Pre-converted 2D field targets. */
-    private static final Pose2d HUB_TARGET      = FieldConstants.hubTarget.toPose2d();
-    private static final Pose2d LEFT_PASS_TARGET = FieldConstants.leftPassTarget.toPose2d();
-    private static final Pose2d RIGHT_PASS_TARGET = FieldConstants.rightPassTarget.toPose2d();
-
     // =========================
     // TURRET POSE
     // =========================
@@ -81,13 +76,13 @@ public class TurretUtil {
     // TARGET SELECTION
     // =========================
 
-    /** Returns the 2D field pose of the requested target. */
+    /** Returns the 2D field pose of the requested target, flipped for red alliance. */
     public static Pose2d getTargetPose(TargetType target) {
         switch (target) {
-            case HUB:        return HUB_TARGET;
-            case LEFT_PASS:  return LEFT_PASS_TARGET;
-            case RIGHT_PASS: return RIGHT_PASS_TARGET;
-            default:         return HUB_TARGET;
+            case HUB:        return FieldConstants.getHubTarget().toPose2d();
+            case LEFT_PASS:  return FieldConstants.getLeftPassTarget().toPose2d();
+            case RIGHT_PASS: return FieldConstants.getRightPassTarget().toPose2d();
+            default:         return FieldConstants.getHubTarget().toPose2d();
         }
     }
 

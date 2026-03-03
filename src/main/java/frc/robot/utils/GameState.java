@@ -30,8 +30,8 @@ public class GameState {
         // AUTO: 2:20 to 2:00 (150 to 120)
         return timeRemaining;
       case TRANSITION:
-        // TRANSITION: 2:00 to 2:10 (120 to 130)
-        return Math.max(0, timeRemaining - 120);
+        // TRANSITION: 2:10 to 2:20 (130 to 140)
+        return Math.max(0, timeRemaining - 130);
       case SHIFTONE:
         // SHIFTONE: 2:10 to 1:45 (130 to 105)
         return Math.max(0, timeRemaining - 105);
@@ -86,14 +86,14 @@ public class GameState {
     double timeRemaining = DriverStation.getMatchTime();
 
     // FRC 2026 timings:
-    // TRANSITION: 2:00-2:10 (120 < t <= 130)
+    // TRANSITION: 2:10-2:20 (130 < t <= 140)
     // SHIFTONE: 2:10-1:45 (105 < t <= 130)
     // SHIFTTWO: 1:45-1:20 (80 < t <= 105)
     // SHIFTTHREE: 1:20-0:55 (55 < t <= 80)
     // SHIFTFOUR: 0:55-0:30 (30 < t <= 55)
     // ENDGAME: 0:30-0:00 (0 < t <= 30)
 
-    if (timeRemaining > 120 && timeRemaining <= 130) {
+    if (timeRemaining > 130 && timeRemaining <= 140) {
       return States.TRANSITION;
     } else if (timeRemaining > 105 && timeRemaining <= 130) {
       return States.SHIFTONE;

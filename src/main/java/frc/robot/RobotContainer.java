@@ -78,8 +78,11 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
+    private final CommandXboxController operatorJoystick = new CommandXboxController(1);
+
     // Rumble command for driver feedback
     private final ControllerRumble rumble = new ControllerRumble(joystick);
+    private final ControllerRumble operatorRumble = new ControllerRumble(operatorJoystick);
 
     // Dashboard publisher
     private final DashboardPublisher dashboard;

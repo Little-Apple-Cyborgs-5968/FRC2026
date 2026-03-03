@@ -4,19 +4,31 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class FieldConstants {
     /** Full length of the FRC field in meters (2026 season) */
     public static final double kFieldLength = 16.5405;
 
-    public static final Pose3d hubTarget = new Pose3d(4.620, 4.040, 3.057144, new Rotation3d());
-    public static final Pose3d leftPassTarget = new Pose3d(2.50, 6.0, 0, new Rotation3d());
-    public static final Pose3d rightPassTarget = new Pose3d(2.50, 1.960, 0, new Rotation3d());
+    // SHOOT 3D targets (Blue alliance origin)
+    private static final Pose3d hubTargetBlue       = new Pose3d(4.620, 4.040, 3.057144, new Rotation3d());
+    private static final Pose3d leftPassTargetBlue  = new Pose3d(2.50, 6.0, 0, new Rotation3d());
+    private static final Pose3d rightPassTargetBlue = new Pose3d(2.50, 1.960, 0, new Rotation3d());
 
-    //Pose 2D (Blue alliance origin)
-    public static final Pose2d leftTrenchShoot  = new Pose2d(3.650, 7.411, new Rotation2d(Math.PI));
-    public static final Pose2d rightTrenchShoot = new Pose2d(3.650, 0.635, new Rotation2d(0));
+    // PATHFIND Pose 2D (Blue alliance origin)
+    private static final Pose2d leftTrenchBlue  = new Pose2d(3.650, 7.411, new Rotation2d(Math.PI));
+    private static final Pose2d rightTrenchBlue = new Pose2d(3.650, 0.635, new Rotation2d(0));
+
+    private static final Pose2d leftNeutralBlue = new Pose2d(8.2, 7.2, new Rotation2d(-90));
+    private static final Pose2d rightNeutralBlue = new Pose2d(8.2, 0.8, new Rotation2d(90));
+
+    private static final Pose2d leftOppBlue = new Pose2d(13.4, 7.4, new Rotation2d(0));
+    private static final Pose2d rightOppBlue = new Pose2d(13.4, 0.627, new Rotation2d(180));
+
+    // -------------------------------------------------------------------------
+    // Pose2d flip helpers
+    // -------------------------------------------------------------------------
 
     /**
      * Mirrors a Pose2d to the red alliance side of the field.
@@ -35,19 +47,94 @@ public class FieldConstants {
      * otherwise returns it unchanged.
      */
     public static Pose2d flipIfRed(Pose2d pose) {
-        boolean isRed = DriverStation.getAlliance()
+        return isRedAlliance() ? flipPose(pose) : pose;
+    }
+
+    // -------------------------------------------------------------------------
+    // Pose3d flip helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Mirrors a Pose3d to the red alliance side of the field.
+     * Flips X across the field center and rotates yaw by 180°. Z and Y are unchanged.
+     */
+    public static Pose3d flipPose3d(Pose3d pose) {
+        Rotation3d flipped = new Rotation3d(
+            pose.getRotation().getX(),
+            pose.getRotation().getY(),
+            pose.getRotation().getZ() + Math.PI
+        );
+        return new Pose3d(
+            new Translation3d(kFieldLength - pose.getX(), pose.getY(), pose.getZ()),
+            flipped
+        );
+    }
+
+    /**
+     * Returns the Pose3d flipped to the red alliance side if currently on red,
+     * otherwise returns it unchanged.
+     */
+    public static Pose3d flipIfRed(Pose3d pose) {
+        return isRedAlliance() ? flipPose3d(pose) : pose;
+    }
+
+    // -------------------------------------------------------------------------
+    // Alliance helper
+    // -------------------------------------------------------------------------
+
+    /** Returns true if the robot is currently on the red alliance. */
+    public static boolean isRedAlliance() {
+        return DriverStation.getAlliance()
             .orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red;
-        return isRed ? flipPose(pose) : pose;
     }
 
-    /** Left trench shoot pose, automatically flipped for red alliance */
+    // -------------------------------------------------------------------------
+    // Pose getters (automatically flipped for red alliance)
+    // -------------------------------------------------------------------------
+
+    /** Hub (high goal) 3D target pose, automatically flipped for red alliance. */
+    public static Pose3d getHubTarget() {
+        return flipIfRed(hubTargetBlue);
+    }
+
+    /** Left pass 3D target pose, automatically flipped for red alliance. */
+    public static Pose3d getLeftPassTarget() {
+        return flipIfRed(leftPassTargetBlue);
+    }
+
+    /** Right pass 3D target pose, automatically flipped for red alliance. */
+    public static Pose3d getRightPassTarget() {
+        return flipIfRed(rightPassTargetBlue);
+    }
+
+    /** Left trench shoot pose, automatically flipped for red alliance. */
     public static Pose2d getLeftTrenchShoot() {
-        return flipIfRed(leftTrenchShoot);
+        return flipIfRed(leftTrenchBlue);
     }
 
-    /** Right trench shoot pose, automatically flipped for red alliance */
+    /** Right trench shoot pose, automatically flipped for red alliance. */
     public static Pose2d getRightTrenchShoot() {
-        return flipIfRed(rightTrenchShoot);
+        return flipIfRed(rightTrenchBlue);
+    }
+
+    /** Left neutral-zone pose, automatically flipped for red alliance. */
+    public static Pose2d getLeftNeutral() {
+        return flipIfRed(leftNeutralBlue);
+    }
+
+    /** Right neutral-zone pose, automatically flipped for red alliance. */
+    public static Pose2d getRightNeutral() {
+        return flipIfRed(rightNeutralBlue);
+    }
+
+    /** Left opponent-zone pose, automatically flipped for red alliance. */
+    public static Pose2d getLeftOpp() {
+        return flipIfRed(leftOppBlue);
+    }
+
+    /** Right opponent-zone pose, automatically flipped for red alliance. */
+    public static Pose2d getRightOpp() {
+        return flipIfRed(rightOppBlue);
     }
 }
 
