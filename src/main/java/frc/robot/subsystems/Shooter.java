@@ -479,7 +479,7 @@ public class Shooter extends SubsystemBase {
    * blocking shotTunableCommand or other commands that need the Shooter subsystem.
    */
     public Command setHoodToTrenchCommand() {
-      return runOnce(() -> {
+      return run(() -> {
         stopFlywheels();
         setHoodAngle(Constants.Shooter.kHoodTrenchAngleDegrees);
       }).withName("HoodToTrench");

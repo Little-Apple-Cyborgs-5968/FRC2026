@@ -222,35 +222,7 @@ public class RobotContainer {
         );
         joystick.pov(270).whileTrue(drivetrain.applyRequest(() -> 
             driveRobotCentric.withVelocityX(0).withVelocityY(robotCentricDriveSpeed))
-        );
-
-        // Pathfind to the nearest trench shooting position (left or right)
-
-
-        // Example usage of rumble command (controller rumble for driver feedback)
-        // Moved to start+back combo to avoid conflict with auto-aim
-        joystick.start().and(joystick.back()).onTrue(
-            rumble.doublePulse()
-        );
-        
-        // Toggle SYOMDrive (Synchronized Yaw-Optimized Motion Drive) with A button
-        // When enabled, robot automatically faces the direction it's traveling
-        // joystick.a().onTrue(
-        //     drivetrain.runOnce(() -> {
-        //         isSYOMDriveEnabled = !isSYOMDriveEnabled;
-        //         
-        //     })
-        // );
-        
-        // Map bumpers/triggers to intake commands
-
-        // joystick.leftTrigger().onTrue(
-        //     intake.SpinnerStopCommand()
-        // );
-
-        // joystick.rightTrigger().onTrue(
-        //     intake.SpinnerTunableCommand(dashboard)
-        // );
+        );  
 
         // Both bumpers together: stow intake
         joystick.rightBumper().and(joystick.leftBumper()).onTrue(
@@ -266,14 +238,6 @@ public class RobotContainer {
         joystick.rightBumper().and(joystick.leftBumper().negate()).onTrue(
             intake.DeployCommand()
         );
-
-        // joystick.leftTrigger().onTrue(
-        //     spindexer.stopCommand()
-        // );
-
-        // joystick.rightTrigger().onTrue(
-        //     spindexer.tunableCommand(dashboard)
-        // );
 
         shooter.setDefaultCommand(shooter.stopCommand());
         spindexer.setDefaultCommand(spindexer.stopCommand());
@@ -310,10 +274,7 @@ public class RobotContainer {
         Trigger warmUpActive    = shootOnMoveOn.and(triggerHeld);         // ON + held  → warm up
         Trigger firingActive    = shootOnMoveOn.and(triggerHeld.negate()); // ON + released → fire
 
-        // Rumble when flywheel reaches target speed (rising edge only — one buzz per spin-up)
-        new Trigger(shooter::isFlywheelAtSpeed).onTrue(
-            rumble.lightPulse()
-        );
+
 
         // Warm-up phase: turret + flywheel only, both lead-compensated
         warmUpActive.whileTrue(
@@ -360,155 +321,102 @@ public class RobotContainer {
             shooter.setHoodToTrenchCommand()
         );
 
-        joystick.a().onTrue(
-            shooter.setHoodToTrenchCommand()
-
-        );
-
         joystick.start().whileTrue(
             spindexer.reverseCommand().alongWith(feeder.reverseCommand())
         );
 
 
 
-        // joystick.rightTrigger().whileTrue(
-        //     turret.TurretTunableCommand(dashboard)
-        //     );
-        // joystick.leftTrigger().onTrue(
-        //     turret.stopCommand()
-        // );
+        // ── X BUTTON: Toggle SYOMDrive (Synchronized Yaw-Optimized Motion Drive) ─
+        // Press once → robot auto-rotates to face travel direction.
+        // Press again → returns to normal field-centric drive with manual rotation.
+        joystick.b().toggleOnTrue(syomDriveCommand);
 
-
-        // HOOD TUNABLE
-
-        // joystick.rightTrigger().onTrue(
-        //     shooter.hoodTunableCommand(dashboard)
-        // );
-
-
-
-
-        // joystick.b().onTrue(
-        //     shooter.autoAimCommandShooter(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB).alongWith(
-        //         turret.autoAimCommandTurret(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB)
-        //     )
         
+        // Pathfind to nearest trench shoot pose; cancelled by pressing either joystick stick
+
+        joystick.a().and(joystick.y()).onTrue(
+            PathFindCommands.pathfindToNearestPose(
+                () -> drivetrain.getState().Pose,
+                List.of(FieldConstants.getLeftTrenchShoot(), FieldConstants.getRightTrenchShoot())
+            ).until(joystick.leftStick().or(joystick.rightStick()))
+        );
+
+        joystick.a().onTrue(
+            shooter.setHoodToTrenchCommand()
+
+        );
+
+
+
+        // reset the field-centric heading on back button press(back button)
+        joystick.back().onTrue(
+            drivetrain.runOnce(() -> drivetrain.seedFieldCentric())
+        );
+
+
+        // Idle while the robot is disabled. This ensures the configured
+        // neutral mode is applied to the drive motors while disabled.
+        final var idle = new SwerveRequest.Idle();
+        RobotModeTriggers.disabled().whileTrue(
+            drivetrain.applyRequest(() -> idle).ignoringDisable(true)
+        );
+
+
+        new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 5).onTrue(rumble.lightPulse());
+        new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 0).onTrue(rumble.doublePulse());
+        
+
+
+
+
+        drivetrain.registerTelemetry(logger::telemeterize);
+
+//=============================================================================================================
+        //COMMENTED OUT 
+//=============================================================================================================
+
+        // Run SysId routines when holding back/start and X/Y.
+        // Note that each routine should be run exactly once in a single log.
+        // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
+
+        // // Rumble when flywheel reaches target speed (rising edge only — one buzz per spin-up)
+        // new Trigger(shooter::isFlywheelAtSpeed).onTrue(
+        //     rumble.lightPulse()
         // );
 
-        // A button: set hood to 79 degrees
-        // joystick.a().onTrue(
-        //     shooter.setHoodAngleCommand(79)
-        // );
 
-        // joystick.y().whileTrue(
-        //     shooter.flywheelTunableCommand(dashboard)
+        //SHOT TUNING ON Y BUTTON 
+                // // ── B BUTTON: Run spindexer + feeder while held ───────────────────────────
+        // joystick.b().whileTrue(
+        //     spindexer.runCommand().alongWith(feeder.runCommand())
         // );
 
         // Y button: shot tunable — setpoint1 = flywheel speed (RPS), setpoint2 = hood angle (deg)
         // Suppliers are evaluated every loop so dashboard changes take effect immediately.
-        joystick.y().whileTrue(
-            shooter.shotTunableCommand(
-                dashboard::getTunableSetpoint1,
-                dashboard::getTunableSetpoint2
-            )
-        );
-
-        // B button: Auto-aim at hub (stationary) — moved to RIGHT TRIGGER toggle.
-        // See shoot-mode toggle block above.
-        // joystick.b().whileTrue(
-        //     turret.autoAimCommandTurret(
-        //         () -> drivetrain.getState().Pose,
-        //         TurretUtil.TargetType.HUB
-        //     ).alongWith(
-        //         shooter.autoAimCommandShooter(
-        //             () -> drivetrain.getState().Pose,
-        //             TurretUtil.TargetType.HUB
-        //         )
+        // joystick.y().whileTrue(
+        //     shooter.shotTunableCommand(
+        //         dashboard::getTunableSetpoint1,
+        //         dashboard::getTunableSetpoint2
         //     )
         // );
 
-        // ── B BUTTON: Shoot-on-the-move toggle (READY TO ENABLE — currently commented out) ──────
-        //
-        // Identical toggle pattern to the right-trigger stationary shoot mode above, but uses
-        // lead-compensated commands (shootOnMove*) so the turret, hood, and flywheel all
-        // account for robot velocity when computing the shot solution.
-        //
-        // To activate: uncomment this block AND comment out the right-trigger stationary block.
-        //
-        // PRESS 1 (toggle ON, B held):
-        //   • Turret   → lead-compensated auto-aim continuously
-        //   • Flywheel → lead-compensated speed (flywheel only, no hood movement)
-        //   • Hood / Feeder / Spindexer → NOT running yet
-        //
-        // PRESS 1 RELEASE (shoot mode still ON):
-        //   • Turret + Flywheel + Hood → all lead-compensated continuously
-        //   • Feeder + Spindexer → start running
-        //   Continues until toggled off.
-        //
-        // PRESS 2 (toggle OFF):
-        //   • Everything stops, hood moves to trench position
 
-        // joystick.b().onTrue(
-        //     Commands.runOnce(() -> {
-        //         isShootOnMoveActive = !isShootOnMoveActive;
-        //         SmartDashboard.putBoolean("DASHBOARD/Shoot On Move Active", isShootOnMoveActive);
-        //     })
-        // );
-        //
-        // Trigger shootOnMoveOn      = new Trigger(() -> isShootOnMoveActive);
-        // Trigger bHeld              = joystick.b();
-        // Trigger somWarmUpActive    = shootOnMoveOn.and(bHeld);
-        // Trigger somFiringActive    = shootOnMoveOn.and(bHeld.negate());
-        //
-        // // Warm-up: turret + flywheel only, both lead-compensated
-        // somWarmUpActive.whileTrue(
-        //     turret.shootOnMoveCommandTurret(
-        //         () -> drivetrain.getState().Pose,
-        //         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
-        //                 drivetrain.getState().Speeds,
-        //                 drivetrain.getState().Pose.getRotation()),
-        //         TurretUtil.TargetType.HUB
-        //     ).alongWith(
-        //         shooter.shootOnMoveFlywheelOnlyCommand(
-        //             () -> drivetrain.getState().Pose,
-        //             () -> ChassisSpeeds.fromRobotRelativeSpeeds(
-        //                     drivetrain.getState().Speeds,
-        //                     drivetrain.getState().Pose.getRotation()),
-        //             TurretUtil.TargetType.HUB
-        //         )
-        //     ).withName("ShootOnMove-WarmUp")
-        // );
-        //
-        // // Firing: turret + full shooter (hood+flywheel) + spindexer + feeder, all lead-compensated
-        // somFiringActive.whileTrue(
-        //     turret.shootOnMoveCommandTurret(
-        //         () -> drivetrain.getState().Pose,
-        //         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
-        //                 drivetrain.getState().Speeds,
-        //                 drivetrain.getState().Pose.getRotation()),
-        //         TurretUtil.TargetType.HUB
-        //     ).alongWith(
-        //         shooter.shootOnMoveCommandShooter(
-        //             () -> drivetrain.getState().Pose,
-        //             () -> ChassisSpeeds.fromRobotRelativeSpeeds(
-        //                     drivetrain.getState().Speeds,
-        //                     drivetrain.getState().Pose.getRotation()),
-        //             TurretUtil.TargetType.HUB
-        //         ),
-        //         spindexer.runCommand(),
-        //         feeder.runCommand()
-        //     ).withName("ShootOnMove-Firing")
-        // );
-        //
-        // // When shoot-on-the-move mode is toggled OFF, stop flywheels and move hood to trench
-        // shootOnMoveOn.onFalse(
-        //     shooter.setHoodToTrenchCommand()
-        // );
+        //DRIVE STUFF
 
-        // ── X BUTTON: Toggle SYOMDrive (Synchronized Yaw-Optimized Motion Drive) ─
-        // Press once → robot auto-rotates to face travel direction.
-        // Press again → returns to normal field-centric drive with manual rotation.
-        joystick.x().toggleOnTrue(syomDriveCommand);
+        // B button: snap to nearest 45° and hold while held.
+        // // Uses the same deadband (10 % of MaxSpeed) as the default drive command.
+        // joystick.b().whileTrue(
+        //     SetYawCommand.snapToNearest45(
+        //         drivetrain,
+        //         () -> -MathUtil.applyDeadband(joystick.getLeftY(), 0.1) * MaxSpeed,
+        //         () -> -MathUtil.applyDeadband(joystick.getLeftX(), 0.1) * MaxSpeed,
+        //         MaxSpeed
+        // );
 
         // ── B BUTTON: Toggle whisker ball-pickup mode ─────────────────────────────
         // Press once → robot drives forward using the whisker algorithm to collect Fuel balls.
@@ -522,117 +430,6 @@ public class RobotContainer {
 
         // Trigger pickupModeOn = new Trigger(() -> isPickupModeActive);
         // pickupModeOn.whileTrue(new WhiskerPickupCommand(drivetrain, vision));
-
-        // ── B BUTTON: Run spindexer + feeder while held ───────────────────────────
-        joystick.b().whileTrue(
-            spindexer.runCommand().alongWith(feeder.runCommand())
-        );
-
-
-                // B button: snap to nearest 45° and hold while held.
-        // // Uses the same deadband (10 % of MaxSpeed) as the default drive command.
-        // joystick.b().whileTrue(
-        //     SetYawCommand.snapToNearest45(
-        //         drivetrain,
-        //         () -> -MathUtil.applyDeadband(joystick.getLeftY(), 0.1) * MaxSpeed,
-        //         () -> -MathUtil.applyDeadband(joystick.getLeftX(), 0.1) * MaxSpeed,
-        //         MaxSpeed
-        // );
-
-
-        
-
-
-// INTAKE PIVOT TEMP BINDINGS
-        // joystick.leftBumper().onTrue(
-        //     intake.StowCommand()
-        // );
-        // joystick.rightBumper().onTrue(
-        //     intake.DeployCommand()
-            
-        // );
-// // SPINDEXER TEMP BINDINGS
-//         joystick.x().onTrue(
-//             spindexer.stopCommand()
-//         );
-
-//         joystick.b().onTrue(
-//             spindexer.runCommand()
-//         );
-
-// //SHOOTER TEMP BINDINGS
-//         joystick.y().whileTrue(
-//             shooter.runFlywheelsAtSpeedCommand(10)
-//         );
-
-//         joystick.a().onTrue(
-//             shooter.setHoodAngleCommand(65)
-//         );
-// FEEDER TEMP BINDINGS
-        // joystick.leftBumper().onTrue(
-        //     feeder.stopCommand()
-        // );
-
-        // joystick.rightBumper().onTrue(
-        //     feeder.tunableCommand(dashboard)
-        // );
-
-// SHOOTER TEMP BINDINGS
-        // joystick.leftBumper().whileTrue(
-        //     shooter.stopCommand()
-        // );
-
-        // joystick.rightBumper().onTrue(
-        //      shooter.flywheelTunableCommand(dashboard)
-        // );
-
-
-
-
-        // Auto-aim bindings
-        // B button: Auto-aim at hub (stationary)
-        // joystick.b().whileTrue(
-        //     turret.autoAimCommand(() -> drivetrain.getState().Pose, TurretUtil.TargetType.HUB)
-        // );
-
-        new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 5).onTrue(rumble.lightPulse());
-        new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 0).onTrue(rumble.doublePulse());
-
-        
-        // Pathfind to nearest trench shoot pose; cancelled by pressing either joystick stick
-
-        // joystick.a().and(joystick.y()).onTrue(
-        //     PathFindCommands.pathfindToNearestPose(
-        //         () -> drivetrain.getState().Pose,
-        //         List.of(FieldConstants.getLeftTrenchShoot(), FieldConstants.getRightTrenchShoot())
-        //     ).until(joystick.leftStick().or(joystick.rightStick()))
-        // );
-
-        // Idle while the robot is disabled. This ensures the configured
-        // neutral mode is applied to the drive motors while disabled.
-        final var idle = new SwerveRequest.Idle();
-        RobotModeTriggers.disabled().whileTrue(
-            drivetrain.applyRequest(() -> idle).ignoringDisable(true)
-        );
-
-        
-        // Run SysId routines when holding back/start and X/Y.
-        // Note that each routine should be run exactly once in a single log.
-        // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
-        // reset the field-centric heading on back button press(back button)
-        // Also rezeroes turret, intake pivot, and shooter hood encoders
-        joystick.back().onTrue(
-            drivetrain.runOnce(() -> drivetrain.seedFieldCentric())
-                .andThen(turret.RezeroCommand())
-                .andThen(intake.RezeroCommand())
-                .andThen(shooter.RezeroCommand())
-        );
-
-        drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     //** Called from Robot.java autonomousInit(), gets selected auto command */
