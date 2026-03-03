@@ -39,6 +39,7 @@ public class DashboardPublisher {
     private final CommandSwerveDrivetrain m_drivetrain;
     private final SendableChooser<Command> m_autoChooser;
     private final SendableChooser<String> m_pathfindZoneChooser;
+    private final SendableChooser<String> m_shootModeChooser;
     private String m_lastAutoName = "";
     
     // ==================== TUNABLE VALUES ====================
@@ -98,6 +99,12 @@ public class DashboardPublisher {
         m_pathfindZoneChooser.addOption("Mid", "Mid");
         m_pathfindZoneChooser.addOption("Opp", "Opp");
         SmartDashboard.putData("DASHBOARD/Pathfind Zone", m_pathfindZoneChooser);
+
+        // Build the shoot-mode chooser: Hub → aim at hub, Pass → aim at nearest pass target
+        m_shootModeChooser = new SendableChooser<>();
+        m_shootModeChooser.setDefaultOption("Hub", "Hub");
+        m_shootModeChooser.addOption("Pass", "Pass");
+        SmartDashboard.putData("DASHBOARD/Shoot Mode", m_shootModeChooser);
 
         // Initialize tunable values with defaults
         tunableKP.setDouble(0.0);
@@ -175,6 +182,12 @@ public class DashboardPublisher {
     public String getPathfindZone() {
         String selected = m_pathfindZoneChooser.getSelected();
         return selected != null ? selected : "Home";
+    }
+
+    /** Returns the currently selected shoot mode: "Hub" or "Pass". */
+    public String getShootMode() {
+        String selected = m_shootModeChooser.getSelected();
+        return selected != null ? selected : "Hub";
     }
 
 //------------------------------------------------------------------------------------

@@ -86,6 +86,17 @@ public class TurretUtil {
         }
     }
 
+    /**
+     * Returns whichever pass target (LEFT_PASS or RIGHT_PASS) is closer to the robot's
+     * current turret position.
+     */
+    public static TargetType getNearestPassTargetType(Pose2d robotPose) {
+        Translation2d turret = getTurretPose(robotPose).getTranslation();
+        double distLeft  = turret.getDistance(FieldConstants.getLeftPassTarget().toPose2d().getTranslation());
+        double distRight = turret.getDistance(FieldConstants.getRightPassTarget().toPose2d().getTranslation());
+        return distLeft <= distRight ? TargetType.LEFT_PASS : TargetType.RIGHT_PASS;
+    }
+
     // =========================
     // DISTANCE & ANGLE (from turret)
     // =========================

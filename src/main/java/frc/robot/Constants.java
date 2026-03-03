@@ -318,8 +318,8 @@ public class Constants {
         public static final double kMaxAngleDegrees = 180.0;
 
         // Shooting range limits (meters)
-        public static final double kMinShootingDistance = 1.0;
-        public static final double kMaxShootingDistance = 5.5;
+        public static final double kMinShootingDistance = 0.5;
+        public static final double kMaxShootingDistance = 10.0;
 
         // Motor and control constants
         public static final double kGearRatio = 11.111; // Gear ratio (dimensionless)

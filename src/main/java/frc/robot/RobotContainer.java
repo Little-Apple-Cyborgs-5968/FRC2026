@@ -280,43 +280,51 @@ public class RobotContainer {
 
 
         // Warm-up phase: turret + flywheel only, both lead-compensated
+        // Target type is resolved at press time from the dashboard "Shoot Mode" chooser
         warmUpActive.whileTrue(
-            turret.shootOnMoveCommandTurret(
-                () -> drivetrain.getState().Pose,
-                () -> ChassisSpeeds.fromRobotRelativeSpeeds(
-                        drivetrain.getState().Speeds,
-                        drivetrain.getState().Pose.getRotation()),
-                TurretUtil.TargetType.HUB
-            ).alongWith(
-                shooter.shootOnMoveFlywheelOnlyCommand(
+            Commands.defer(() -> {
+                TurretUtil.TargetType target = getShootTargetType();
+                return turret.shootOnMoveCommandTurret(
                     () -> drivetrain.getState().Pose,
                     () -> ChassisSpeeds.fromRobotRelativeSpeeds(
                             drivetrain.getState().Speeds,
                             drivetrain.getState().Pose.getRotation()),
-                    TurretUtil.TargetType.HUB
-                )
-            ).withName("ShootOnMove-WarmUp")
+                    target
+                ).alongWith(
+                    shooter.shootOnMoveFlywheelOnlyCommand(
+                        () -> drivetrain.getState().Pose,
+                        () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                                drivetrain.getState().Speeds,
+                                drivetrain.getState().Pose.getRotation()),
+                        target
+                    )
+                ).withName("ShootOnMove-WarmUp");
+            }, java.util.Set.of(turret, shooter))
         );
 
         // Firing phase: turret + full shooter (hood+flywheel) + spindexer + feeder, all lead-compensated
+        // Target type is resolved at press time from the dashboard "Shoot Mode" chooser
         firingActive.whileTrue(
-            turret.shootOnMoveCommandTurret(
-                () -> drivetrain.getState().Pose,
-                () -> ChassisSpeeds.fromRobotRelativeSpeeds(
-                        drivetrain.getState().Speeds,
-                        drivetrain.getState().Pose.getRotation()),
-                TurretUtil.TargetType.HUB
-            ).alongWith(
-                shooter.shootOnMoveCommandShooter(
+            Commands.defer(() -> {
+                TurretUtil.TargetType target = getShootTargetType();
+                return turret.shootOnMoveCommandTurret(
                     () -> drivetrain.getState().Pose,
                     () -> ChassisSpeeds.fromRobotRelativeSpeeds(
                             drivetrain.getState().Speeds,
                             drivetrain.getState().Pose.getRotation()),
-                    TurretUtil.TargetType.HUB
-                ),
-                spindexer.runCommand(),
-                feeder.runCommand()
-            ).withName("ShootOnMove-Firing")
+                    target
+                ).alongWith(
+                    shooter.shootOnMoveCommandShooter(
+                        () -> drivetrain.getState().Pose,
+                        () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                                drivetrain.getState().Speeds,
+                                drivetrain.getState().Pose.getRotation()),
+                        target
+                    ),
+                    spindexer.runCommand(),
+                    feeder.runCommand()
+                ).withName("ShootOnMove-Firing");
+            }, java.util.Set.of(turret, shooter, spindexer, feeder))
         );
 
         // When shoot-on-the-move mode is toggled OFF, move hood to trench position
@@ -450,6 +458,18 @@ public class RobotContainer {
 
         // Trigger pickupModeOn = new Trigger(() -> isPickupModeActive);
         // pickupModeOn.whileTrue(new WhiskerPickupCommand(drivetrain, vision));
+    }
+
+    /**
+     * Returns the shoot TargetType to use based on the dashboard "Shoot Mode" chooser.
+     * "Hub"  → TurretUtil.TargetType.HUB
+     * "Pass" → whichever pass target (left/right) is nearest to the robot's current pose
+     */
+    private TurretUtil.TargetType getShootTargetType() {
+        if ("Pass".equals(dashboard.getShootMode())) {
+            return TurretUtil.getNearestPassTargetType(drivetrain.getState().Pose);
+        }
+        return TurretUtil.TargetType.HUB;
     }
 
     //** Called from Robot.java autonomousInit(), gets selected auto command */
