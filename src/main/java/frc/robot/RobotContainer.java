@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.generated.TunerConstants;
+import frc.robot.commands.DefaultShootCommand;
 import frc.robot.commands.PathFindCommands;
 import frc.robot.commands.SYOMDriveCommand;
 // import frc.robot.commands.WhiskerPickupCommand;
@@ -396,6 +397,22 @@ public class RobotContainer {
 
         new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 5).onTrue(rumble.lightPulse());
         new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 0).onTrue(rumble.doublePulse());
+
+
+//===============================================================================================================
+// Operator Controls
+//===============================================================================================================
+
+operatorJoystick.pov(0).onTrue(intake.DeployCommand());
+operatorJoystick.pov(90).onTrue(intake.StowCommand());
+operatorJoystick.pov(180).onTrue(intake.UltraStowCommand());
+operatorJoystick.pov(270).onTrue(intake.SpinnerStopCommand());
+
+operatorJoystick.b().whileTrue(spindexer.runCommand().alongWith(feeder.runCommand()));
+operatorJoystick.x().whileTrue(spindexer.reverseCommand().alongWith(feeder.reverseCommand()));
+
+operatorJoystick.a().onTrue(shooter.setHoodToTrenchCommand());
+operatorJoystick.y().whileTrue(new DefaultShootCommand(turret, shooter));
         
 
 

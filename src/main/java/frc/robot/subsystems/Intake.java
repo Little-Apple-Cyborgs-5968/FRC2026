@@ -49,6 +49,7 @@ public class Intake extends SubsystemBase {
   private final double spinnerSpeed = Constants.Intake.kSpinnerSpeed;
   private final double intakeAngleDeployed = Constants.Intake.kIntakeAngleDeployed;
   private final double intakeAngleStowed = Constants.Intake.kIntakeAngleStowed;
+  private final double intakeAngleUltraStowed = Constants.Intake.kIntakeAngleUltraStowed;
 
   //Pivot Constants
   private final DCMotor dcMotorPivot = DCMotor.getKrakenX60(1);
@@ -651,6 +652,15 @@ public class Intake extends SubsystemBase {
 
   public Command StowCommand() {
     return runOnce(() -> stow());
+  }
+
+  private void ultraStow(){
+    PivotSetAngle(intakeAngleUltraStowed);
+    SpinnerStopCommand().schedule();
+  }
+
+  public Command UltraStowCommand() {
+    return runOnce(() -> ultraStow());
   }
 
   private void deploy(){

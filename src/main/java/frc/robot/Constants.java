@@ -205,6 +205,7 @@ public class Constants {
         public static final double kSpinnerSpeed = -28; // Target spinner speed in rotations per second (RPS)
         public static final double kIntakeAngleDeployed = -55; // Deployed angle in degrees
         public static final double kIntakeAngleStowed = 0; // Stowed angle in degrees
+        public static final double kIntakeAngleUltraStowed = 40; // Ultra-stowed angle in degrees (for tight spaces)
         public static final double kPivotRezeroAngleDegrees = 0.0; // Rezero position in degrees
         
         // Pivot Constants
@@ -337,6 +338,26 @@ public class Constants {
         public static final double kStatorCurrentLimit = 40; // Stator current limit (amperes)
         public static final boolean kEnableSupplyLimit = false; // Supply current limit enabled (boolean)
         public static final double kSupplyCurrentLimit = 40; // Supply current limit (amperes)
+    }
+
+    // ==================== DEFAULT SHOOT PRESET ====================
+    // Used by DefaultShootCommand — a fixed forward-facing shot preset.
+    // Adjust these values to tune the default shot without touching robot code.
+    public static class DefaultShot {
+        /** Turret angle for the default shot — 0° = robot forward (field-relative center). */
+        public static final double kTurretAngleDegrees  = 0.0;
+
+        /** Flywheel speed for the default shot (RPS). Negative = correct spin direction. */
+        public static final double kFlywheelSpeedRPS    = -12.0;
+
+        /** Hood angle for the default shot (degrees). */
+        public static final double kHoodAngleDegrees    = 75.0;
+
+        /** Turret must be within this many degrees of the target before considered "at target". */
+        public static final double kTurretToleranceDegrees = 2.0;
+
+        /** Hood must be within this many degrees of the target before considered "at target". */
+        public static final double kHoodToleranceDegrees   = 2.0;
     }
 
      public static class Shooter {
