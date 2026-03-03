@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.commands.PathFindCommands;
+import frc.robot.commands.SYOMDriveCommand;
 // import frc.robot.commands.WhiskerPickupCommand;
 import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
@@ -60,9 +61,6 @@ public class RobotContainer {
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     
-    // SYOMDrive (Synchronized Yaw-Optimized Motion Drive) - auto-rotates to face travel direction
-    private boolean isSYOMDriveEnabled = false;
-
     // Shoot-on-the-move toggle — right trigger turns on lead-compensated warm-up; releasing fires; second press cancels
     private boolean isShootOnMoveActive = false;
 
@@ -114,6 +112,14 @@ public class RobotContainer {
 
     
     private final Visualizer visualizer = new Visualizer(turret,shooter);
+
+    // SYOMDrive command instance — toggled on/off with the X button
+    private final SYOMDriveCommand syomDriveCommand = new SYOMDriveCommand(
+            drivetrain,
+            () -> -joystick.getLeftY() * MaxSpeed,
+            () -> -joystick.getLeftX() * MaxSpeed,
+            MaxSpeed,
+            MaxAngularRate);
 
     
 
@@ -197,47 +203,11 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() -> {
-                // Check if SYOMDrive mode is enabled
-                if (isSYOMDriveEnabled) {
-                    // SYOMDrive: Calculate automatic rotation to face travel direction
-                    double vx = -joystick.getLeftY() * MaxSpeed;
-                    double vy = -joystick.getLeftX() * MaxSpeed;
-                    
-                    // Calculate velocity magnitude
-                    double doubleVelocityMagnitude = Math.sqrt(vx * vx + vy * vy);
-                    
-                    // Calculate rotational rate
-                    double rotationalRate = 0;
-                    
-                    if (doubleVelocityMagnitude > Constants.Swerve.kSYOMDriveMinVelocity) {
-                        // Calculate the direction of travel (desired heading)
-                        Rotation2d desiredHeading = new Rotation2d(vx, vy);
-                        
-                        // Get current heading
-                        Rotation2d currentHeading = drivetrain.getState().Pose.getRotation();
-                        
-                        // Calculate heading error
-                        double headingError = desiredHeading.minus(currentHeading).getRadians();
-                        
-                        // Normalize to [-π, π]
-                        while (headingError > Math.PI) headingError -= 2 * Math.PI;
-                        while (headingError < -Math.PI) headingError += 2 * Math.PI;
-                        
-                        // Apply proportional control for smooth rotation
-                        rotationalRate = headingError * Constants.Swerve.kSYOMDriveRotationKp;
-                    }
-                    
-                    return drive.withVelocityX(vx)
-                                .withVelocityY(vy)
-                                .withRotationalRate(rotationalRate);
-                } else {
-                    // Normal field-centric drive with manual rotation
-                    return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                                .withVelocityY(-joystick.getLeftX() * MaxSpeed)
-                                .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
-                }
-            })
+            drivetrain.applyRequest(() ->
+                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
+                     .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
+            )
         );
 
         // robot oriented drive forwad and backward, also left right
@@ -390,6 +360,11 @@ public class RobotContainer {
             shooter.setHoodToTrenchCommand()
         );
 
+        joystick.a().onTrue(
+            shooter.setHoodToTrenchCommand()
+
+        );
+
         joystick.start().whileTrue(
             spindexer.reverseCommand().alongWith(feeder.reverseCommand())
         );
@@ -530,9 +505,10 @@ public class RobotContainer {
         //     shooter.setHoodToTrenchCommand()
         // );
 
-        joystick.x().onTrue(
-            turret.setAngleCommand(-90)
-        );
+        // ── X BUTTON: Toggle SYOMDrive (Synchronized Yaw-Optimized Motion Drive) ─
+        // Press once → robot auto-rotates to face travel direction.
+        // Press again → returns to normal field-centric drive with manual rotation.
+        joystick.x().toggleOnTrue(syomDriveCommand);
 
         // ── B BUTTON: Toggle whisker ball-pickup mode ─────────────────────────────
         // Press once → robot drives forward using the whisker algorithm to collect Fuel balls.
@@ -669,7 +645,7 @@ public class RobotContainer {
     public void updateDashboard() {
         dashboard.update();
         // Update SYOMDrive status on SmartDashboard
-        SmartDashboard.putBoolean("DASHBOARD/SYOMDrive Enabled", isSYOMDriveEnabled);
+        SmartDashboard.putBoolean("DASHBOARD/SYOMDrive Enabled", syomDriveCommand.isScheduled());
         // Update shoot-on-the-move mode toggle status on SmartDashboard
         SmartDashboard.putBoolean("DASHBOARD/Shoot On Move Active", isShootOnMoveActive);
         // Update whisker pickup mode toggle status on SmartDashboard

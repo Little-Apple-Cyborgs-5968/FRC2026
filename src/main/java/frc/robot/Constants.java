@@ -16,9 +16,15 @@ public class Constants {
         public static final double kRobotCentricSpeed = 0.5; // how fast robot centric drive speed is in m/s
 
         // SYOMDrive (Synchronized Yaw-Optimized Motion Drive) constants
-        public static final double kSYOMDriveMinVelocity = 0.33; // Minimum velocity (m/s) before rotation activates
-        public static final double kSYOMDriveRotationKp = 8.0; // Proportional gain for smooth rotation to travel direction
-        public static final double kSYOMDriveMaxRotationalVelocity = Units.degreesToRadians(180); // Max rotational velocity (rad/s) to prevent spinning
+        public static final double kSYOMDriveMinVelocity = 0.75; // Minimum translation speed (m/s) before auto-rotation activates
+        public static final double kSYOMDriveRotationKp = 7.0; // Proportional gain for rotation to travel direction
+        public static final double kSYOMDriveMaxRotationalVelocity = Units.degreesToRadians(210); // Max rotational velocity (rad/s)
+
+        // Motion-profile constraints for SYOM rotation (TrapezoidProfile)
+        public static final double kSYOMDriveMaxRotAccel = Units.degreesToRadians(360); // Max rotational accel (rad/s²)
+        // Velocity slew: rotational output approaches target at this rate (rad/s per loop)
+        // Set to max-velocity / desired-ramp-time  (e.g. 180°/s over 0.15 s ≈ 1200 °/s²)
+        public static final double kSYOMDriveSlewRateRadPerSec = Units.degreesToRadians(400); // rate limiter (rad/s²)
 
         // ==================== SET-YAW / HEADING LOCK CONSTANTS ====================
         // Used by SetYawCommand with CTRE's FieldCentricFacingAngle request.
