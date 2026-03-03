@@ -38,6 +38,7 @@ public class DashboardPublisher {
     private final Field2d m_autoPreviewField = new Field2d();
     private final CommandSwerveDrivetrain m_drivetrain;
     private final SendableChooser<Command> m_autoChooser;
+    private final SendableChooser<String> m_pathfindZoneChooser;
     private String m_lastAutoName = "";
     
     // ==================== TUNABLE VALUES ====================
@@ -91,6 +92,13 @@ public class DashboardPublisher {
         //puts auto chooser on smartdashboard for selection
         SmartDashboard.putData("DASHBOARD/Auto Chooser", m_autoChooser);
 
+        // Build the pathfind-zone chooser: Home → trench, Mid → neutral, Opp → opponent zone
+        m_pathfindZoneChooser = new SendableChooser<>();
+        m_pathfindZoneChooser.setDefaultOption("Home", "Home");
+        m_pathfindZoneChooser.addOption("Mid", "Mid");
+        m_pathfindZoneChooser.addOption("Opp", "Opp");
+        SmartDashboard.putData("DASHBOARD/Pathfind Zone", m_pathfindZoneChooser);
+
         // Initialize tunable values with defaults
         tunableKP.setDouble(0.0);
         tunableKI.setDouble(0.0);
@@ -123,6 +131,7 @@ public class DashboardPublisher {
     updateRobotField();
     updateAutoPreviewField();
     updateGameState();
+    edu.wpi.first.wpilibj.smartdashboard.SmartDashboard.updateValues();
     }
 
     /** Gets the current tunable value from the dashboard */
@@ -160,6 +169,12 @@ public class DashboardPublisher {
 
     public Command getAuto() {
         return m_autoChooser.getSelected();
+    }
+
+    /** Returns the currently selected pathfind zone: "Home", "Mid", or "Opp". */
+    public String getPathfindZone() {
+        String selected = m_pathfindZoneChooser.getSelected();
+        return selected != null ? selected : "Home";
     }
 
 //------------------------------------------------------------------------------------

@@ -339,10 +339,27 @@ public class RobotContainer {
         // Pathfind to nearest trench shoot pose; cancelled by pressing either joystick stick
 
         joystick.a().and(joystick.y()).onTrue(
-            PathFindCommands.pathfindToNearestPose(
-                () -> drivetrain.getState().Pose,
-                List.of(FieldConstants.getLeftTrenchShoot(), FieldConstants.getRightTrenchShoot())
-            ).until(joystick.leftStick().or(joystick.rightStick()))
+            Commands.defer(() -> {
+                String zone = dashboard.getPathfindZone();
+                switch (zone) {
+                    case "Mid":
+                        return PathFindCommands.pathfindToNearestPose(
+                            () -> drivetrain.getState().Pose,
+                            List.of(FieldConstants.getLeftNeutral(), FieldConstants.getRightNeutral())
+                        ).until(joystick.leftStick().or(joystick.rightStick()));
+                    case "Opp":
+                        return PathFindCommands.pathfindToNearestPose(
+                            () -> drivetrain.getState().Pose,
+                            List.of(FieldConstants.getLeftOpp(), FieldConstants.getRightOpp())
+                        ).until(joystick.leftStick().or(joystick.rightStick()));
+                    case "Home":
+                    default:
+                        return PathFindCommands.pathfindToNearestPose(
+                            () -> drivetrain.getState().Pose,
+                            List.of(FieldConstants.getLeftTrenchShoot(), FieldConstants.getRightTrenchShoot())
+                        ).until(joystick.leftStick().or(joystick.rightStick()));
+                }
+            }, java.util.Set.of(drivetrain))
         );
 
         joystick.a().onTrue(
