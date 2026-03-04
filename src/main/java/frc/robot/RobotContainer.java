@@ -384,6 +384,22 @@ public class RobotContainer {
                             () -> drivetrain.getState().Pose,
                             List.of(FieldConstants.getLeftOpp(), FieldConstants.getRightOpp())
                         ).until(joystick.leftStick().or(joystick.rightStick()));
+                    case "Sweep": {
+                        // Pick whichever sweep path starts closest to the robot, then pathfind+follow it
+                        String nearestSweepPath;
+                        try {
+                            com.pathplanner.lib.path.PathPlannerPath leftPath  = com.pathplanner.lib.path.PathPlannerPath.fromPathFile("sweep_from_left");
+                            com.pathplanner.lib.path.PathPlannerPath rightPath = com.pathplanner.lib.path.PathPlannerPath.fromPathFile("sweep_from_right");
+                            edu.wpi.first.math.geometry.Pose2d robotPose = drivetrain.getState().Pose;
+                            double distLeft  = leftPath.getPathPoses().get(0).getTranslation().getDistance(robotPose.getTranslation());
+                            double distRight = rightPath.getPathPoses().get(0).getTranslation().getDistance(robotPose.getTranslation());
+                            nearestSweepPath = (distLeft <= distRight) ? "sweep_from_left" : "sweep_from_right";
+                        } catch (Exception e) {
+                            return Commands.print("Failed to load sweep paths: " + e.getMessage());
+                        }
+                        return PathFindCommands.pathfindToPath(nearestSweepPath)
+                            .until(joystick.leftStick().or(joystick.rightStick()));
+                    }
                     case "Home":
                     default:
                         return PathFindCommands.pathfindToNearestPose(

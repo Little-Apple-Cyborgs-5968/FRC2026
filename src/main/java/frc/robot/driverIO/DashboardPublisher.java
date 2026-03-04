@@ -98,6 +98,7 @@ public class DashboardPublisher {
         m_pathfindZoneChooser.setDefaultOption("Home", "Home");
         m_pathfindZoneChooser.addOption("Mid", "Mid");
         m_pathfindZoneChooser.addOption("Opp", "Opp");
+        m_pathfindZoneChooser.addOption("Sweep", "Sweep");
         SmartDashboard.putData("DASHBOARD/Pathfind Zone", m_pathfindZoneChooser);
 
         // Build the shoot-mode chooser: Hub → aim at hub, Pass → aim at nearest pass target
