@@ -96,7 +96,7 @@ public class RobotContainer {
 
     // Turret subsystem
     private final Turret turret = new Turret();
-    private final TurretSim turretSim = new TurretSim(turret);
+    //private final TurretSim turretSim = new TurretSim(turret);
 
     // Intake Subsystem
     private final Intake intake = new Intake();
@@ -104,11 +104,11 @@ public class RobotContainer {
 
     // Spindexer Subsystem
     private final Spindexer spindexer = new Spindexer();
-    private final SpindexerSim spindexerSim = new SpindexerSim(spindexer);
+    //private final SpindexerSim spindexerSim = new SpindexerSim(spindexer);
 
     // Feeder Subsystem
     private final Feeder feeder = new Feeder();
-    private final FeederSim feederSim = new FeederSim(feeder);
+    //private final FeederSim feederSim = new FeederSim(feeder);
 
     // Shooter Subsystem
     private final Shooter shooter = new Shooter();
@@ -415,8 +415,13 @@ public class RobotContainer {
         );
 
 
-        new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 5).onTrue(rumble.lightPulse());
-        new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == 0).onTrue(rumble.doublePulse());
+        new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == Constants.Misc.driverRumbleTime1).onTrue(rumble.lightPulse());
+        new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == Constants.Misc.driverRumbleTime2).onTrue(rumble.doublePulse());
+
+        new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == Constants.Misc.operatorRumbleTime1).onTrue(operatorRumble.lightPulse());
+        new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == Constants.Misc.operatorRumbleTime2).onTrue(operatorRumble.lightPulse());
+        new Trigger(() -> Math.round(GameState.timeRemainingInCurrentState()) == Constants.Misc.operatorRumbleTime3).onTrue(operatorRumble.doublePulse());
+
 
 
 //===============================================================================================================

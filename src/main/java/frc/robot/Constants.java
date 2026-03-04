@@ -12,6 +12,15 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 
 public class Constants {
+
+    public static class Misc {
+        public static final double driverRumbleTime1 = 3; // Time in seconds for rumble before end of each shift 
+        public static final double driverRumbleTime2 = 0; // Time in seconds for rumble before end of each shift 
+
+        public static final double operatorRumbleTime1 = 10; // Time in seconds for rumble before end of each shift (operators get an extra 4 seconds to prepare)
+        public static final double operatorRumbleTime2 = 5; // Time in seconds for rumble before end of each shift (operators get an extra 4 seconds to prepare)
+        public static final double operatorRumbleTime3 = 0; // Time in seconds for rumble at end of match (after all shifts are over)
+    }
     public static class Swerve {
         public static final double kRobotCentricSpeed = 0.5; // how fast robot centric drive speed is in m/s
 
@@ -345,7 +354,7 @@ public class Constants {
     // Adjust these values to tune the default shot without touching robot code.
     public static class DefaultShot {
         /** Turret angle for the default shot — 0° = robot forward (field-relative center). */
-        public static final double kTurretAngleDegrees  = 0.0;
+        public static final double kTurretAngleDegrees  = 0.5;
 
         /** Flywheel speed for the default shot (RPS). Negative = correct spin direction. */
         public static final double kFlywheelSpeedRPS    = -12.0;
