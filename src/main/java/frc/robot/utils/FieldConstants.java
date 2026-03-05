@@ -1,5 +1,7 @@
 package frc.robot.utils;
 
+import com.pathplanner.lib.util.FlippingUtil;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,15 +32,12 @@ public class FieldConstants {
     // -------------------------------------------------------------------------
 
     /**
-     * Mirrors a Pose2d to the red alliance side of the field.
-     * Flips X across the field center and rotates heading by 180°.
+     * Flips a Pose2d to the red alliance side of the field using the same
+     * rotational symmetry that PathPlanner uses for 2026:
+     *   flipped_X = fieldSizeX - X,  flipped_Y = fieldSizeY - Y
      */
     public static Pose2d flipPose(Pose2d pose) {
-        return new Pose2d(
-            kFieldLength - pose.getX(),
-            pose.getY(),
-            pose.getRotation().rotateBy(Rotation2d.k180deg)
-        );
+        return FlippingUtil.flipFieldPose(pose);
     }
 
     /**
@@ -46,7 +45,7 @@ public class FieldConstants {
      * otherwise returns it unchanged.
      */
     public static Pose2d flipIfRed(Pose2d pose) {
-        return isRedAlliance() ? flipPose(pose) : pose;
+        return isRedAlliance() ? FlippingUtil.flipFieldPose(pose) : pose;
     }
 
     // -------------------------------------------------------------------------
@@ -54,8 +53,9 @@ public class FieldConstants {
     // -------------------------------------------------------------------------
 
     /**
-     * Mirrors a Pose3d to the red alliance side of the field.
-     * Flips X across the field center and rotates yaw by 180°. Z and Y are unchanged.
+     * Flips a Pose3d to the red alliance side of the field using the same
+     * rotational symmetry that PathPlanner uses for 2026:
+     *   flipped_X = fieldSizeX - X,  flipped_Y = fieldSizeY - Y,  yaw += 180°
      */
     public static Pose3d flipPose3d(Pose3d pose) {
         Rotation3d flipped = new Rotation3d(
@@ -64,7 +64,10 @@ public class FieldConstants {
             pose.getRotation().getZ() + Math.PI
         );
         return new Pose3d(
-            new Translation3d(kFieldLength - pose.getX(), pose.getY(), pose.getZ()),
+            new Translation3d(
+                FlippingUtil.fieldSizeX - pose.getX(),
+                FlippingUtil.fieldSizeY - pose.getY(),
+                pose.getZ()),
             flipped
         );
     }

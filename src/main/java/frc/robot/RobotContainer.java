@@ -393,14 +393,18 @@ public class RobotContainer {
                             List.of(FieldConstants.getLeftOpp(), FieldConstants.getRightOpp())
                         ).until(joystick.leftStick().or(joystick.rightStick()));
                     case "Sweep": {
-                        // Pick whichever sweep path starts closest to the robot, then pathfind+follow it
+                        // Pick whichever sweep path starts closest to the robot, then pathfind+follow it.
+                        // getPathPoses() always returns raw Blue-alliance coordinates, so flip to the
+                        // current alliance before comparing distances.
                         String nearestSweepPath;
                         try {
                             com.pathplanner.lib.path.PathPlannerPath leftPath  = com.pathplanner.lib.path.PathPlannerPath.fromPathFile("sweep_from_left");
                             com.pathplanner.lib.path.PathPlannerPath rightPath = com.pathplanner.lib.path.PathPlannerPath.fromPathFile("sweep_from_right");
                             edu.wpi.first.math.geometry.Pose2d robotPose = drivetrain.getState().Pose;
-                            double distLeft  = leftPath.getPathPoses().get(0).getTranslation().getDistance(robotPose.getTranslation());
-                            double distRight = rightPath.getPathPoses().get(0).getTranslation().getDistance(robotPose.getTranslation());
+                            edu.wpi.first.math.geometry.Pose2d leftStart  = FieldConstants.flipIfRed(leftPath.getPathPoses().get(0));
+                            edu.wpi.first.math.geometry.Pose2d rightStart = FieldConstants.flipIfRed(rightPath.getPathPoses().get(0));
+                            double distLeft  = leftStart.getTranslation().getDistance(robotPose.getTranslation());
+                            double distRight = rightStart.getTranslation().getDistance(robotPose.getTranslation());
                             nearestSweepPath = (distLeft <= distRight) ? "sweep_from_left" : "sweep_from_right";
                         } catch (Exception e) {
                             return Commands.print("Failed to load sweep paths: " + e.getMessage());
