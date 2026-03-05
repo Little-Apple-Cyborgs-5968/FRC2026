@@ -67,6 +67,14 @@ public class RobotContainer {
 
     // Whisker pickup mode toggle — B button cycles on/off
     private boolean isPickupModeActive = false;
+
+    // Pathfind zone cycle — operator left/right bumper
+    private static final String[] PATHFIND_ZONES = {"Home", "Mid", "Opp", "Sweep"};
+    private int pathfindZoneIndex = 0; // starts at "Home"
+
+    // Shoot mode cycle — operator left/right trigger
+    private static final String[] SHOOT_MODES = {"Hub", "Pass"};
+    private int shootModeIndex = 0; // starts at "Hub"
     
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -454,6 +462,28 @@ operatorJoystick.x().whileTrue(spindexer.reverseCommand().alongWith(feeder.rever
 
 operatorJoystick.a().onTrue(shooter.setHoodToTrenchCommand());
 operatorJoystick.y().whileTrue(new DefaultShootCommand(turret, shooter));
+
+// ── OPERATOR BUMPERS: Cycle pathfind zone ────────────────────────────────────
+// Left bumper → previous zone, Right bumper → next zone (Home → Mid → Opp → Sweep → wrap)
+operatorJoystick.rightBumper().onTrue(
+    Commands.runOnce(() -> cyclePathfindZone(+1))
+        .andThen(operatorRumble.lightPulse())
+);
+operatorJoystick.leftBumper().onTrue(
+    Commands.runOnce(() -> cyclePathfindZone(-1))
+        .andThen(operatorRumble.lightPulse())
+);
+
+// ── OPERATOR TRIGGERS: Cycle shoot mode ──────────────────────────────────────
+// Left trigger → previous mode, Right trigger → next mode (Hub ↔ Pass)
+operatorJoystick.rightTrigger().onTrue(
+    Commands.runOnce(() -> cycleShootMode(+1))
+        .andThen(operatorRumble.lightPulse())
+);
+operatorJoystick.leftTrigger().onTrue(
+    Commands.runOnce(() -> cycleShootMode(-1))
+        .andThen(operatorRumble.lightPulse())
+);
         
 
 
@@ -531,6 +561,24 @@ operatorJoystick.y().whileTrue(new DefaultShootCommand(turret, shooter));
             return TurretUtil.getNearestPassTargetType(drivetrain.getState().Pose);
         }
         return TurretUtil.TargetType.HUB;
+    }
+
+    /**
+     * Cycles the pathfind zone by {@code delta} steps (+1 = next, -1 = previous), wrapping around.
+     * Publishes the new value to the dashboard.
+     */
+    private void cyclePathfindZone(int delta) {
+        pathfindZoneIndex = Math.floorMod(pathfindZoneIndex + delta, PATHFIND_ZONES.length);
+        dashboard.setPathfindZone(PATHFIND_ZONES[pathfindZoneIndex]);
+    }
+
+    /**
+     * Cycles the shoot mode by {@code delta} steps (+1 = next, -1 = previous), wrapping around.
+     * Publishes the new value to the dashboard.
+     */
+    private void cycleShootMode(int delta) {
+        shootModeIndex = Math.floorMod(shootModeIndex + delta, SHOOT_MODES.length);
+        dashboard.setShootMode(SHOOT_MODES[shootModeIndex]);
     }
 
     //** Called from Robot.java autonomousInit(), gets selected auto command */

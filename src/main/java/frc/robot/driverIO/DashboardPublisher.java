@@ -6,8 +6,6 @@ package frc.robot.driverIO;
 
 import frc.robot.utils.GameState;
 
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -17,7 +15,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.util.datalog.DataLogWriter;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -38,8 +35,10 @@ public class DashboardPublisher {
     private final Field2d m_autoPreviewField = new Field2d();
     private final CommandSwerveDrivetrain m_drivetrain;
     private final SendableChooser<Command> m_autoChooser;
-    private final SendableChooser<String> m_pathfindZoneChooser;
-    private final SendableChooser<String> m_shootModeChooser;
+    // Pathfind zone and shoot mode are controlled by operator controller buttons,
+    // not by a SendableChooser (which would fight joystick inputs).
+    private String m_pathfindZone = "Home";
+    private String m_shootMode = "Hub";
     private String m_lastAutoName = "";
     
     // ==================== TUNABLE VALUES ====================
@@ -93,19 +92,10 @@ public class DashboardPublisher {
         //puts auto chooser on smartdashboard for selection
         SmartDashboard.putData("DASHBOARD/Auto Chooser", m_autoChooser);
 
-        // Build the pathfind-zone chooser: Home → trench, Mid → neutral, Opp → opponent zone
-        m_pathfindZoneChooser = new SendableChooser<>();
-        m_pathfindZoneChooser.setDefaultOption("Home", "Home");
-        m_pathfindZoneChooser.addOption("Mid", "Mid");
-        m_pathfindZoneChooser.addOption("Opp", "Opp");
-        m_pathfindZoneChooser.addOption("Sweep", "Sweep");
-        SmartDashboard.putData("DASHBOARD/Pathfind Zone", m_pathfindZoneChooser);
-
-        // Build the shoot-mode chooser: Hub → aim at hub, Pass → aim at nearest pass target
-        m_shootModeChooser = new SendableChooser<>();
-        m_shootModeChooser.setDefaultOption("Hub", "Hub");
-        m_shootModeChooser.addOption("Pass", "Pass");
-        SmartDashboard.putData("DASHBOARD/Shoot Mode", m_shootModeChooser);
+        // Publish initial pathfind zone and shoot mode as plain strings
+        // (updated by operator controller buttons in RobotContainer)
+        SmartDashboard.putString("DASHBOARD/Pathfind Zone", m_pathfindZone);
+        SmartDashboard.putString("DASHBOARD/Shoot Mode", m_shootMode);
 
         // Initialize tunable values with defaults
         tunableKP.setDouble(0.0);
@@ -179,16 +169,26 @@ public class DashboardPublisher {
         return m_autoChooser.getSelected();
     }
 
-    /** Returns the currently selected pathfind zone: "Home", "Mid", or "Opp". */
+    /** Returns the currently selected pathfind zone: "Home", "Mid", "Opp", or "Sweep". */
     public String getPathfindZone() {
-        String selected = m_pathfindZoneChooser.getSelected();
-        return selected != null ? selected : "Home";
+        return m_pathfindZone;
+    }
+
+    /** Sets the pathfind zone and publishes it to the dashboard. */
+    public void setPathfindZone(String zone) {
+        m_pathfindZone = zone;
+        SmartDashboard.putString("DASHBOARD/Pathfind Zone", m_pathfindZone);
     }
 
     /** Returns the currently selected shoot mode: "Hub" or "Pass". */
     public String getShootMode() {
-        String selected = m_shootModeChooser.getSelected();
-        return selected != null ? selected : "Hub";
+        return m_shootMode;
+    }
+
+    /** Sets the shoot mode and publishes it to the dashboard. */
+    public void setShootMode(String mode) {
+        m_shootMode = mode;
+        SmartDashboard.putString("DASHBOARD/Shoot Mode", m_shootMode);
     }
 
 //------------------------------------------------------------------------------------
