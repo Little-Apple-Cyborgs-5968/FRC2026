@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.commands.DefaultShootCommand;
+import frc.robot.commands.DrivetrainShootOnMoveCommand;
 import frc.robot.commands.PathFindCommands;
 import frc.robot.commands.SYOMDriveCommand;
 // import frc.robot.commands.WhiskerPickupCommand;
@@ -64,6 +65,9 @@ public class RobotContainer {
     
     // Shoot-on-the-move toggle — right trigger turns on lead-compensated warm-up; releasing fires; second press cancels
     private boolean isShootOnMoveActive = false;
+
+    // Swerve shoot-on-the-move toggle — left trigger rotates drivetrain to aim instead of turret
+    private boolean isSwerveSOMActive = false;
 
     // Whisker pickup mode toggle — B button cycles on/off
     private boolean isPickupModeActive = false;
@@ -361,6 +365,99 @@ public class RobotContainer {
             shooter.setHoodToTrenchCommand()
         );
 
+        // ── LEFT TRIGGER: Toggle swerve-drivetrain shoot-on-the-move ──────────────
+        //
+        // Identical toggle pattern to the right-trigger turret SOTM, but instead of
+        // rotating the turret the drivetrain is rotated to the lead-compensated field
+        // heading.  The turret is held at 0° (robot-forward) the entire time.
+        //
+        // PRESS 1 (toggle ON, trigger held)  → warm-up:
+        //   • Drivetrain → rotates to lead heading (FieldCentricFacingAngle)
+        //   • Turret     → held at 0°
+        //   • Flywheel   → spun to correct lead speed (no hood movement yet)
+        //   • Feeder / Spindexer → NOT running
+        //
+        // PRESS 1 RELEASE (swerve SOTM still ON) → firing:
+        //   • Drivetrain → continues rotating to lead heading
+        //   • Turret     → held at 0°
+        //   • Hood + Flywheel → lead-compensated
+        //   • Feeder + Spindexer → running
+        //
+        // PRESS 2 (toggle OFF) → everything returns to defaults; hood → trench.
+
+        joystick.leftTrigger().onTrue(
+            Commands.runOnce(() -> {
+                isSwerveSOMActive = !isSwerveSOMActive;
+                SmartDashboard.putBoolean("DASHBOARD/Swerve Shoot On Move Active", isSwerveSOMActive);
+            })
+        );
+
+        Trigger swerveSOMOn      = new Trigger(() -> isSwerveSOMActive);
+        Trigger leftTriggerHeld  = joystick.leftTrigger();
+        Trigger swerveWarmUp     = swerveSOMOn.and(leftTriggerHeld);          // ON + held  → warm up
+        Trigger swerveFiring     = swerveSOMOn.and(leftTriggerHeld.negate()); // ON + released → fire
+
+        // Warm-up: drivetrain rotates to lead heading + turret at 0 + flywheel only
+        swerveWarmUp.whileTrue(
+            Commands.defer(() -> {
+                TurretUtil.TargetType target = getShootTargetType();
+                return new DrivetrainShootOnMoveCommand(
+                    drivetrain,
+                    turret,
+                    () -> -joystick.getLeftY() * MaxSpeed,
+                    () -> -joystick.getLeftX() * MaxSpeed,
+                    MaxSpeed,
+                    () -> drivetrain.getState().Pose,
+                    () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                            drivetrain.getState().Speeds,
+                            drivetrain.getState().Pose.getRotation()),
+                    target
+                ).alongWith(
+                    shooter.shootOnMoveFlywheelOnlyCommand(
+                        () -> drivetrain.getState().Pose,
+                        () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                                drivetrain.getState().Speeds,
+                                drivetrain.getState().Pose.getRotation()),
+                        target
+                    )
+                ).withName("SwerveSOM-WarmUp");
+            }, java.util.Set.of(drivetrain, turret, shooter))
+        );
+
+        // Firing: drivetrain rotates + turret at 0 + full shooter + spindexer + feeder
+        swerveFiring.whileTrue(
+            Commands.defer(() -> {
+                TurretUtil.TargetType target = getShootTargetType();
+                return new DrivetrainShootOnMoveCommand(
+                    drivetrain,
+                    turret,
+                    () -> -joystick.getLeftY() * MaxSpeed,
+                    () -> -joystick.getLeftX() * MaxSpeed,
+                    MaxSpeed,
+                    () -> drivetrain.getState().Pose,
+                    () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                            drivetrain.getState().Speeds,
+                            drivetrain.getState().Pose.getRotation()),
+                    target
+                ).alongWith(
+                    shooter.shootOnMoveCommandShooter(
+                        () -> drivetrain.getState().Pose,
+                        () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+                                drivetrain.getState().Speeds,
+                                drivetrain.getState().Pose.getRotation()),
+                        target
+                    ),
+                    spindexer.runCommand(),
+                    feeder.runCommand()
+                ).withName("SwerveSOM-Firing");
+            }, java.util.Set.of(drivetrain, turret, shooter, spindexer, feeder))
+        );
+
+        // When swerve SOTM is toggled OFF, move hood back to trench position
+        swerveSOMOn.onFalse(
+            shooter.setHoodToTrenchCommand()
+        );
+
         joystick.start().whileTrue(
             spindexer.reverseCommand().alongWith(feeder.reverseCommand())
         );
@@ -598,6 +695,8 @@ operatorJoystick.leftTrigger().onTrue(
         SmartDashboard.putBoolean("DASHBOARD/SYOMDrive Enabled", syomDriveCommand.isScheduled());
         // Update shoot-on-the-move mode toggle status on SmartDashboard
         SmartDashboard.putBoolean("DASHBOARD/Shoot On Move Active", isShootOnMoveActive);
+        // Update swerve shoot-on-the-move mode toggle status on SmartDashboard
+        SmartDashboard.putBoolean("DASHBOARD/Swerve Shoot On Move Active", isSwerveSOMActive);
         // Update whisker pickup mode toggle status on SmartDashboard
         SmartDashboard.putBoolean("DASHBOARD/Pickup Mode Active", isPickupModeActive);
     }
