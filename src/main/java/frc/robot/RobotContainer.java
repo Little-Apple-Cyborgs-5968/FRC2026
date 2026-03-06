@@ -112,11 +112,11 @@ public class RobotContainer {
 
     // Spindexer Subsystem
     private final Spindexer spindexer = new Spindexer();
-    //private final SpindexerSim spindexerSim = new SpindexerSim(spindexer);
+    private final SpindexerSim spindexerSim = new SpindexerSim(spindexer);
 
     // Feeder Subsystem
     private final Feeder feeder = new Feeder();
-    //private final FeederSim feederSim = new FeederSim(feeder);
+    private final FeederSim feederSim = new FeederSim(feeder);
 
     // Shooter Subsystem
     private final Shooter shooter = new Shooter();
