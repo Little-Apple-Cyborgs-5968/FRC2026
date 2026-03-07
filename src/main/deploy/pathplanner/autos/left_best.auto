@@ -34,7 +34,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "SHOOTER_WARMUP"
+                        "name": "SHOOT_ON_MOVE"
                       }
                     },
                     {

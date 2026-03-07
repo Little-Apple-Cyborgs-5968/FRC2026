@@ -271,7 +271,7 @@ public class Constants {
 
     public static class Spindexer {
         // Operational constants
-        public static final double kSpinnerSpeed = -1.8; // Target spinner speed in rotations per second (RPS)
+        public static final double kSpinnerSpeed = -1.5; // Target spinner speed in rotations per second (RPS)
         
         // Motor Constants
         public static final int kMotorCanID = 11; // CAN ID (dimensionless)
@@ -279,16 +279,16 @@ public class Constants {
         public static final double kKP = 11; // Proportional gain (dimensionless)
         public static final double kKI = 0; // Integral gain (dimensionless)
         public static final double kKD = 0; // Derivative gain (dimensionless)
-        public static final double kKS = 0; // Static friction feedforward (volts)
-        public static final double kKV = 1.9; // Velocity feedforward (volt-seconds per radian)
-        public static final double kKA = 1; // Acceleration feedforward (volt-seconds² per radian)
-        public static final double kMaxVelocity = 50; // Maximum velocity (rotations/s)
-        public static final double kMaxAcceleration = 100; // Maximum acceleration (rotations/s²)
+        public static final double kKS = 1; // Static friction feedforward (volts)
+        public static final double kKV = 5.5; // Velocity feedforward (volt-seconds per radian)
+        public static final double kKA = 2; // Acceleration feedforward (volt-seconds² per radian)
+        public static final double kMaxVelocity = 5000; // Maximum velocity (rotations/s)
+        public static final double kMaxAcceleration = 1000; // Maximum acceleration (rotations/s²)
         public static final boolean kBrakeMode = true; // Brake mode enabled (boolean)
         public static final boolean kEnableStatorLimit = true; // Stator current limit enabled (boolean)
-        public static final int kStatorCurrentLimit = 40; // Stator current limit (amperes)
+        public static final int kStatorCurrentLimit = 80; // Stator current limit (amperes)
         public static final boolean kEnableSupplyLimit = false; // Supply current limit enabled (boolean)
-        public static final double kSupplyCurrentLimit = 40; // Supply current limit (amperes)
+        public static final double kSupplyCurrentLimit = 60; // Supply current limit (amperes)
     }
 
     public static class Feeder {
