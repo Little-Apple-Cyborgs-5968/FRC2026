@@ -155,7 +155,7 @@ public class Constants {
 
         // ==================== MEGATAG2 CONFIG ====================
         // Whether to use MegaTag2 (recommended for better accuracy)
-        public static final boolean kUseMegaTag2 = false;
+        public static final boolean kUseMegaTag2 = true;
 
         // ==================== CAMERA POSE CONFIG ====================
         // Set to true to override web GUI camera poses with code values
