@@ -212,9 +212,9 @@ public class Constants {
     public static class Intake {
         // Operational constants
         public static final double kSpinnerSpeed = -28; // Target spinner speed in rotations per second (RPS)
-        public static final double kIntakeAngleDeployed = -55; // Deployed angle in degrees
+        public static final double kIntakeAngleDeployed = 110; // Deployed angle in degrees
         public static final double kIntakeAngleStowed = 0; // Stowed angle in degrees
-        public static final double kIntakeAngleUltraStowed = 40; // Ultra-stowed angle in degrees (for tight spaces)
+        public static final double kIntakeAngleUltraStowed = 0; // Ultra-stowed angle in degrees (for tight spaces)
         public static final double kPivotRezeroAngleDegrees = 0.0; // Rezero position in degrees
         
         // Pivot Constants
