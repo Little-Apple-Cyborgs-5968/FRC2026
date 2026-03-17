@@ -470,7 +470,7 @@ public class RobotContainer {
         // ── B BUTTON: Toggle SYOMDrive (Synchronized Yaw-Optimized Motion Drive) ─
         // Press once → robot auto-rotates to face travel direction.
         // Press again → returns to normal field-centric drive with manual rotation.
-        joystick.b().toggleOnTrue(syomDriveCommand);
+        joystick.rightStick().toggleOnTrue(syomDriveCommand);
 
         
         // Pathfind to nearest trench shoot pose; cancelled by pressing either joystick stick
