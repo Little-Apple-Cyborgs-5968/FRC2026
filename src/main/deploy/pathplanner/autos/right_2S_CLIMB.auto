@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left2_slow"
+            "pathName": "right1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Left3_slow"
+            "pathName": "right2"
           }
         },
         {
-          "type": "sequential",
+          "type": "path",
           "data": {
-            "commands": []
+            "pathName": "right_climb"
           }
         }
       ]

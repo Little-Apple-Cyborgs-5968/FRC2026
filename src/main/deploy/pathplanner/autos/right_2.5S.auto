@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "botbuster"
+            "pathName": "right1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "right2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "right3"
           }
         }
       ]

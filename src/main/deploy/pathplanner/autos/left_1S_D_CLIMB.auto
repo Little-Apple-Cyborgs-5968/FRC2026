@@ -13,13 +13,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left2"
+            "pathName": "Left3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Left3"
+            "pathName": "left_depot_climb"
           }
         }
       ]
