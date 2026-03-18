@@ -63,9 +63,20 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "SHOOTER_FULL_WARMUP",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": 0.08,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOTER_FULL_WARMUP"
+        }
+      }
+    },
+    {
       "name": "SHOOT_ON_MOVE",
-      "waypointRelativePos": 0.15,
-      "endWaypointRelativePos": 1.0,
+      "waypointRelativePos": 0.08,
+      "endWaypointRelativePos": 1.95,
       "command": {
         "type": "named",
         "data": {

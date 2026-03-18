@@ -56,24 +56,24 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "HOOD_TRENCH",
+      "waypointRelativePos": 0.026234567901234566,
+      "endWaypointRelativePos": 0.13888888888888562,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOT_ON_MOVE"
+        }
+      }
+    },
+    {
       "name": "INTAKE_DEPLOY",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.21759259259259262,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "INTAKE_DEPLOY"
-        }
-      }
-    },
-    {
-      "name": "SHOOT_ON_MOVE",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": 1.0,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "SHOOT_ON_MOVE"
         }
       }
     }

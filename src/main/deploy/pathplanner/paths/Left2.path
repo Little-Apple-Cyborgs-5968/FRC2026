@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 6.306308784383318,
-        "y": 7.266237799467612
+        "x": 6.299712837837839,
+        "y": 7.316342905405405
       },
       "prevControl": {
-        "x": 6.1196875586751105,
-        "y": 7.481326669775376
+        "x": 6.113091612129631,
+        "y": 7.531431775713169
       },
       "nextControl": {
-        "x": 6.781135758651286,
-        "y": 6.718979591836735
+        "x": 6.7745398121058065,
+        "y": 6.769084697774528
       },
       "isLocked": false,
       "linkedName": null
@@ -52,12 +52,12 @@
         "y": 6.332679680567879
       },
       "prevControl": {
-        "x": 5.525661047027507,
-        "y": 5.576175687666371
+        "x": 5.526524967986685,
+        "y": 5.575854576414526
       },
       "nextControl": {
-        "x": 6.412435770688174,
-        "y": 7.957799231212163
+        "x": 6.381190878378379,
+        "y": 7.879282094594595
       },
       "isLocked": false,
       "linkedName": null
@@ -68,8 +68,8 @@
         "y": 7.435244010647738
       },
       "prevControl": {
-        "x": 5.179600709849157,
-        "y": 7.435244010647738
+        "x": 5.144206081081081,
+        "y": 7.560777027027028
       },
       "nextControl": null,
       "isLocked": false,
@@ -118,7 +118,52 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "HOOD_TRENCH",
+      "waypointRelativePos": 0.06,
+      "endWaypointRelativePos": 0.5925925925925926,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "HOOD_TRENCH"
+        }
+      }
+    },
+    {
+      "name": "INTAKE_DEPLOY",
+      "waypointRelativePos": 0.4938271604938269,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "INTAKE_DEPLOY"
+        }
+      }
+    },
+    {
+      "name": "HOOD_TRENCH",
+      "waypointRelativePos": 3.635802469135803,
+      "endWaypointRelativePos": 3.8,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "HOOD_TRENCH"
+        }
+      }
+    },
+    {
+      "name": "SHOOTER_WARMUP",
+      "waypointRelativePos": 3.8,
+      "endWaypointRelativePos": 4.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOTER_WARMUP"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

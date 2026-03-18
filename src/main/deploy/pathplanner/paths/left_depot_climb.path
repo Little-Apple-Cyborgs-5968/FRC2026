@@ -32,28 +32,28 @@
     },
     {
       "anchor": {
-        "x": 0.9329720455158208,
-        "y": 4.900105611016497
+        "x": 1.1,
+        "y": 4.928666136263059
       },
       "prevControl": {
-        "x": 0.9329720455158208,
-        "y": 5.150105611016497
+        "x": 1.1,
+        "y": 5.178666136263059
       },
       "nextControl": {
-        "x": 0.9329720455158208,
-        "y": 4.650105611016497
+        "x": 1.1,
+        "y": 4.678666136263059
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.9329720455158208,
-        "y": 4.501173129387359
+        "x": 1.0,
+        "y": 4.4
       },
       "prevControl": {
-        "x": 0.9249241306977198,
-        "y": 5.322060440833676
+        "x": 0.991952085181899,
+        "y": 5.220887311446317
       },
       "nextControl": null,
       "isLocked": false,
@@ -82,7 +82,30 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "SHOOTER_FULL_WARMUP",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": 0.8,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOTER_FULL_WARMUP"
+        }
+      }
+    },
+    {
+      "name": "SHOOT_ON_MOVE",
+      "waypointRelativePos": 0.8,
+      "endWaypointRelativePos": 3.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOT_ON_MOVE"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 2.0,

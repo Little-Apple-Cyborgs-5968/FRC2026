@@ -120,7 +120,52 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "HOOD_TRENCH",
+      "waypointRelativePos": 0.1,
+      "endWaypointRelativePos": 0.8719135802469113,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "HOOD_TRENCH"
+        }
+      }
+    },
+    {
+      "name": "INTAKE_DEPLOY",
+      "waypointRelativePos": 0.8950617283950635,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "INTAKE_DEPLOY"
+        }
+      }
+    },
+    {
+      "name": "HOOD_TRENCH",
+      "waypointRelativePos": 4.2,
+      "endWaypointRelativePos": 4.5,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "HOOD_TRENCH"
+        }
+      }
+    },
+    {
+      "name": "SHOOTER_WARMUP",
+      "waypointRelativePos": 4.5,
+      "endWaypointRelativePos": 5.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOTER_WARMUP"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.3,
     "maxAcceleration": 3.3,

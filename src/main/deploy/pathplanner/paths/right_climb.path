@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 1.107339527027027,
-        "y": 2.9905996621621624
+        "x": 1.13,
+        "y": 3.1
       },
       "prevControl": {
-        "x": 1.107339527027027,
-        "y": 2.2418966374220157
+        "x": 1.13,
+        "y": 2.3512969752598534
       },
       "nextControl": null,
       "isLocked": false,
@@ -70,7 +70,30 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "SHOOTER_FULL_WARMUP",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": 0.15,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOTER_FULL_WARMUP"
+        }
+      }
+    },
+    {
+      "name": "SHOOT_ON_MOVE",
+      "waypointRelativePos": 0.15,
+      "endWaypointRelativePos": 2.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOT_ON_MOVE"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 1.0,
     "maxAcceleration": 2.0,
