@@ -21,6 +21,12 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "INTAKE_JIGGLE"
+                }
+              },
+              {
                 "type": "wait",
                 "data": {
                   "waitTime": 2.5

@@ -103,6 +103,17 @@
           "name": "SHOOT_ON_MOVE"
         }
       }
+    },
+    {
+      "name": "INTAKE_JIGGLE",
+      "waypointRelativePos": 0.2772585669781931,
+      "endWaypointRelativePos": 1.8753894080996811,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "INTAKE_JIGGLE"
+        }
+      }
     }
   ],
   "globalConstraints": {

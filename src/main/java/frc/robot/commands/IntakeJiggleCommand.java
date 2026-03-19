@@ -24,6 +24,7 @@ public class IntakeJiggleCommand extends Command {
     timer.restart();
     isAtFirstAngle = true;
     intake.PivotSetAngle(Constants.Intake.kIntakeAngleJiggle1);
+    intake.StopSpinner();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -46,10 +47,8 @@ public class IntakeJiggleCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     // Return to stowed position or leave it depending on desired behavior.
-    // Calling StowCommand() here might not be necessary if the default command handles it
-    // or if the driver prefers it to stay before another command takes over.
     // For safety, we can stop the pivot motor.
-    intake.PivotStopCommand().schedule();
+    intake.PivotStop();
   }
 
   // Returns true when the command should end.

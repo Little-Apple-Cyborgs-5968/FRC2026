@@ -461,11 +461,19 @@ public class Intake extends SubsystemBase {
     return intakeSim;
   }
   /**
+   * Stop the intake pivot directly.
+   */
+  public void PivotStop() {
+    PivotMotor.setControl(pivotVelocityRequest.withVelocity(0));
+    PivotMotor.stopMotor();
+  }
+
+  /**
    * Creates a command to stop the intake.
    * @return A command that stops the intake
    */
   public Command PivotStopCommand() {
-    return runOnce(() -> PivotMotor.stopMotor());
+    return runOnce(() -> PivotStop());
   }
 
   public Command PivotSetAngleCommand(double angleDegrees) {
@@ -543,16 +551,19 @@ public class Intake extends SubsystemBase {
   }
 
   /**
+   * Stop the spinner directly.
+   */
+  public void StopSpinner() {
+    SpinnerMotor.setControl(spinnerVelocityRequest.withVelocity(0));
+    SpinnerMotor.stopMotor();
+  }
+
+  /**
    * Creates a command to stop the spinner.
    * @return A command that stops the spinner
    */
   public Command SpinnerStopCommand() {
-    return runOnce(() -> {
-      // Update velocity request to 0 so logged target shows 0
-      SpinnerMotor.setControl(spinnerVelocityRequest.withVelocity(0));
-      // Then immediately stop motor (neutral output)
-      SpinnerMotor.stopMotor();
-    });
+    return runOnce(() -> this.StopSpinner());
   }
 
   /**
