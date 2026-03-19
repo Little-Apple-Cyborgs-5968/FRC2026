@@ -17,6 +17,9 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.Spindexer;
+import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 
 public class Visualizer extends SubsystemBase {
@@ -27,11 +30,18 @@ public class Visualizer extends SubsystemBase {
   private final Turret turret;
   private final Shooter shooter;
   private final Climber climber;
+  private final Spindexer spindexer;
+  private final Feeder feeder;
+  private final CommandSwerveDrivetrain drivetrain;
+  
   /** Creates a new Visualizer. */
-  public Visualizer(Turret turretSubsystem, Shooter shooterSubsystem, Climber climberSubsystem) {
+  public Visualizer(Turret turretSubsystem, Shooter shooterSubsystem, Climber climberSubsystem, Spindexer spindexerSubsystem, Feeder feederSubsystem, CommandSwerveDrivetrain drivetrainSubsystem) {
     this.turret = turretSubsystem;
     this.shooter = shooterSubsystem;
     this.climber = climberSubsystem;
+    this.spindexer = spindexerSubsystem;
+    this.feeder = feederSubsystem;
+    this.drivetrain = drivetrainSubsystem;
         // Initialize NetworkTables publisher
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     turretPosePublisher = inst.getStructTopic("VISUALIZER/Turret Pose", Pose3d.struct).publish();
@@ -76,8 +86,16 @@ public class Visualizer extends SubsystemBase {
 
     turretPosePublisher.set(turretPose);
     climberPosePublisher.set(climberPose);
-    targetPosePublisher.set(shooter.getTargetPose());
     componentsPublisher.set(new Pose3d[] {turretPose, climberPose});
 
+    boolean spindexerSpinning = Math.abs(spindexer.getVelocity()) > 0.1 || Math.abs(spindexer.getTargetVelocity()) > 0.1;
+    boolean feederSpinning = feeder.isRunning() || Math.abs(feeder.getVelocity()) > 0.1;
+    boolean flywheelSpinning = shooter.getTargetFlywheelVelocity() > 0.1 || Math.abs(shooter.getAverageFlywheelVelocity()) > 0.1;
+    
+    if (spindexerSpinning && feederSpinning && flywheelSpinning) {
+      targetPosePublisher.set(shooter.getTargetPose());
+    } else {
+      targetPosePublisher.set(drivetrain.getState().Pose);
+    }
   }
 }

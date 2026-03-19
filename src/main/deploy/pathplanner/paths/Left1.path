@@ -136,6 +136,17 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "CLIMBER_RETRACT",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "CLIMBER_RETRACT"
+        }
+      }
+    },
+    {
       "name": "HOOD_TRENCH",
       "waypointRelativePos": 0.03,
       "endWaypointRelativePos": 0.8796296296296285,

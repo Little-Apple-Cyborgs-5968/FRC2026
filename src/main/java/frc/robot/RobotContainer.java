@@ -135,7 +135,7 @@ public class RobotContainer {
 
 
     
-    private final Visualizer visualizer = new Visualizer(turret,shooter,climber);
+    private final Visualizer visualizer = new Visualizer(turret,shooter,climber, spindexer, feeder, drivetrain);
 
     // SYOMDrive command instance — toggled on/off with the X button
     private final SYOMDriveCommand syomDriveCommand = new SYOMDriveCommand(

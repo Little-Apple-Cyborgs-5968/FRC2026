@@ -331,7 +331,7 @@ public class Shooter extends SubsystemBase {
    */
   @Logged(name = "Flywheel/Average Velocity RPS")
   public double getAverageFlywheelVelocity() {
-    return (getLeftFlywheelVelocity() + Math.abs(getRightFlywheelVelocity())) / 2.0;
+    return (Math.abs(getLeftFlywheelVelocity()) + Math.abs(getRightFlywheelVelocity())) / 2.0;
   }
 
   /**
