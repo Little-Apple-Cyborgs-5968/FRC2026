@@ -75,7 +75,23 @@
       "name": "SHOOTER_FULL_WARMUP",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": 0.2,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOTER_FULL_WARMUP"
+        }
+      }
+    },
+    {
+      "name": "CLIMBER_EXTEND",
+      "waypointRelativePos": 0.11526479750778815,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "CLIMBER_EXTEND"
+        }
+      }
     },
     {
       "name": "SHOOT_ON_MOVE",

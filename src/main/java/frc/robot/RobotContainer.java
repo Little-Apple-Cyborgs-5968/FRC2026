@@ -223,6 +223,9 @@ public class RobotContainer {
                 feeder.runCommand()
             ).withName("ShootOnMove-Firing")
         );
+
+        NamedCommands.registerCommand("CLIMBER_EXTEND", climber.extendCommand());
+        NamedCommands.registerCommand("CLIMBER_RETRACT", climber.retractCommand());
         // Initialize Vision subsystem with drivetrain integration
         vision = new Vision(
             // Pose supplier - gets current robot pose from drivetrain

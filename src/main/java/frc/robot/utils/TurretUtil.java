@@ -35,16 +35,18 @@ public class TurretUtil {
         public final double shooterSpeedRPS;      // Flywheel speed from lookup table (RPS)
         public final double timeOfFlightSeconds;  // Ball time-of-flight from lookup table (s)
         public final boolean isValid;             // True if shot is within range & turret limits
+        public final Pose2d targetPose;           // The target pose, adjusted for robot velocity if applicable
 
         public ShotSolution(double distanceMeters, double turretAngleDegrees,
                             double trajectoryAngleDegrees, double shooterSpeedRPS,
-                            double timeOfFlightSeconds, boolean isValid) {
+                            double timeOfFlightSeconds, boolean isValid, Pose2d targetPose) {
             this.distanceMeters = distanceMeters;
             this.turretAngleDegrees = turretAngleDegrees;
             this.trajectoryAngleDegrees = trajectoryAngleDegrees;
             this.shooterSpeedRPS = shooterSpeedRPS;
             this.timeOfFlightSeconds = timeOfFlightSeconds;
             this.isValid = isValid;
+            this.targetPose = targetPose;
         }
     }
 
@@ -177,7 +179,8 @@ public class TurretUtil {
                 params.trajectoryAngle,
                 params.shooterSpeed,
                 params.timeOfFlight,
-                valid);
+                valid,
+                getTargetPose(target));
     }
 
     // =========================
@@ -249,13 +252,20 @@ public class TurretUtil {
 
         boolean valid = isWithinShootingRange(finalDist) && isTurretAngleReachable(turretAngle);
 
+        Pose2d actualTargetPose = getTargetPose(target);
+        Pose2d virtualTargetPose = new Pose2d(
+                actualTargetPose.getX() - (virtualX - turretNow.getX()),
+                actualTargetPose.getY() - (virtualY - turretNow.getY()),
+                actualTargetPose.getRotation());
+
         return new ShotSolution(
                 finalDist,
                 turretAngle,
                 params.trajectoryAngle,
                 params.shooterSpeed,
                 params.timeOfFlight,
-                valid);
+                valid,
+                virtualTargetPose);
     }
 
     // =========================

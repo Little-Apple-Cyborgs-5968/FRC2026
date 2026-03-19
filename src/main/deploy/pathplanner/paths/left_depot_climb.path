@@ -95,6 +95,17 @@
       }
     },
     {
+      "name": "CLIMBER_EXTEND",
+      "waypointRelativePos": 0.4,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "CLIMBER_EXTEND"
+        }
+      }
+    },
+    {
       "name": "SHOOT_ON_MOVE",
       "waypointRelativePos": 0.8,
       "endWaypointRelativePos": 3.0,

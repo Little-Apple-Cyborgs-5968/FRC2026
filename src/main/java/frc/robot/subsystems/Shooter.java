@@ -94,6 +94,9 @@ public class Shooter extends SubsystemBase {
   private final SparkClosedLoopController hoodController;
   private double targetHoodAngle = Constants.Shooter.kHoodStartAngleDegrees;
 
+  // Software-tracked target pose
+  private Pose2d currentTargetPose = new Pose2d();
+
   // Simulation
   private final FlywheelSim leftFlywheelSim;
   private final FlywheelSim rightFlywheelSim;
@@ -436,6 +439,14 @@ public class Shooter extends SubsystemBase {
     return Math.abs(getHoodVelocity()) < 5.0; // 5 deg/s tolerance
   }
 
+  /**
+   * Get the current theoretical target pose that the shooter aims at, adjusted for robot velocity.
+   */
+  @Logged(name = "Target Pose")
+  public Pose2d getTargetPose() {
+    return currentTargetPose;
+  }
+
   //------------------------ Commands -----------------------//
 
   /**
@@ -611,6 +622,7 @@ public class Shooter extends SubsystemBase {
       TurretUtil.ShotSolution solution = TurretUtil.computeShotSolution(robotPose, target);
       
       if (solution.isValid) {
+        currentTargetPose = solution.targetPose;
         setHoodAngle(solution.trajectoryAngleDegrees);
         setFlywheelVelocity(solution.shooterSpeedRPS);
       }
@@ -631,6 +643,7 @@ public class Shooter extends SubsystemBase {
       TurretUtil.ShotSolution solution = TurretUtil.computeShotSolution(robotPose, target);
 
       if (solution.isValid) {
+        currentTargetPose = solution.targetPose;
         setFlywheelVelocity(solution.shooterSpeedRPS);
       }
     }).withName("AutoAimFlywheelOnly-" + target.toString());
@@ -650,6 +663,7 @@ public class Shooter extends SubsystemBase {
       TurretUtil.ShotSolution solution = TurretUtil.computeShotSolution(robotPose, target);
 
       if (solution.isValid) {
+        currentTargetPose = solution.targetPose;
         setHoodAngle(solution.trajectoryAngleDegrees);
       }
     }).withName("AutoAimHoodOnly-" + target.toString());
@@ -674,6 +688,7 @@ public class Shooter extends SubsystemBase {
           robotPose, speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, target);
 
       if (solution.isValid) {
+        currentTargetPose = solution.targetPose;
         setHoodAngle(solution.trajectoryAngleDegrees);
         setFlywheelVelocity(solution.shooterSpeedRPS);
       }
@@ -699,6 +714,7 @@ public class Shooter extends SubsystemBase {
           robotPose, speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, target);
 
       if (solution.isValid) {
+        currentTargetPose = solution.targetPose;
         setFlywheelVelocity(solution.shooterSpeedRPS);
       }
     }).withName("ShootOnMove-FlywheelOnly-" + target.toString());
@@ -724,6 +740,7 @@ public class Shooter extends SubsystemBase {
           robotPose, speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, target);
 
       if (solution.isValid) {
+        currentTargetPose = solution.targetPose;
         setHoodAngle(solution.trajectoryAngleDegrees);
       }
     }).withName("ShootOnMove-HoodOnly-" + target.toString());

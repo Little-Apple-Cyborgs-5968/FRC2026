@@ -83,6 +83,17 @@
       }
     },
     {
+      "name": "CLIMBER_EXTEND",
+      "waypointRelativePos": 0.12149532710280372,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "CLIMBER_EXTEND"
+        }
+      }
+    },
+    {
       "name": "SHOOT_ON_MOVE",
       "waypointRelativePos": 0.15,
       "endWaypointRelativePos": 2.0,

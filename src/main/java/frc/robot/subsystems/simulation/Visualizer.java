@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.simulation;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -21,6 +22,7 @@ import frc.robot.subsystems.Turret;
 public class Visualizer extends SubsystemBase {
   private final StructPublisher<Pose3d> turretPosePublisher;
   private final StructPublisher<Pose3d> climberPosePublisher;
+  private final StructPublisher<Pose2d> targetPosePublisher;
   private final StructArrayPublisher<Pose3d> componentsPublisher;
   private final Turret turret;
   private final Shooter shooter;
@@ -34,6 +36,7 @@ public class Visualizer extends SubsystemBase {
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     turretPosePublisher = inst.getStructTopic("VISUALIZER/Turret Pose", Pose3d.struct).publish();
     climberPosePublisher = inst.getStructTopic("VISUALIZER/Climber Pose", Pose3d.struct).publish();
+    targetPosePublisher = inst.getStructTopic("VISUALIZER/Target Pose", Pose2d.struct).publish();
     componentsPublisher = inst.getStructArrayTopic("VISUALIZER/Components Poses", Pose3d.struct).publish();
   }
 
@@ -73,6 +76,7 @@ public class Visualizer extends SubsystemBase {
 
     turretPosePublisher.set(turretPose);
     climberPosePublisher.set(climberPose);
+    targetPosePublisher.set(shooter.getTargetPose());
     componentsPublisher.set(new Pose3d[] {turretPose, climberPose});
 
   }

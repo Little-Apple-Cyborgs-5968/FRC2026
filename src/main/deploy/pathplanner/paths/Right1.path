@@ -139,6 +139,17 @@
       }
     },
     {
+      "name": "CLIMBER_RETRACT",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "CLIMBER_RETRACT"
+        }
+      }
+    },
+    {
       "name": "INTAKE_DEPLOY",
       "waypointRelativePos": 0.20833333333333331,
       "endWaypointRelativePos": null,
