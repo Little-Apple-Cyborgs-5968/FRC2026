@@ -9,24 +9,32 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
 
 public class Visualizer extends SubsystemBase {
   private final StructPublisher<Pose3d> turretPosePublisher;
+  private final StructPublisher<Pose3d> climberPosePublisher;
+  private final StructArrayPublisher<Pose3d> componentsPublisher;
   private final Turret turret;
   private final Shooter shooter;
+  private final Climber climber;
   /** Creates a new Visualizer. */
-  public Visualizer(Turret turretSubsystem, Shooter shooterSubsystem) {
+  public Visualizer(Turret turretSubsystem, Shooter shooterSubsystem, Climber climberSubsystem) {
     this.turret = turretSubsystem;
     this.shooter = shooterSubsystem;
+    this.climber = climberSubsystem;
         // Initialize NetworkTables publisher
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     turretPosePublisher = inst.getStructTopic("VISUALIZER/Turret Pose", Pose3d.struct).publish();
+    climberPosePublisher = inst.getStructTopic("VISUALIZER/Climber Pose", Pose3d.struct).publish();
+    componentsPublisher = inst.getStructArrayTopic("VISUALIZER/Components Poses", Pose3d.struct).publish();
   }
 
   @Override
@@ -48,6 +56,24 @@ public class Visualizer extends SubsystemBase {
       new Translation3d(turretOffsetX, turretOffsetY, turretOffsetZ), 
       new Rotation3d(0, hoodAngleRad, currentAngleRad + Math.PI) // Add 180 degrees to match physical orientation
     );
+
+
+
+    double climberX = -0.079; // Adjust as needed to match physical robot
+    double climberY = 0.273 ; // Adjust as needed
+    double climberBaseZ = 0.15; // Base height of the climber
+    double climberZrange = 0.3; // Max extension range of the climber in meters
+
+    double currentClimberHeight = climberZrange * (climber.getPosition() - Constants.Climber.kRetractSetpointRotations) / (Constants.Climber.kExtendSetpointRotations - Constants.Climber.kRetractSetpointRotations);
+    
+    Pose3d climberPose = new Pose3d(
+      new Translation3d(climberX, climberY, climberBaseZ +currentClimberHeight),
+      new Rotation3d(0, 0, 0) // No rotation for climber visualization
+    );
+
     turretPosePublisher.set(turretPose);
+    climberPosePublisher.set(climberPose);
+    componentsPublisher.set(new Pose3d[] {turretPose, climberPose});
+
   }
 }

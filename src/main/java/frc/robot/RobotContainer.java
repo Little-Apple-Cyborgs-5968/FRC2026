@@ -29,6 +29,7 @@ import frc.robot.commands.SYOMDriveCommand;
 // import frc.robot.commands.WhiskerPickupCommand;
 import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
@@ -36,6 +37,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Spindexer;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.simulation.ClimberSim;
 import frc.robot.subsystems.simulation.FeederSim;
 import frc.robot.subsystems.simulation.IntakeSim;
 import frc.robot.subsystems.simulation.ShooterSim;
@@ -126,8 +128,14 @@ public class RobotContainer {
     private final Shooter shooter = new Shooter();
     private final ShooterSim shooterSim = new ShooterSim(shooter);
 
+    //Climber subsystem 
+    private final Climber climber = new Climber();
+    private final ClimberSim climberSim = new ClimberSim(climber);
+
+
+
     
-    private final Visualizer visualizer = new Visualizer(turret,shooter);
+    private final Visualizer visualizer = new Visualizer(turret,shooter,climber);
 
     // SYOMDrive command instance — toggled on/off with the X button
     private final SYOMDriveCommand syomDriveCommand = new SYOMDriveCommand(
@@ -473,7 +481,7 @@ public class RobotContainer {
         joystick.rightStick().toggleOnTrue(syomDriveCommand);
 
         
-        // Pathfind to nearest trench shoot pose; cancelled by pressing either joystick stick
+        // Pathfind to nearest postion in selected zone while A+Y held, cancel on joystick move
 
         joystick.a().and(joystick.y()).onTrue(
             Commands.defer(() -> {
@@ -529,6 +537,26 @@ public class RobotContainer {
         // reset the field-centric heading on back button press(back button)
         joystick.back().onTrue(
             drivetrain.runOnce(() -> drivetrain.seedFieldCentric())
+        );
+
+        // climber.setDefaultCommand(climber.stopCommand());
+
+        joystick.pov(45).whileTrue(
+            climber.extendCommand()
+        );
+        joystick.pov(135).whileTrue(
+            climber.retractCommand()
+        );
+
+        joystick.pov(315).whileTrue(
+            climber.upCommand()
+        ).onFalse(
+            climber.stopCommand()
+        );
+        joystick.pov(225).whileTrue(
+            climber.downCommand()
+        ).onFalse(
+            climber.stopCommand()
         );
 
 

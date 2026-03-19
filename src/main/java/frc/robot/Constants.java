@@ -302,7 +302,7 @@ public class Constants {
         public static final double kKI = 0; // Integral gain (dimensionless)
         public static final double kKD = 0; // Derivative gain (dimensionless)
         public static final double kKS = 0; // Static friction feedforward (volts)
-        public static final double kKV = 0.12; // Velocity feedforward (volt-seconds per radian)
+        public static final double kKV = 1; // Velocity feedforward (volt-seconds per radian)
         public static final double kKA = 1; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kMaxVelocity = 60; // Maximum velocity (rotations/s)
         public static final double kMaxAcceleration = 120; // Maximum acceleration (rotations/s²)
@@ -423,5 +423,48 @@ public class Constants {
         public static final double kSimFlywheelMomentOfInertia = 0.005; // kg·m² — realistic for shooter flywheels
         public static final double kSimHoodMomentOfInertia = 0.004; // kg·m²
         public static final double kSimHoodLength = 0.3; // meters
+    }
+
+    public static class Climber {
+        public static final int kMotorCanID = 16; // TODO: Update CAN ID
+        public static final double kGearRatio = 25.0; // 25:1 spool gearbox
+        public static final double kSpoolDiameterMeters = 0.02; // probably fake
+
+        // PID values
+        public static final double kP = 2000;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double kS = 0.1;
+        public static final double kV = 100;
+        public static final double kA = 1;
+
+        // Current limits
+        public static final boolean kEnableStatorLimit = true;
+        public static final int kStatorCurrentLimit = 60;
+        public static final boolean kEnableSupplyLimit = true;
+        public static final double kSupplyCurrentLimit = 40;
+
+        // Brake mode
+        public static final boolean kBrakeMode = true; // Brake mode is critical for climber
+
+        // Setpoints (in rotations or meters depending on preference; using rotations here)
+        public static final double kExtendSetpointRotations = 2.76; // TODO: tune
+        public static final double kRetractSetpointRotations = 0;  // TODO: tune
+
+        // Motion Magic / Limits
+        public static final double kMaxVelocity = 3.0; // mechanism rotations/s
+        public static final double kMaxAcceleration =5.0; // mechanism rotations/s^2
+        public static final double kForwardSoftLimit = 3.0; // rotations
+        public static final double kReverseSoftLimit = 0.0; // rotations
+        public static final double kG = 0; // Gravity feedforward constant 
+
+        // Manual controls
+        public static final double kManualUpSpeed = 1.0; // rotations per second
+        public static final double kManualDownSpeed = -1.0; // rotations per second
+
+        // Simulation Constants
+        public static final double kSimCarriageMass = 1; // kg
+        public static final double kSimMinRotations = 0.0; // mechanism rotations
+        public static final double kSimMaxRotations = 105.0; // mechanism rotations
     }
 }
