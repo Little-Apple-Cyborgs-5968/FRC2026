@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.commands.DefaultShootCommand;
 import frc.robot.commands.DrivetrainShootOnMoveCommand;
+import frc.robot.commands.IntakeJiggleCommand;
 import frc.robot.commands.PathFindCommands;
 import frc.robot.commands.SYOMDriveCommand;
 // import frc.robot.commands.WhiskerPickupCommand;
@@ -114,7 +115,7 @@ public class RobotContainer {
 
     // Intake Subsystem
     private final Intake intake = new Intake();
-    //private final IntakeSim intakeSim = new IntakeSim(intake);
+    private final IntakeSim intakeSim = new IntakeSim(intake);
 
     // Spindexer Subsystem
     private final Spindexer spindexer = new Spindexer();
@@ -135,7 +136,7 @@ public class RobotContainer {
 
 
     
-    private final Visualizer visualizer = new Visualizer(turret,shooter,climber, spindexer, feeder, drivetrain);
+    private final Visualizer visualizer = new Visualizer(turret,shooter,climber, spindexer, feeder, drivetrain, intake);
 
     // SYOMDrive command instance — toggled on/off with the X button
     private final SYOMDriveCommand syomDriveCommand = new SYOMDriveCommand(
@@ -150,9 +151,10 @@ public class RobotContainer {
     public RobotContainer() {
         // Register named commands for PathPlanner autos
 
-        NamedCommands.registerCommand("INTAKE_DEPLOY", intake.DeployCommand());
-        NamedCommands.registerCommand("INTAKE_STOW", intake.StowCommand());
+        NamedCommands.registerCommand("INTAKE_DEPLOY", intake.DeployCommand().withTimeout(0.01)); // Add a short timeout to ensure the deploy command finishes before any subsequent commands that might rely on the intake being deployed  
+        NamedCommands.registerCommand("INTAKE_STOW", intake.StowCommand().withTimeout(0.01)); // Add a short timeout to ensure the stow command finishes before any subsequent commands that might rely on the intake being stowed
         NamedCommands.registerCommand("INTAKE_STOP_SPINNER", intake.SpinnerStopCommand());
+        NamedCommands.registerCommand("INTAKE_JIGGLE", new IntakeJiggleCommand(intake));
 
         NamedCommands.registerCommand("SPINDEXER_RUN", spindexer.runCommand());
         NamedCommands.registerCommand("SPINDEXER_STOP", spindexer.stopCommand());
@@ -285,6 +287,9 @@ public class RobotContainer {
         joystick.rightBumper().and(joystick.leftBumper().negate()).onTrue(
             intake.DeployCommand()
         );
+
+        // B button toggles the Intake Jiggle Command
+        joystick.b().toggleOnTrue(new IntakeJiggleCommand(intake));
 
         shooter.setDefaultCommand(shooter.stopCommand());
         spindexer.setDefaultCommand(spindexer.stopCommand());
@@ -544,10 +549,10 @@ public class RobotContainer {
 
         // climber.setDefaultCommand(climber.stopCommand());
 
-        joystick.pov(45).whileTrue(
+        joystick.pov(45).onTrue(
             climber.extendCommand()
         );
-        joystick.pov(135).whileTrue(
+        joystick.pov(135).onTrue(
             climber.retractCommand()
         );
 

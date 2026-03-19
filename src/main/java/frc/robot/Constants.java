@@ -215,6 +215,9 @@ public class Constants {
         public static final double kIntakeAngleDeployed = 110; // Deployed angle in degrees
         public static final double kIntakeAngleStowed = 0; // Stowed angle in degrees
         public static final double kIntakeAngleUltraStowed = 0; // Ultra-stowed angle in degrees (for tight spaces)
+        public static final double kIntakeAngleJiggle1 = 30; // First jiggle angle in degrees
+        public static final double kIntakeAngleJiggle2 = 70; // Second jiggle angle in degrees
+        public static final double kJiggleInterval = 0.5; // Swap direction every this many seconds
         public static final double kPivotRezeroAngleDegrees = 0.0; // Rezero position in degrees
         
         // Pivot Constants
@@ -258,11 +261,11 @@ public class Constants {
         public static final double kSpinnerSupplyCurrentLimit = 25; // Supply current limit (amperes)
         
         // Simulation constants
-        public static final double kSimArmMomentOfInertia = 0.3; // Arm moment of inertia (kg·m²)
+        public static final double kSimArmMomentOfInertia = 2; // Arm moment of inertia (kg·m²)
         public static final double kSimArmLength = 0.4; // Arm length (m) - ~16 inches
-        public static final double kSimMinAngleDegrees = -60; // Min angle (degrees)
-        public static final double kSimMaxAngleDegrees = 30; // Max angle (degrees)
-        public static final boolean kSimulateGravity = true; // Simulate gravity
+        public static final double kSimMinAngleDegrees = kIntakeAngleStowed; // Min angle (degrees)
+        public static final double kSimMaxAngleDegrees = kIntakeAngleDeployed; // Max angle (degrees)
+        public static final boolean kSimulateGravity = false; // Simulate gravity
         public static final double kSimStartingPositionDegrees = 0; // Starting position (degrees)
         
         // Spinner simulation constants

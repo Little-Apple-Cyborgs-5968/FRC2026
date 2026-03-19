@@ -400,7 +400,7 @@ public class Intake extends SubsystemBase {
    * Set intake angle.
    * @param angleDegrees The target angle in degrees
    */
-  private void PivotSetAngle(double angleDegrees) {
+  public void PivotSetAngle(double angleDegrees) {
     PivotSetAngle(angleDegrees, 0);
   }
 
@@ -409,7 +409,7 @@ public class Intake extends SubsystemBase {
    * @param angleDegrees The target angle in degrees
    * @param acceleration The acceleration in rad/s²
    */
-  private void PivotSetAngle(double angleDegrees, double acceleration) {
+  public void PivotSetAngle(double angleDegrees, double acceleration) {
     // Track target for telemetry
     this.targetPivotAngleDegrees = angleDegrees;
     

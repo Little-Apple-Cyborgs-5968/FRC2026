@@ -15,6 +15,44 @@
           "data": {
             "pathName": "right_climb_slow"
           }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SHOOT_ON_MOVE"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.6
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "INTAKE_STOW"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CLIMBER_RETRACT"
+                }
+              }
+            ]
+          }
         }
       ]
     }

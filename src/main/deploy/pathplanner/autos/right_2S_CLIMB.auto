@@ -11,6 +11,25 @@
           }
         },
         {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SHOOT_ON_MOVE"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.5
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "right2"
@@ -20,6 +39,25 @@
           "type": "path",
           "data": {
             "pathName": "right_climb"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "CLIMBER_RETRACT"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "INTAKE_STOW"
+                }
+              }
+            ]
           }
         }
       ]

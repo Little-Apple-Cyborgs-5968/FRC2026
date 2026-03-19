@@ -7,6 +7,7 @@ package frc.robot.subsystems.simulation;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -19,25 +20,29 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Spindexer;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 
 public class Visualizer extends SubsystemBase {
   private final StructPublisher<Pose3d> turretPosePublisher;
   private final StructPublisher<Pose3d> climberPosePublisher;
+    private final StructPublisher<Pose3d> intakePosePublisher;
   private final StructPublisher<Pose2d> targetPosePublisher;
   private final StructArrayPublisher<Pose3d> componentsPublisher;
   private final Turret turret;
   private final Shooter shooter;
+  private final Intake intake;
   private final Climber climber;
   private final Spindexer spindexer;
   private final Feeder feeder;
   private final CommandSwerveDrivetrain drivetrain;
   
   /** Creates a new Visualizer. */
-  public Visualizer(Turret turretSubsystem, Shooter shooterSubsystem, Climber climberSubsystem, Spindexer spindexerSubsystem, Feeder feederSubsystem, CommandSwerveDrivetrain drivetrainSubsystem) {
+  public Visualizer(Turret turretSubsystem, Shooter shooterSubsystem, Climber climberSubsystem, Spindexer spindexerSubsystem, Feeder feederSubsystem, CommandSwerveDrivetrain drivetrainSubsystem, Intake intakeSubsystem) {
     this.turret = turretSubsystem;
     this.shooter = shooterSubsystem;
+    this.intake = intakeSubsystem;
     this.climber = climberSubsystem;
     this.spindexer = spindexerSubsystem;
     this.feeder = feederSubsystem;
@@ -46,6 +51,7 @@ public class Visualizer extends SubsystemBase {
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     turretPosePublisher = inst.getStructTopic("VISUALIZER/Turret Pose", Pose3d.struct).publish();
     climberPosePublisher = inst.getStructTopic("VISUALIZER/Climber Pose", Pose3d.struct).publish();
+    intakePosePublisher = inst.getStructTopic("VISUALIZER/Intake Pose", Pose3d.struct).publish();
     targetPosePublisher = inst.getStructTopic("VISUALIZER/Target Pose", Pose2d.struct).publish();
     componentsPublisher = inst.getStructArrayTopic("VISUALIZER/Components Poses", Pose3d.struct).publish();
   }
@@ -84,9 +90,24 @@ public class Visualizer extends SubsystemBase {
       new Rotation3d(0, 0, 0) // No rotation for climber visualization
     );
 
+    double intakeX = 0.3; // Adjust as needed to match physical robot
+    double intakeY = 0.0; // Adjust as needed
+    double intakeZ = 0.07; // Adjust as needed for height of intake
+
+
+    double intakeAngleRad = -Math.abs(Math.abs(Units.degreesToRadians(Constants.Intake.kIntakeAngleDeployed)) -  Math.abs(Units.degreesToRadians(Units.rotationsToDegrees(intake.GetPivotPosition()))));
+    
+    // Apply translation first to place the intake pivot, then apply rotation around that pivot
+    Pose3d intakePose = new Pose3d()
+      .transformBy(new Transform3d(new Translation3d(intakeX, intakeY, intakeZ), new Rotation3d()))
+      .transformBy(new Transform3d(new Translation3d(), new Rotation3d(0, intakeAngleRad, 0))); // Rotate around Z axis for intake deployment
+      
+
     turretPosePublisher.set(turretPose);
     climberPosePublisher.set(climberPose);
-    componentsPublisher.set(new Pose3d[] {turretPose, climberPose});
+    intakePosePublisher.set(intakePose);
+
+    componentsPublisher.set(new Pose3d[] {turretPose, climberPose, intakePose});
 
     boolean spindexerSpinning = Math.abs(spindexer.getVelocity()) > 0.1 || Math.abs(spindexer.getTargetVelocity()) > 0.1;
     boolean feederSpinning = feeder.isRunning() || Math.abs(feeder.getVelocity()) > 0.1;

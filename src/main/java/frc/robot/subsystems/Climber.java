@@ -282,7 +282,7 @@ public class Climber extends SubsystemBase {
    * Command to extend the climber to the configured setpoint.
    */
   public Command extendCommand() {
-    return run(() -> {
+    return runOnce(() -> {
       setPosition(Constants.Climber.kExtendSetpointRotations);
     });
   }
@@ -291,7 +291,7 @@ public class Climber extends SubsystemBase {
    * Command to retract the climber to the configured setpoint.
    */
   public Command retractCommand() {
-    return run(() -> {
+    return runOnce(() -> {
       setPosition(Constants.Climber.kRetractSetpointRotations);
     });
   }

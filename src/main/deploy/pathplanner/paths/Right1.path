@@ -151,7 +151,7 @@
     },
     {
       "name": "INTAKE_DEPLOY",
-      "waypointRelativePos": 0.20833333333333331,
+      "waypointRelativePos": 0.01,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

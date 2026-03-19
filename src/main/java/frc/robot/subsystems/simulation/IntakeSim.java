@@ -80,13 +80,14 @@ public class IntakeSim extends SubsystemBase {
   @Override
   public void periodic() {
     // Update intake angle
-    double currentAngleRad = intake.GetPivotPosition();
-    intakeMech.setAngle(Units.radiansToDegrees(currentAngleRad));
+    double currentAngleRot = intake.GetPivotPosition();
+    intakeMech.setAngle(Units.radiansToDegrees(currentAngleRot));
 
     // Add telemetry data
     SmartDashboard.putNumber(
       "INTAKE/pivot Angle (deg)",
-      Units.rotationsToDegrees(currentAngleRad)
+      Units.rotationsToDegrees(currentAngleRot)
+      
     );
     SmartDashboard.putNumber(
       "INTAKE/pivot Target Angle (deg)",
