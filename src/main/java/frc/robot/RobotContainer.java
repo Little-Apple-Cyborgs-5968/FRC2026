@@ -37,6 +37,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Spindexer;
 import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.BallCounter;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.simulation.ClimberSim;
 import frc.robot.subsystems.simulation.FeederSim;
@@ -124,6 +125,9 @@ public class RobotContainer {
     // Feeder Subsystem
     private final Feeder feeder = new Feeder();
     private final FeederSim feederSim = new FeederSim(feeder);
+
+    // Ball Counter Subsystem
+    private final BallCounter ballCounter = new BallCounter();
 
     // Shooter Subsystem
     private final Shooter shooter = new Shooter();

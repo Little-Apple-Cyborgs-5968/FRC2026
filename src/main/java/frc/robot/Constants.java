@@ -470,4 +470,25 @@ public class Constants {
         public static final double kSimMinRotations = 0.0; // mechanism rotations
         public static final double kSimMaxRotations = 105.0; // mechanism rotations
     }
+
+    public static class BallCounter {
+        public static final int kCanId = 17; // CAN ID (dimensionless)
+        public static final String kCanBus = "rio"; // CAN Bus
+        
+
+        //dont take readings that are less than 2cm away for isBallPresent 
+        public static final double kBallInFeederMinMeters = 0.015;
+
+        //dont take readings that are more than 50cm away for isBallPresent (probably noise)
+        public static final double kBallInFeederMaxMeters = 0.163;
+
+        // Distance threshold for detecting a ball passing  and set  isBallPresent to true
+        public static final double kDetectBallThresholdMeters = 0.05;
+        
+        // Cooldown between ball counts to prevent noise (50ms)
+        public static final double kCooldownSeconds = 0.05;
+
+        // sample rate of CANrange 
+        public static final double kUpdateFrequencyHz = 100.0;
+    }
 }
