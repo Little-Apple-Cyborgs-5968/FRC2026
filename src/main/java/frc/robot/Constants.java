@@ -212,7 +212,7 @@ public class Constants {
     public static class Intake {
         // Operational constants
         public static final double kSpinnerSpeed = -28; // Target spinner speed in rotations per second (RPS)
-        public static final double kIntakeAngleDeployed = 110; // Deployed angle in degrees
+        public static final double kIntakeAngleDeployed = 135; // Deployed angle in degrees /110 really
         public static final double kIntakeAngleStowed = 0; // Stowed angle in degrees
         public static final double kIntakeAngleUltraStowed = 0; // Ultra-stowed angle in degrees (for tight spaces)
         public static final double kIntakeAngleJiggle1 = 20; // First jiggle angle in degrees
@@ -223,12 +223,12 @@ public class Constants {
         // Pivot Constants
         public static final int kPivotCanID = 10; // CAN ID (dimensionless)
         public static final double kPivotGearRatio = 9; // Gear ratio (dimensionless)
-        public static final double kPivotKP = 500; // Proportional gain (dimensionless)
+        public static final double kPivotKP = 100; // Proportional gain (dimensionless)
         public static final double kPivotKI = 0; // Integral gain (dimensionless)
         public static final double kPivotKD = 0; // Derivative gain (dimensionless)
         public static final double kPivotKS = 0; // Static friction feedforward (volts)
-        public static final double kPivotKV = 20; // Velocity feedforward (volt-seconds per radian)
-        public static final double kPivotKA = 0.08; // Acceleration feedforward (volt-seconds² per radian)
+        public static final double kPivotKV = 10; // Velocity feedforward (volt-seconds per radian)
+        public static final double kPivotKA = 0.05; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kPivotKG = 0; // Gravity feedforward (volts)
         public static final double kPivotMaxVelocity = 1; // Maximum velocity for Motion Magic (rotations/s, mechanism-side)
         public static final double kPivotMaxAcceleration = 2.0; // Maximum acceleration for Motion Magic (rotations/s², mechanism-side)
@@ -252,7 +252,7 @@ public class Constants {
         public static final double kSpinnerKG = 0; // Gravity feedforward (volts)
         public static final double kSpinnerMaxVelocity = 40; // Maximum velocity (rad/s)
         public static final double kSpinnerMaxAcceleration = 100; // Maximum acceleration (rad/s²)
-        public static final boolean kSpinnerBrakeMode = true; // Brake mode enabled (boolean)
+        public static final boolean kSpinnerBrakeMode = false; // Brake mode enabled (boolean)
         public static final double kSpinnerForwardSoftLimit = 0; // Maximum angle (degrees)
         public static final double kSpinnerReverseSoftLimit = 0; // Minimum angle (degrees)
         public static final boolean kSpinnerEnableStatorLimit = true; // Stator current limit enabled (boolean)
@@ -274,7 +274,7 @@ public class Constants {
 
     public static class Spindexer {
         // Operational constants
-        public static final double kSpinnerSpeed = -1.5; // Target spinner speed in rotations per second (RPS)
+        public static final double kSpinnerSpeed = 1.5; // Target spinner speed in rotations per second (RPS)
         
         // Motor Constants
         public static final int kMotorCanID = 11; // CAN ID (dimensionless)
