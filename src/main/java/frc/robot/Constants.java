@@ -360,7 +360,7 @@ public class Constants {
         public static final double kTurretAngleDegrees  = 0.5;
 
         /** Flywheel speed for the default shot (RPS). Negative = correct spin direction. */
-        public static final double kFlywheelSpeedRPS    = -12.0;
+        public static final double kFlywheelSpeedRPS    = 12.0;
 
         /** Hood angle for the default shot (degrees). */
         public static final double kHoodAngleDegrees    = 75.0;
@@ -377,7 +377,7 @@ public class Constants {
         public static final int kLeftFlywheelCanID = 14; // CAN ID for left flywheel
         public static final int kRightFlywheelCanID = 15; // CAN ID for right flywheel
         public static final double kFlywheelGearRatio = 2.0; // 2:1 gear ratio
-        public static final double kDefaultFlywheelSpeed = -1.0; // Default speed in RPS
+        public static final double kDefaultFlywheelSpeed = 1.0; // Default speed in RPS
         
         // Flywheel PID Constants
         public static final double kFlywheelKP = 0.24;
