@@ -303,4 +303,48 @@ public class Climber extends SubsystemBase {
     return runOnce(() -> motor.setPosition(0));
   }
 
+  //------------------------ Tuning -----------------------//
+
+  /**
+   * Sets motor position using tunable PID values and setpoint from dashboard.
+   * Updates PID gains in real-time and uses Setpoint1 for target position.
+   */
+  private void runTunable(DashboardPublisher dashboard) {
+    if (dashboard == null) {
+      System.err.println("Dashboard is null");
+      return;
+    }
+
+    // Get tunable PID values
+    double tunableKP = dashboard.getTunableKP();
+    double tunableKI = dashboard.getTunableKI();
+    double tunableKD = dashboard.getTunableKD();
+    double tunableKV = dashboard.getTunableKV();
+    double tunableKA = dashboard.getTunableKA();
+    double setpoint = dashboard.getTunableSetpoint1();
+
+    // Update PID gains in slot 0
+    Slot0Configs slot0 = new Slot0Configs();
+    slot0.kP = tunableKP;
+    slot0.kI = tunableKI;
+    slot0.kD = tunableKD;
+    slot0.kV = tunableKV;
+    slot0.kA = tunableKA;
+    slot0.kS = Constants.Climber.kS; // Keep original kS
+    slot0.kG = Constants.Climber.kG; // Keep original kG
+    slot0.GravityType = com.ctre.phoenix6.signals.GravityTypeValue.Elevator_Static;
+    
+    motor.getConfigurator().apply(slot0);
+
+    // Set position using tunable setpoint
+    setPosition(setpoint);
+  }
+
+  /**
+   * Command to tune climber using dashboard values.
+   * Continuously updates PID and setpoint from dashboard.
+   */
+  public Command tunableCommand(DashboardPublisher dashboard) {
+    return run(() -> runTunable(dashboard));
+  }
 }

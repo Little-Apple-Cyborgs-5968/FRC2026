@@ -704,6 +704,22 @@ public class RobotContainer {
         intake.SpinnerMoveAtVelocityCommand(-30)
     );
 
+    //testJoystick.leftBumper().onTrue(climber.tunableCommand(dashboard));
+
+    // Climber Test Controls
+    testJoystick.leftBumper().and(testJoystick.pov(0)).whileTrue(
+        climber.upCommand()
+    );
+    testJoystick.leftBumper().and(testJoystick.pov(90)).whileTrue(
+        climber.extendCommand()
+    );
+    testJoystick.leftBumper().and(testJoystick.pov(180)).whileTrue(
+        climber.downCommand()
+    );
+    testJoystick.leftBumper().and(testJoystick.pov(270)).whileTrue(
+        climber.retractCommand()
+    );
+
     
 
 
