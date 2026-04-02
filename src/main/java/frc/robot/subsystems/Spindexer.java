@@ -304,6 +304,21 @@ public class Spindexer extends SubsystemBase {
     return run(() -> setVelocity(-defaultSpeed));
   }
 
+  /**
+   * Creates a command to perform a chill jiggle.
+   * Spins forward for a bit, then backwards to unstick things.
+   * @return A sequence of commands that loop
+   */
+  public Command chillJiggleCommand() {
+    return run(() -> setVelocity(Constants.Spindexer.kChillJiggleForwardSpeed))
+        .withTimeout(Constants.Spindexer.kChillJiggleForwardTime)
+        .andThen(
+            run(() -> setVelocity(Constants.Spindexer.kChillJiggleReverseSpeed))
+            .withTimeout(Constants.Spindexer.kChillJiggleReverseTime)
+        )
+        .repeatedly();
+  }
+
   //------------------------ Tuning -----------------------//
 
   /**
