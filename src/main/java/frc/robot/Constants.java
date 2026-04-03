@@ -331,8 +331,8 @@ public class Constants {
         public static final double kTurretRezeroAngleDegrees = 0.0; // Angle to set encoder to when rezeroing (0 = forward)
 
         // Turret mechanical limits (degrees, relative to robot forward)
-        public static final double kMinAngleDegrees = -370.0;
-        public static final double kMaxAngleDegrees = 153.0;
+        public static final double kMinAngleDegrees = -280.0;
+        public static final double kMaxAngleDegrees = 145.0;
 
         // Shooting range limits (meters)
         public static final double kMinShootingDistance = 0.5;
@@ -343,15 +343,15 @@ public class Constants {
         public static final double kKP = 140; // Proportional gain (dimensionless)
         public static final double kKI = 0.01; // Integral gain (dimensionless)
         public static final double kKD = 0; // Derivative gain (dimensionless)
-        public static final double kKS = 0; // Static friction feedforward (volts)
-        public static final double kKV = 1; // Velocity feedforward (volt-seconds per radian)
+        public static final double kKS = 1; // Static friction feedforward (volts)
+        public static final double kKV = 3; // Velocity feedforward (volt-seconds per radian)
         public static final double kKA = 0; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kKG = 0; // Gravity feedforward (volts) - Unused for turrets
         public static final double kMaxVelocity = 1.0; // Maximum velocity for Motion Magic (rotations/s, mechanism-side)
         public static final double kMaxAcceleration = 2.0; // Maximum acceleration for Motion Magic (rotations/s², mechanism-side)
         public static final boolean kBrakeMode = true; // Brake mode enabled (boolean)
         public static final boolean kEnableStatorLimit = true; // Stator current limit enabled (boolean)
-        public static final double kStatorCurrentLimit = 40; // Stator current limit (amperes)
+        public static final double kStatorCurrentLimit = 50; // Stator current limit (amperes)
         public static final boolean kEnableSupplyLimit = false; // Supply current limit enabled (boolean)
         public static final double kSupplyCurrentLimit = 40; // Supply current limit (amperes)
     }

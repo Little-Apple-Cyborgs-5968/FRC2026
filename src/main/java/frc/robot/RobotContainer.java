@@ -724,7 +724,7 @@ public class RobotContainer {
     testJoystick.start().whileTrue(spindexer.chillJiggleCommand());
 
     testJoystick.back().whileTrue(feeder.runAtVelocityCommand(-20));
-    testJoystick.back().whileTrue(shooter.runFlywheelsAtSpeedCommand(3));
+    testJoystick.back().whileTrue(shooter.runFlywheelsAtSpeedCommand(4.5));
     testJoystick.back().whileTrue(spindexer.runAtVelocityCommand(1.2));
 
     
