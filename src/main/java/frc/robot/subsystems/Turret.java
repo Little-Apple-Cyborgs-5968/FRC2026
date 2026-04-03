@@ -340,6 +340,19 @@ public class Turret extends SubsystemBase {
    * @param acceleration The acceleration in rad/s²
    */
   public void setAngle(double angleDegrees, double acceleration) {
+    double minAngle = Constants.Turret.kMinAngleDegrees;
+    double maxAngle = Constants.Turret.kMaxAngleDegrees;
+
+    while (angleDegrees > maxAngle) {
+      angleDegrees -= 360.0;
+    }
+    while (angleDegrees < minAngle) {
+      angleDegrees += 360.0;
+    }
+
+    // If it's somehow still out of bounds, clamp it
+    angleDegrees = edu.wpi.first.math.MathUtil.clamp(angleDegrees, minAngle, maxAngle);
+
     // Track target for telemetry
     this.targetAngleDegrees = angleDegrees;
     this.targetVelocityDegPerSec = 0; // Position control, not velocity control
