@@ -487,54 +487,54 @@ public class RobotContainer {
 
     // Pathfind to nearest postion in selected zone while A+Y held, cancel on joystick move
 
-    joystick.a().and(joystick.y()).onTrue(
-      Commands.defer(() -> {
-        String zone = dashboard.getPathfindZone();
-        switch (zone) {
-        case "Mid":
-          return PathFindCommands.pathfindToNearestPose(
-            () -> drivetrain.getState().Pose,
-            List.of(FieldConstants.getLeftNeutral(), FieldConstants.getRightNeutral())
-          ).until(joystick.leftStick().or(joystick.rightStick()));
-        case "Opp":
-          return PathFindCommands.pathfindToNearestPose(
-            () -> drivetrain.getState().Pose,
-            List.of(FieldConstants.getLeftOpp(), FieldConstants.getRightOpp())
-          ).until(joystick.leftStick().or(joystick.rightStick()));
-        case "Sweep": {
-          // Pick whichever sweep path starts closest to the robot, then pathfind+follow it.
-          // getPathPoses() always returns raw Blue-alliance coordinates, so flip to the
-          // current alliance before comparing distances.
-          String nearestSweepPath;
-          try {
-            com.pathplanner.lib.path.PathPlannerPath leftPath = com.pathplanner.lib.path.PathPlannerPath.fromPathFile("sweep_from_left");
-            com.pathplanner.lib.path.PathPlannerPath rightPath = com.pathplanner.lib.path.PathPlannerPath.fromPathFile("sweep_from_right");
-            edu.wpi.first.math.geometry.Pose2d robotPose = drivetrain.getState().Pose;
-            edu.wpi.first.math.geometry.Pose2d leftStart = FieldConstants.flipIfRed(leftPath.getPathPoses().get(0));
-            edu.wpi.first.math.geometry.Pose2d rightStart = FieldConstants.flipIfRed(rightPath.getPathPoses().get(0));
-            double distLeft = leftStart.getTranslation().getDistance(robotPose.getTranslation());
-            double distRight = rightStart.getTranslation().getDistance(robotPose.getTranslation());
-            nearestSweepPath = (distLeft <= distRight) ? "sweep_from_left" : "sweep_from_right";
-          } catch (Exception e) {
-            return Commands.print("Failed to load sweep paths: " + e.getMessage());
-          }
-          return PathFindCommands.pathfindToPath(nearestSweepPath)
-            .until(joystick.leftStick().or(joystick.rightStick()));
-        }
-        case "Home":
-        default:
-          return PathFindCommands.pathfindToNearestPose(
-            () -> drivetrain.getState().Pose,
-            List.of(FieldConstants.getLeftTrenchShoot(), FieldConstants.getRightTrenchShoot())
-          ).until(joystick.leftStick().or(joystick.rightStick()));
-        }
-      }, java.util.Set.of(drivetrain))
-    );
+    // joystick.a().and(joystick.y()).onTrue(
+    //   Commands.defer(() -> {
+    //     String zone = dashboard.getPathfindZone();
+    //     switch (zone) {
+    //     case "Mid":
+    //       return PathFindCommands.pathfindToNearestPose(
+    //         () -> drivetrain.getState().Pose,
+    //         List.of(FieldConstants.getLeftNeutral(), FieldConstants.getRightNeutral())
+    //       ).until(joystick.leftStick().or(joystick.rightStick()));
+    //     case "Opp":
+    //       return PathFindCommands.pathfindToNearestPose(
+    //         () -> drivetrain.getState().Pose,
+    //         List.of(FieldConstants.getLeftOpp(), FieldConstants.getRightOpp())
+    //       ).until(joystick.leftStick().or(joystick.rightStick()));
+    //     case "Sweep": {
+    //       // Pick whichever sweep path starts closest to the robot, then pathfind+follow it.
+    //       // getPathPoses() always returns raw Blue-alliance coordinates, so flip to the
+    //       // current alliance before comparing distances.
+    //       String nearestSweepPath;
+    //       try {
+    //         com.pathplanner.lib.path.PathPlannerPath leftPath = com.pathplanner.lib.path.PathPlannerPath.fromPathFile("sweep_from_left");
+    //         com.pathplanner.lib.path.PathPlannerPath rightPath = com.pathplanner.lib.path.PathPlannerPath.fromPathFile("sweep_from_right");
+    //         edu.wpi.first.math.geometry.Pose2d robotPose = drivetrain.getState().Pose;
+    //         edu.wpi.first.math.geometry.Pose2d leftStart = FieldConstants.flipIfRed(leftPath.getPathPoses().get(0));
+    //         edu.wpi.first.math.geometry.Pose2d rightStart = FieldConstants.flipIfRed(rightPath.getPathPoses().get(0));
+    //         double distLeft = leftStart.getTranslation().getDistance(robotPose.getTranslation());
+    //         double distRight = rightStart.getTranslation().getDistance(robotPose.getTranslation());
+    //         nearestSweepPath = (distLeft <= distRight) ? "sweep_from_left" : "sweep_from_right";
+    //       } catch (Exception e) {
+    //         return Commands.print("Failed to load sweep paths: " + e.getMessage());
+    //       }
+    //       return PathFindCommands.pathfindToPath(nearestSweepPath)
+    //         .until(joystick.leftStick().or(joystick.rightStick()));
+    //     }
+    //     case "Home":
+    //     default:
+    //       return PathFindCommands.pathfindToNearestPose(
+    //         () -> drivetrain.getState().Pose,
+    //         List.of(FieldConstants.getLeftTrenchShoot(), FieldConstants.getRightTrenchShoot())
+    //       ).until(joystick.leftStick().or(joystick.rightStick()));
+    //     }
+    //   }, java.util.Set.of(drivetrain))
+    // );
 
-    joystick.a().onTrue(
-      shooter.setHoodToTrenchCommand()
+    // joystick.a().onTrue(
+    //   shooter.setHoodToTrenchCommand()
 
-    );
+    // );
 
     // reset the field-centric heading on back button press(back button)
     joystick.back().onTrue(
@@ -757,12 +757,15 @@ public class RobotContainer {
 
     // Y button: shot tunable — setpoint1 = flywheel speed (RPS), setpoint2 = hood angle (deg)
     // Suppliers are evaluated every loop so dashboard changes take effect immediately.
-    // joystick.y().whileTrue(
-    //     shooter.shotTunableCommand(
-    //         dashboard::getTunableSetpoint1,
-    //         dashboard::getTunableSetpoint2
-    //     )
-    // );
+    joystick.y().whileTrue(
+        shooter.shotTunableCommand(
+            dashboard::getTunableSetpoint1,
+            dashboard::getTunableSetpoint2
+        )
+    );
+
+    joystick.a().whileTrue(spindexer.runCommand());
+    joystick.a().whileTrue(feeder.runCommand());
 
     //DRIVE STUFF
 
