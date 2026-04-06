@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants;
 
 /**
@@ -171,13 +172,19 @@ public class TurretUtil {
 
         var params = getTableParams(dist, target);
 
+        double turretCorrection = NetworkTableInstance.getDefault().getTable("DASHBOARD").getEntry("Turret Correction").getDouble(0.0);
+        double flywheelCorrection = NetworkTableInstance.getDefault().getTable("DASHBOARD").getEntry("Flywheel Speed Correction").getDouble(0.0);
+
+        turretAngle = normalizeDegrees(turretAngle + turretCorrection);
+        double finalShooterSpeed = params.shooterSpeed + flywheelCorrection;
+
         boolean valid = isWithinShootingRange(dist) && isTurretAngleReachable(turretAngle);
 
         return new ShotSolution(
                 dist,
                 turretAngle,
                 params.trajectoryAngle,
-                params.shooterSpeed,
+                finalShooterSpeed,
                 params.timeOfFlight,
                 valid,
                 getTargetPose(target));
@@ -250,6 +257,12 @@ public class TurretUtil {
         double turretAngle = normalizeDegrees(
                 Math.toDegrees(leadFieldAngle - robotPose.getRotation().getRadians()));
 
+        double turretCorrection = NetworkTableInstance.getDefault().getTable("DASHBOARD").getEntry("Turret Correction").getDouble(0.0);
+        double flywheelCorrection = NetworkTableInstance.getDefault().getTable("DASHBOARD").getEntry("Flywheel Speed Correction").getDouble(0.0);
+
+        turretAngle = normalizeDegrees(turretAngle + turretCorrection);
+        double finalShooterSpeed = params.shooterSpeed + flywheelCorrection;
+
         boolean valid = isWithinShootingRange(finalDist) && isTurretAngleReachable(turretAngle);
 
         Pose2d actualTargetPose = getTargetPose(target);
@@ -262,7 +275,7 @@ public class TurretUtil {
                 finalDist,
                 turretAngle,
                 params.trajectoryAngle,
-                params.shooterSpeed,
+                finalShooterSpeed,
                 params.timeOfFlight,
                 valid,
                 virtualTargetPose);

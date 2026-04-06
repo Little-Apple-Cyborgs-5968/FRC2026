@@ -82,6 +82,16 @@ public class DashboardPublisher {
         NetworkTableInstance.getDefault()
             .getTable("Tuning")
             .getEntry("Setpoint2");
+            
+    private final NetworkTableEntry tunableTurretCorrection = 
+        NetworkTableInstance.getDefault()
+            .getTable("DASHBOARD")
+            .getEntry("Turret Correction");
+            
+    private final NetworkTableEntry tunableFlywheelCorrection = 
+        NetworkTableInstance.getDefault()
+            .getTable("DASHBOARD")
+            .getEntry("Flywheel Speed Correction");
 
     public DashboardPublisher(CommandSwerveDrivetrain drivetrain) {
         m_drivetrain = drivetrain;
@@ -106,6 +116,8 @@ public class DashboardPublisher {
         tunableKX.setDouble(0.0);
         tunableSetpoint1.setDouble(0.0);
         tunableSetpoint2.setDouble(0.0);
+        tunableTurretCorrection.setDouble(0.0);
+        tunableFlywheelCorrection.setDouble(0.0);
 
         // Put data in the "DASHBOARD" subfolder on the dashboard (NetworkTables keys support '/')
         SmartDashboard.putData("DASHBOARD/Robot Field", m_field);
@@ -163,6 +175,14 @@ public class DashboardPublisher {
 
     public double getTunableSetpoint2() {
         return tunableSetpoint2.getDouble(0.0);
+    }
+
+    public double getTunableTurretCorrection() {
+        return tunableTurretCorrection.getDouble(0.0);
+    }
+
+    public double getTunableFlywheelCorrection() {
+        return tunableFlywheelCorrection.getDouble(0.0);
     }
 
     public Command getAuto() {
