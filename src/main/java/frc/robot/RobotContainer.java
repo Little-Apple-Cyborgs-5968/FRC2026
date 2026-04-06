@@ -289,8 +289,7 @@ public class RobotContainer {
       intake.DeployCommand()
     );
 
-    // B button toggles the Intake Jiggle Command
-    joystick.b().toggleOnTrue(new IntakeJiggleCommand(intake));
+
 
     shooter.setDefaultCommand(shooter.stopCommand());
     spindexer.setDefaultCommand(spindexer.stopCommand());
@@ -380,99 +379,6 @@ public class RobotContainer {
       shooter.setHoodToTrenchCommand()
     );
 
-    // ── LEFT TRIGGER: Toggle swerve-drivetrain shoot-on-the-move ──────────────
-    //
-    // Identical toggle pattern to the right-trigger turret SOTM, but instead of
-    // rotating the turret the drivetrain is rotated to the lead-compensated field
-    // heading.  The turret is held at 0° (robot-forward) the entire time.
-    //
-    // PRESS 1 (toggle ON, trigger held)  → warm-up:
-    //   • Drivetrain → rotates to lead heading (FieldCentricFacingAngle)
-    //   • Turret     → held at 0°
-    //   • Flywheel   → spun to correct lead speed (no hood movement yet)
-    //   • Feeder / Spindexer → NOT running
-    //
-    // PRESS 1 RELEASE (swerve SOTM still ON) → firing:
-    //   • Drivetrain → continues rotating to lead heading
-    //   • Turret     → held at 0°
-    //   • Hood + Flywheel → lead-compensated
-    //   • Feeder + Spindexer → running
-    //
-    // PRESS 2 (toggle OFF) → everything returns to defaults; hood → trench.
-
-    joystick.leftTrigger().onTrue(
-      Commands.runOnce(() -> {
-        isSwerveSOMActive = !isSwerveSOMActive;
-        SmartDashboard.putBoolean("DASHBOARD/Swerve Shoot On Move Active", isSwerveSOMActive);
-      })
-    );
-
-    Trigger swerveSOMOn = new Trigger(() -> isSwerveSOMActive);
-    Trigger leftTriggerHeld = joystick.leftTrigger();
-    Trigger swerveWarmUp = swerveSOMOn.and(leftTriggerHeld); // ON + held  → warm up
-    Trigger swerveFiring = swerveSOMOn.and(leftTriggerHeld.negate()); // ON + released → fire
-
-    // Warm-up: drivetrain rotates to lead heading + turret at 0 + flywheel only
-    swerveWarmUp.whileTrue(
-      Commands.defer(() -> {
-        TurretUtil.TargetType target = getShootTargetType();
-        return new DrivetrainShootOnMoveCommand(
-          drivetrain,
-          turret,
-          () -> -joystick.getLeftY() * MaxSpeed,
-          () -> -joystick.getLeftX() * MaxSpeed,
-          MaxSpeed,
-          () -> drivetrain.getState().Pose,
-          () -> ChassisSpeeds.fromRobotRelativeSpeeds(
-            drivetrain.getState().Speeds,
-            drivetrain.getState().Pose.getRotation()),
-          target
-        ).alongWith(
-          shooter.shootOnMoveFlywheelOnlyCommand(
-            () -> drivetrain.getState().Pose,
-            () -> ChassisSpeeds.fromRobotRelativeSpeeds(
-              drivetrain.getState().Speeds,
-              drivetrain.getState().Pose.getRotation()),
-            target
-          )
-        ).withName("SwerveSOM-WarmUp");
-      }, java.util.Set.of(drivetrain, turret, shooter))
-    );
-
-    // Firing: drivetrain rotates + turret at 0 + full shooter + spindexer + feeder
-    swerveFiring.whileTrue(
-      Commands.defer(() -> {
-        TurretUtil.TargetType target = getShootTargetType();
-        return new DrivetrainShootOnMoveCommand(
-          drivetrain,
-          turret,
-          () -> -joystick.getLeftY() * MaxSpeed,
-          () -> -joystick.getLeftX() * MaxSpeed,
-          MaxSpeed,
-          () -> drivetrain.getState().Pose,
-          () -> ChassisSpeeds.fromRobotRelativeSpeeds(
-            drivetrain.getState().Speeds,
-            drivetrain.getState().Pose.getRotation()),
-          target
-        ).alongWith(
-          shooter.shootOnMoveCommandShooter(
-            () -> drivetrain.getState().Pose,
-            () -> ChassisSpeeds.fromRobotRelativeSpeeds(
-              drivetrain.getState().Speeds,
-              drivetrain.getState().Pose.getRotation()),
-            target
-          ),
-          spindexer.runCommand(),
-          feeder.runCommand()
-        ).withName("SwerveSOM-Firing");
-      }, java.util.Set.of(drivetrain, turret, shooter, spindexer, feeder))
-    );
-
-    // When swerve SOTM is toggled OFF, move hood back to trench position
-    swerveSOMOn.onFalse(
-      shooter.setHoodToTrenchCommand()
-    );
-
     joystick.start().whileTrue(
       spindexer.reverseCommand().alongWith(feeder.reverseCommand())
     );
@@ -539,26 +445,6 @@ public class RobotContainer {
     // reset the field-centric heading on back button press(back button)
     joystick.back().onTrue(
       drivetrain.runOnce(() -> drivetrain.seedFieldCentric())
-    );
-
-    // climber.setDefaultCommand(climber.stopCommand());
-
-    joystick.pov(45).onTrue(
-      climber.extendCommand()
-    );
-    joystick.pov(135).onTrue(
-      climber.retractCommand()
-    );
-
-    joystick.pov(315).whileTrue(
-      climber.upCommand()
-    ).onFalse(
-      climber.stopCommand()
-    );
-    joystick.pov(225).whileTrue(
-      climber.downCommand()
-    ).onFalse(
-      climber.stopCommand()
     );
 
     // Idle while the robot is disabled. This ensures the configured
