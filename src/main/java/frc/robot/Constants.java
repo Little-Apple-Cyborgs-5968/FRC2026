@@ -230,8 +230,8 @@ public class Constants {
         public static final double kPivotKV = 10; // Velocity feedforward (volt-seconds per radian)
         public static final double kPivotKA = 0.05; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kPivotKG = 0; // Gravity feedforward (volts)
-        public static final double kPivotMaxVelocity = 0.6; // Maximum velocity for Motion Magic (rotations/s, mechanism-side)
-        public static final double kPivotMaxAcceleration = 1.3; // Maximum acceleration for Motion Magic (rotations/s², mechanism-side)
+        public static final double kPivotMaxVelocity = 1; // Maximum velocity for Motion Magic (rotations/s, mechanism-side)
+        public static final double kPivotMaxAcceleration = 2; // Maximum acceleration for Motion Magic (rotations/s², mechanism-side)
         public static final boolean kPivotBrakeEnabled = true; // Brake mode enabled (boolean)
         public static final double kPivotForwardSoftLimit = 100; // Maximum angle (degrees)
         public static final double kPivotReverseSoftLimit = -100; // Minimum angle (degrees)
@@ -243,11 +243,11 @@ public class Constants {
         // Spinner constants
         public static final int kSpinnerCanID = 9; // CAN ID (dimensionless)
         public static final double kSpinnerGearRatio = 2; // Gear ratio (dimensionless)
-        public static final double kSpinnerKP = 16; // Proportional gain (dimensionless) // 0.6 works fine for 1:2
+        public static final double kSpinnerKP = 18; // Proportional gain (dimensionless) // 0.6 works fine for 1:2
         public static final double kSpinnerKI = 0; // Integral gain (dimensionless)
-        public static final double kSpinnerKD = 0; // Derivative gain (dimensionless)
+        public static final double kSpinnerKD = 0.5; // Derivative gain (dimensionless)
         public static final double kSpinnerKS = 0; // Static friction feedforward (volts)
-        public static final double kSpinnerKV = 0.235; // Velocity feedforward (volt-seconds per radian)
+        public static final double kSpinnerKV = 0.25; // Velocity feedforward (volt-seconds per radian)
         public static final double kSpinnerKA = 0; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kSpinnerKG = 0; // Gravity feedforward (volts)
         public static final double kSpinnerMaxVelocity = 40; // Maximum velocity (rad/s)
