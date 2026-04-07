@@ -170,8 +170,8 @@
     },
     {
       "name": "HOOD_TRENCH",
-      "waypointRelativePos": 5.5,
-      "endWaypointRelativePos": 5.55,
+      "waypointRelativePos": 5.196261682242989,
+      "endWaypointRelativePos": 5.41,
       "command": {
         "type": "named",
         "data": {
@@ -181,7 +181,7 @@
     },
     {
       "name": "SHOOTER_WARMUP",
-      "waypointRelativePos": 5.55,
+      "waypointRelativePos": 5.411214953271024,
       "endWaypointRelativePos": 6.0,
       "command": {
         "type": "named",

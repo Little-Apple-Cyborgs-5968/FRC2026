@@ -16,22 +16,45 @@
     },
     {
       "anchor": {
-        "x": 7.658358473824313,
-        "y": 6.493637976929901
+        "x": 7.811268855368235,
+        "y": 6.179769299023957
       },
       "prevControl": {
-        "x": 7.754933451641525,
-        "y": 7.403052351375332
+        "x": 7.9078438331854475,
+        "y": 7.225998225377107
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.22875000000000087,
+      "rotationDegrees": 179.2587515727626
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "HOOD_TRENCH",
+      "waypointRelativePos": 0.02024922118380062,
+      "endWaypointRelativePos": 0.1573208722741433,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "HOOD_TRENCH"
+        }
+      }
+    },
+    {
+      "name": "INTAKE_DEPLOY",
+      "waypointRelativePos": 0.14641744548286603,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
