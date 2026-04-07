@@ -490,8 +490,9 @@ public class Turret extends SubsystemBase {
    */
   public Command shootOnMoveCommandTurret(Supplier<Pose2d> robotPoseSupplier,
                                            Supplier<ChassisSpeeds> chassisSpeedsSupplier,
-                                           TurretUtil.TargetType target) {
+                                           Supplier<TurretUtil.TargetType> targetSupplier) {
     return run(() -> {
+      TurretUtil.TargetType target = targetSupplier.get();
       Pose2d robotPose = robotPoseSupplier.get();
       ChassisSpeeds speeds = chassisSpeedsSupplier.get();
       TurretUtil.ShotSolution solution = TurretUtil.computeLeadShotSolution(
@@ -500,7 +501,7 @@ public class Turret extends SubsystemBase {
       if (solution.isValid) {
         setAngle(solution.turretAngleDegrees);
       }
-    }).withName("ShootOnMove-Turret-" + target.toString());
+    }).withName("ShootOnMove-Turret");
   }
 
   //------------------------ Tuning -----------------------//

@@ -198,6 +198,10 @@ public class DashboardPublisher {
         return tunableFlywheelCorrection.getDouble(0.0);
     }
 
+    public FieldZones.ZoneType getCurrentZone() {
+        return m_zoneResolver.getZone(m_drivetrain.getState().Pose);
+    }
+
     public Command getAuto() {
         return m_autoChooser.getSelected();
     }

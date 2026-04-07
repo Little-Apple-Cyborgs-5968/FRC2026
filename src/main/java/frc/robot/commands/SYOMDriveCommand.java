@@ -93,8 +93,14 @@ public class SYOMDriveCommand extends Command {
         if (velocityMagnitude > kMinVelocity) {
             // ── Robot is moving fast enough: engage auto-rotation ──────────────
 
-            // Desired heading = direction of the travel vector (field-relative)
+            // Desired heading = direction of the travel vector (operator-perspective)
             Rotation2d desiredHeading = new Rotation2d(vx, vy);
+
+            // Adjust desired heading if on the Red Alliance
+            var alliance = edu.wpi.first.wpilibj.DriverStation.getAlliance();
+            if (alliance.isPresent() && alliance.get() == edu.wpi.first.wpilibj.DriverStation.Alliance.Red) {
+                desiredHeading = desiredHeading.rotateBy(Rotation2d.fromDegrees(180));
+            }
 
             // Current robot heading from odometry
             Rotation2d currentHeading = drivetrain.getState().Pose.getRotation();

@@ -52,9 +52,10 @@ public final class FieldZones {
     );
 
     public static final List<FieldZone> ORDERED_ZONES = List.of(
-        TRENCH,
         ALLIANCE,
+        BLOCKED,
         NEUTRAL,
-        BLOCKED
+        TRENCH
+        
     );
 }

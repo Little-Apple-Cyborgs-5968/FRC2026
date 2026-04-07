@@ -687,8 +687,9 @@ public class Shooter extends SubsystemBase {
    */
   public Command shootOnMoveCommandShooter(Supplier<Pose2d> robotPoseSupplier,
                                             Supplier<ChassisSpeeds> chassisSpeedsSupplier,
-                                            TurretUtil.TargetType target) {
+                                            Supplier<TurretUtil.TargetType> targetSupplier) {
     return run(() -> {
+      TurretUtil.TargetType target = targetSupplier.get();
       Pose2d robotPose = robotPoseSupplier.get();
       ChassisSpeeds speeds = chassisSpeedsSupplier.get();
       TurretUtil.ShotSolution solution = TurretUtil.computeLeadShotSolution(
@@ -699,7 +700,7 @@ public class Shooter extends SubsystemBase {
         setHoodAngle(solution.trajectoryAngleDegrees);
         setFlywheelVelocity(solution.shooterSpeedRPS);
       }
-    }).withName("ShootOnMove-Shooter-" + target.toString());
+    }).withName("ShootOnMove-Shooter");
   }
 
   /**
@@ -708,13 +709,14 @@ public class Shooter extends SubsystemBase {
    *
    * @param robotPoseSupplier     Supplier for the current robot field pose
    * @param chassisSpeedsSupplier Supplier for the current field-relative chassis speeds
-   * @param target                Which target to shoot at
+   * @param targetSupplier        Supplier for the target to shoot at
    * @return A command that continuously spins the flywheel with motion compensation
    */
   public Command shootOnMoveFlywheelOnlyCommand(Supplier<Pose2d> robotPoseSupplier,
                                                  Supplier<ChassisSpeeds> chassisSpeedsSupplier,
-                                                 TurretUtil.TargetType target) {
+                                                 Supplier<TurretUtil.TargetType> targetSupplier) {
     return run(() -> {
+      TurretUtil.TargetType target = targetSupplier.get();
       Pose2d robotPose = robotPoseSupplier.get();
       ChassisSpeeds speeds = chassisSpeedsSupplier.get();
       TurretUtil.ShotSolution solution = TurretUtil.computeLeadShotSolution(
@@ -724,7 +726,7 @@ public class Shooter extends SubsystemBase {
         currentTargetPose = solution.targetPose;
         setFlywheelVelocity(solution.shooterSpeedRPS);
       }
-    }).withName("ShootOnMove-FlywheelOnly-" + target.toString());
+    }).withName("ShootOnMove-FlywheelOnly");
   }
 
   /**
@@ -734,13 +736,14 @@ public class Shooter extends SubsystemBase {
    *
    * @param robotPoseSupplier     Supplier for the current robot field pose
    * @param chassisSpeedsSupplier Supplier for the current field-relative chassis speeds
-   * @param target                Which target to shoot at
+   * @param targetSupplier        Supplier for the target to shoot at
    * @return A command that continuously moves the hood with motion compensation
    */
   public Command shootOnMoveHoodOnlyCommand(Supplier<Pose2d> robotPoseSupplier,
                                              Supplier<ChassisSpeeds> chassisSpeedsSupplier,
-                                             TurretUtil.TargetType target) {
+                                             Supplier<TurretUtil.TargetType> targetSupplier) {
     return run(() -> {
+      TurretUtil.TargetType target = targetSupplier.get();
       Pose2d robotPose = robotPoseSupplier.get();
       ChassisSpeeds speeds = chassisSpeedsSupplier.get();
       TurretUtil.ShotSolution solution = TurretUtil.computeLeadShotSolution(
@@ -750,6 +753,6 @@ public class Shooter extends SubsystemBase {
         currentTargetPose = solution.targetPose;
         setHoodAngle(solution.trajectoryAngleDegrees);
       }
-    }).withName("ShootOnMove-HoodOnly-" + target.toString());
+    }).withName("ShootOnMove-HoodOnly");
   }
 }

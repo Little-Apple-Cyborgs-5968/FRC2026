@@ -178,14 +178,14 @@ public class RobotContainer {
         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
           drivetrain.getState().Speeds,
           drivetrain.getState().Pose.getRotation()),
-        TurretUtil.TargetType.HUB
+        () -> TurretUtil.TargetType.HUB
       ).alongWith(
         shooter.shootOnMoveFlywheelOnlyCommand(
           () -> drivetrain.getState().Pose,
           () -> ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds,
             drivetrain.getState().Pose.getRotation()),
-          TurretUtil.TargetType.HUB
+          () -> TurretUtil.TargetType.HUB
         )
       ).withName("ShootOnMove-WarmUp")
     );
@@ -198,14 +198,14 @@ public class RobotContainer {
         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
           drivetrain.getState().Speeds,
           drivetrain.getState().Pose.getRotation()),
-        TurretUtil.TargetType.HUB
+        () -> TurretUtil.TargetType.HUB
       ).alongWith(
         shooter.shootOnMoveCommandShooter(
           () -> drivetrain.getState().Pose,
           () -> ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds,
             drivetrain.getState().Pose.getRotation()),
-          TurretUtil.TargetType.HUB
+          () -> TurretUtil.TargetType.HUB
         )
       ).withName("ShootOnMove-WarmUp-WithHood")
     );
@@ -217,14 +217,14 @@ public class RobotContainer {
         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
           drivetrain.getState().Speeds,
           drivetrain.getState().Pose.getRotation()),
-        TurretUtil.TargetType.HUB
+        () -> TurretUtil.TargetType.HUB
       ).alongWith(
         shooter.shootOnMoveCommandShooter(
           () -> drivetrain.getState().Pose,
           () -> ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds,
             drivetrain.getState().Pose.getRotation()),
-          TurretUtil.TargetType.HUB
+          () -> TurretUtil.TargetType.HUB
         ),
         spindexer.runCommand(),
         feeder.runCommand()
@@ -327,51 +327,45 @@ public class RobotContainer {
     Trigger firingActive = shootOnMoveOn.and(triggerHeld.negate()); // ON + released → fire
 
     // Warm-up phase: turret + flywheel only, both lead-compensated
-    // Target type is resolved at press time from the dashboard "Shoot Mode" chooser
+    // Target type is resolved dynamically
     warmUpActive.whileTrue(
-      Commands.defer(() -> {
-        TurretUtil.TargetType target = getShootTargetType();
-        return turret.shootOnMoveCommandTurret(
+      turret.shootOnMoveCommandTurret(
+        () -> drivetrain.getState().Pose,
+        () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+          drivetrain.getState().Speeds,
+          drivetrain.getState().Pose.getRotation()),
+        this::getShootTargetType
+      ).alongWith(
+        shooter.shootOnMoveFlywheelOnlyCommand(
           () -> drivetrain.getState().Pose,
           () -> ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds,
             drivetrain.getState().Pose.getRotation()),
-          target
-        ).alongWith(
-          shooter.shootOnMoveFlywheelOnlyCommand(
-            () -> drivetrain.getState().Pose,
-            () -> ChassisSpeeds.fromRobotRelativeSpeeds(
-              drivetrain.getState().Speeds,
-              drivetrain.getState().Pose.getRotation()),
-            target
-          )
-        ).withName("ShootOnMove-WarmUp");
-      }, java.util.Set.of(turret, shooter))
+          this::getShootTargetType
+        )
+      ).withName("ShootOnMove-WarmUp")
     );
 
     // Firing phase: turret + full shooter (hood+flywheel) + spindexer + feeder, all lead-compensated
-    // Target type is resolved at press time from the dashboard "Shoot Mode" chooser
+    // Target type is resolved dynamically
     firingActive.whileTrue(
-      Commands.defer(() -> {
-        TurretUtil.TargetType target = getShootTargetType();
-        return turret.shootOnMoveCommandTurret(
+      turret.shootOnMoveCommandTurret(
+        () -> drivetrain.getState().Pose,
+        () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+          drivetrain.getState().Speeds,
+          drivetrain.getState().Pose.getRotation()),
+        this::getShootTargetType
+      ).alongWith(
+        shooter.shootOnMoveCommandShooter(
           () -> drivetrain.getState().Pose,
           () -> ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds,
             drivetrain.getState().Pose.getRotation()),
-          target
-        ).alongWith(
-          shooter.shootOnMoveCommandShooter(
-            () -> drivetrain.getState().Pose,
-            () -> ChassisSpeeds.fromRobotRelativeSpeeds(
-              drivetrain.getState().Speeds,
-              drivetrain.getState().Pose.getRotation()),
-            target
-          ),
-          spindexer.runCommand(),
-          feeder.runCommand()
-        ).withName("ShootOnMove-Firing");
-      }, java.util.Set.of(turret, shooter, spindexer, feeder))
+          this::getShootTargetType
+        ),
+        spindexer.runCommand(),
+        feeder.runCommand()
+      ).withName("ShootOnMove-Firing")
     );
 
     // When shoot-on-the-move mode is toggled OFF, move hood to trench position
@@ -716,7 +710,8 @@ public class RobotContainer {
    * "Pass" → whichever pass target (left/right) is nearest to the robot's current pose
    */
   private TurretUtil.TargetType getShootTargetType() {
-    if ("Pass".equals(dashboard.getShootMode())) {
+    frc.robot.utils.FieldZoneUtil.FieldZones.ZoneType currentZone = dashboard.getCurrentZone();
+    if (currentZone == frc.robot.utils.FieldZoneUtil.FieldZones.ZoneType.NEUTRAL) {
       return TurretUtil.getNearestPassTargetType(drivetrain.getState().Pose);
     }
     return TurretUtil.TargetType.HUB;
