@@ -380,7 +380,7 @@ public class Shooter extends SubsystemBase {
   /**
    * Set flywheel velocity (controls both motors with same speed, inverted via configuration).
    */
-  private void setFlywheelVelocity(double velocityRPS) {
+  public void setFlywheelVelocity(double velocityRPS) {
     targetFlywheelVelocityRPS = velocityRPS;
     leftFlywheel.setControl(velocityRequest.withVelocity(velocityRPS));
     rightFlywheel.setControl(velocityRequest.withVelocity(velocityRPS)); // Right is inverted in config
@@ -416,7 +416,7 @@ public class Shooter extends SubsystemBase {
   /**
    * Set hood angle in degrees.
    */
-  private void setHoodAngle(double angleDegrees) {
+  public void setHoodAngle(double angleDegrees) {
     targetHoodAngle = angleDegrees;
     double positionRotations = angleDegrees / 360.0 * hoodGearRatio;
     hoodController.setSetpoint(positionRotations, ControlType.kMAXMotionPositionControl);
@@ -445,6 +445,13 @@ public class Shooter extends SubsystemBase {
   @Logged(name = "Target Pose")
   public Pose2d getTargetPose() {
     return currentTargetPose;
+  }
+
+  /**
+   * Set the current theoretical target pose that the shooter aims at, adjusted for robot velocity.
+   */
+  public void setCurrentTargetPose(Pose2d pose) {
+    currentTargetPose = pose;
   }
 
   //------------------------ Commands -----------------------//

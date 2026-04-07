@@ -14,6 +14,9 @@ import edu.wpi.first.math.util.Units;
 public class Constants {
 
     public static class Misc {
+        public static final double kRobotLengthMeters = 0.83;
+        public static final double kRobotWidthMeters = 0.83;
+
         public static final double driverRumbleTime1 = 3; // Time in seconds for rumble before end of each shift 
         public static final double driverRumbleTime2 = 0; // Time in seconds for rumble before end of each shift 
 

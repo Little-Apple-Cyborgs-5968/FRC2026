@@ -1,9 +1,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
+import java.util.function.Supplier;
 
 /**
  * DefaultShootCommand — A fixed-preset shot command that:
@@ -47,19 +52,30 @@ public class DefaultShootCommand extends ParallelCommandGroup {
      *
      * @param turret  The {@link Turret} subsystem
      * @param shooter The {@link Shooter} subsystem
+     * @param robotPoseSupplier A supplier for the robot's current pose
      */
-    public DefaultShootCommand(Turret turret, Shooter shooter) {
+    public DefaultShootCommand(Turret turret, Shooter shooter, Supplier<Pose2d> robotPoseSupplier) {
         addCommands(
             // Branch 1 — Turret: hold forward (0°) every loop.
             turret.run(() -> turret.setAngle(Constants.DefaultShot.kTurretAngleDegrees))
                   .withName("DefaultShot-Turret"),
 
             // Branch 2 — Shooter: set flywheel speed AND hood angle in a single run()
-            // so only one command requires the Shooter subsystem (mirrors shotTunableCommand).
-            shooter.shotTunableCommand(
-                () -> Constants.DefaultShot.kFlywheelSpeedRPS,
-                () -> Constants.DefaultShot.kHoodAngleDegrees
-            ).withName("DefaultShot-Shooter")
+            // also set the visualizer target pose 1.5 meters directly in front of the robot.
+            shooter.run(() -> {
+                shooter.setFlywheelVelocity(Constants.DefaultShot.kFlywheelSpeedRPS);
+                shooter.setHoodAngle(Constants.DefaultShot.kHoodAngleDegrees);
+                if (robotPoseSupplier != null) {
+                    Pose2d robotPose = robotPoseSupplier.get();
+                    if (robotPose != null) {
+                        shooter.setCurrentTargetPose(
+                            robotPose.transformBy(
+                                new Transform2d(new Translation2d(1.5, 0.0), new Rotation2d())
+                            )
+                        );
+                    }
+                }
+            }).withName("DefaultShot-Shooter")
         );
 
         setName("DefaultShootCommand");

@@ -379,6 +379,37 @@ public class RobotContainer {
       shooter.setHoodToTrenchCommand()
     );
 
+    // ── LEFT TRIGGER: Disable shoot on move, jiggle spindexer + intake ────────
+    joystick.leftTrigger().onTrue(
+      Commands.runOnce(() -> {
+        isShootOnMoveActive = false;
+        SmartDashboard.putBoolean("DASHBOARD/Shoot On Move Active", isShootOnMoveActive);
+        if (syomDriveCommand.isScheduled()) {
+            syomDriveCommand.cancel();
+        }
+      })
+    );
+    
+    joystick.leftTrigger().whileTrue(
+      spindexer.chillJiggleCommand().alongWith(new IntakeJiggleCommand(intake))
+    );
+
+    joystick.leftTrigger().onFalse(
+      intake.DeployCommand()
+    );
+
+    //defualt shot
+    joystick.y().onTrue(
+      Commands.runOnce(() -> {
+        isShootOnMoveActive = false;
+        SmartDashboard.putBoolean("DASHBOARD/Shoot On Move Active", isShootOnMoveActive);
+      })
+    );
+    joystick.y().whileTrue(new DefaultShootCommand(turret, shooter, () -> drivetrain.getState().Pose));
+    joystick.y().whileTrue(
+      spindexer.runCommand().alongWith(feeder.runCommand()));
+    
+
     joystick.start().whileTrue(
       spindexer.reverseCommand().alongWith(feeder.reverseCommand())
     );
@@ -386,7 +417,7 @@ public class RobotContainer {
     // ── X BUTTON: Brake (lock wheels in X pattern while held) ───────────────
     joystick.x().whileTrue(drivetrain.applyRequest(() -> brake));
 
-    // ── B BUTTON: Toggle SYOMDrive (Synchronized Yaw-Optimized Motion Drive) ─
+    // ── right stick BUTTON: Toggle SYOMDrive (Synchronized Yaw-Optimized Motion Drive) ─
     // Press once → robot auto-rotates to face travel direction.
     // Press again → returns to normal field-centric drive with manual rotation.
     joystick.rightStick().toggleOnTrue(syomDriveCommand);
@@ -475,7 +506,7 @@ public class RobotContainer {
     operatorJoystick.x().whileTrue(spindexer.reverseCommand().alongWith(feeder.reverseCommand()));
 
     operatorJoystick.a().onTrue(shooter.setHoodToTrenchCommand());
-    operatorJoystick.y().whileTrue(new DefaultShootCommand(turret, shooter));
+    operatorJoystick.y().whileTrue(new DefaultShootCommand(turret, shooter, () -> drivetrain.getState().Pose));
 
     
     
@@ -643,15 +674,15 @@ public class RobotContainer {
 
     // Y button: shot tunable — setpoint1 = flywheel speed (RPS), setpoint2 = hood angle (deg)
     // Suppliers are evaluated every loop so dashboard changes take effect immediately.
-    joystick.y().whileTrue(
-        shooter.shotTunableCommand(
-            dashboard::getTunableSetpoint1,
-            dashboard::getTunableSetpoint2
-        )
-    );
+    // joystick.y().whileTrue(
+    //     shooter.shotTunableCommand(
+    //         dashboard::getTunableSetpoint1,
+    //         dashboard::getTunableSetpoint2
+    //     )
+    // );
 
-    joystick.a().whileTrue(spindexer.runCommand());
-    joystick.a().whileTrue(feeder.runCommand());
+    // joystick.a().whileTrue(spindexer.runCommand());
+    // joystick.a().whileTrue(feeder.runCommand());
 
     //DRIVE STUFF
 

@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.utils.FieldZoneUtil.FieldZones;
+import frc.robot.utils.FieldZoneUtil.ZoneResolver;
 
 /**
  * Handles all SmartDashboard/Shuffleboard visualizations.
@@ -93,6 +95,12 @@ public class DashboardPublisher {
             .getTable("DASHBOARD")
             .getEntry("Flywheel Speed Correction");
 
+    private final ZoneResolver m_zoneResolver = new ZoneResolver(
+        FieldZones.ORDERED_ZONES, 
+        frc.robot.Constants.Misc.kRobotLengthMeters, 
+        frc.robot.Constants.Misc.kRobotWidthMeters
+    );
+
     public DashboardPublisher(CommandSwerveDrivetrain drivetrain) {
         m_drivetrain = drivetrain;
 
@@ -138,10 +146,15 @@ public class DashboardPublisher {
 
     /** * Call periodically to update dashboard visualizations */
     public void update() {
-    updateRobotField();
-    updateAutoPreviewField();
-    updateGameState();
-    edu.wpi.first.wpilibj.smartdashboard.SmartDashboard.updateValues();
+        updateRobotField();
+        updateAutoPreviewField();
+        updateGameState();
+        
+        // Display Current Zone
+        FieldZones.ZoneType currentZone = m_zoneResolver.getZone(m_drivetrain.getState().Pose);
+        SmartDashboard.putString("DASHBOARD/Current Zone", currentZone.name());
+
+        edu.wpi.first.wpilibj.smartdashboard.SmartDashboard.updateValues();
     }
 
     /** Gets the current tunable value from the dashboard */
