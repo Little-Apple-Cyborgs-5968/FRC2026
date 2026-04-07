@@ -156,8 +156,8 @@ public class Turret extends SubsystemBase {
       gearRatio,
       0.01, // Arm moment of inertia - Small value since there are no arm parameters
       0.1, // Arm length (m) - Small value since there are no arm parameters
-      Units.degreesToRadians(-180), // Min angle (rad)
-      Units.degreesToRadians(180), // Max angle (rad)
+      Units.degreesToRadians(-720), // Min angle (rad)
+      Units.degreesToRadians(720), // Max angle (rad)
       false, // Simulate gravity - Disable gravity for pivot
       Units.degreesToRadians(startAngleDegrees) // Starting position matches physical start angle
     );
