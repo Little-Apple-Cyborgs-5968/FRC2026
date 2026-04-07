@@ -211,7 +211,7 @@ public class Constants {
 
     public static class Intake {
         // Operational constants
-        public static final double kSpinnerSpeed = -28; // Target spinner speed in rotations per second (RPS)
+        public static final double kSpinnerSpeed = -33; //   Target spinner speed in rotations per second (RPS)
         public static final double kIntakeAngleDeployed = 135; // Deployed angle in degrees /110 really
         public static final double kIntakeAngleStowed = 0; // Stowed angle in degrees
         public static final double kIntakeAngleUltraStowed = 0; // Ultra-stowed angle in degrees (for tight spaces)
@@ -247,7 +247,7 @@ public class Constants {
         public static final double kSpinnerKI = 0; // Integral gain (dimensionless)
         public static final double kSpinnerKD = 0.5; // Derivative gain (dimensionless)
         public static final double kSpinnerKS = 0; // Static friction feedforward (volts)
-        public static final double kSpinnerKV = 0.25; // Velocity feedforward (volt-seconds per radian)
+        public static final double kSpinnerKV = 0.5; // Velocity feedforward (volt-seconds per radian)
         public static final double kSpinnerKA = 0; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kSpinnerKG = 0; // Gravity feedforward (volts)
         public static final double kSpinnerMaxVelocity = 40; // Maximum velocity (rad/s)
@@ -331,11 +331,11 @@ public class Constants {
         public static final double kTurretRezeroAngleDegrees = 0.0; // Angle to set encoder to when rezeroing (0 = forward)
 
         // Turret mechanical limits (degrees, relative to robot forward)
-        public static final double kMinAngleDegrees = -280.0;
-        public static final double kMaxAngleDegrees = 145.0;
+        public static final double kMinAngleDegrees = -297.0;
+        public static final double kMaxAngleDegrees = 75.0;
 
         // Shooting range limits (meters)
-        public static final double kMinShootingDistance = 0.5;
+        public static final double kMinShootingDistance = 0.2;
         public static final double kMaxShootingDistance = 10.0;
 
         // Motor and control constants

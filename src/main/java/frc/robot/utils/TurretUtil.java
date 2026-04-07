@@ -316,11 +316,14 @@ public class TurretUtil {
         }
     }
 
-    /** Normalizes an angle to the range [-180, 180) degrees. */
+    /** Normalizes an angle to fit within the turret's physical bounds defined in Constants. */
     private static double normalizeDegrees(double degrees) {
-        degrees %= 360.0;
-        if (degrees >= 180.0)  degrees -= 360.0;
-        if (degrees < -180.0)  degrees += 360.0;
+        while (degrees < Constants.Turret.kMinAngleDegrees) {
+            degrees += 360.0;
+        }
+        while (degrees > Constants.Turret.kMaxAngleDegrees) {
+            degrees -= 360.0;
+        }
         return degrees;
     }
 }
