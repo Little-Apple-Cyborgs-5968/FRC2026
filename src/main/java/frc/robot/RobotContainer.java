@@ -227,8 +227,8 @@ public class RobotContainer {
             drivetrain.getState().Pose.getRotation()),
           () -> TurretUtil.TargetType.HUB
         ),
-        spindexer.runCommand(),
-        feeder.runCommand()
+        spindexer.runIfCommand(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees),
+        feeder.runIfCommand(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees)
       ).withName("ShootOnMove-Firing")
     );
 
@@ -368,8 +368,8 @@ public class RobotContainer {
             drivetrain.getState().Pose.getRotation()),
           this::getShootTargetType
         ),
-        spindexer.runCommand(),
-        feeder.runCommand()
+        spindexer.runIfCommand(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees),
+        feeder.runIfCommand(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees)
       ).withName("ShootOnMove-Firing")
     );
 

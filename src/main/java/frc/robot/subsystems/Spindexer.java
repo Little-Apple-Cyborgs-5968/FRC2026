@@ -288,6 +288,21 @@ public class Spindexer extends SubsystemBase {
   }
 
   /**
+   * Creates a command to move the spindexer at the default velocity only when a condition is true.
+   * @param condition Supplier that returns true if the spindexer should run
+   * @return A command that conditionally moves the spindexer
+   */
+  public Command runIfCommand(java.util.function.BooleanSupplier condition) {
+    return run(() -> {
+      if (condition.getAsBoolean()) {
+        setVelocity(defaultSpeed);
+      } else {
+        motor.stopMotor();
+      }
+    });
+  }
+
+  /**
    * Creates a command to move the spindexer at a specific velocity.
    * @param velocityRotSec The target velocity in rotations per second
    * @return A command that moves the spindexer at the specified velocity

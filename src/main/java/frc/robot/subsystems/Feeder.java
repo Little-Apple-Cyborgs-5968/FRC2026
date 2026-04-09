@@ -284,6 +284,21 @@ public class Feeder extends SubsystemBase {
   }
 
   /**
+   * Creates a command to run the feeder at the default velocity only when a condition is true.
+   * @param condition Supplier that returns true if the feeder should run
+   * @return A command that conditionally runs the feeder
+   */ 
+  public Command runIfCommand(java.util.function.BooleanSupplier condition) {
+    return run(() -> {
+      if (condition.getAsBoolean()) {
+        setVelocity(defaultSpeed);
+      } else {
+        motor.stopMotor();
+      }
+    });
+  }
+
+  /**
    * Creates a command to run the feeder at a specific velocity.
    * @param velocityRotSec The target velocity in rotations per second
    * @return A command that runs the feeder at the specified velocity
