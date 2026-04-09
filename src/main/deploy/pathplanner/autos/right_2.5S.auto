@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "right1"
+            "pathName": "Right1"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "right2"
+            "pathName": "Right2"
           }
         },
         {
@@ -60,16 +60,10 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.8
+                  "waitTime": 100.0
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "right3"
           }
         }
       ]

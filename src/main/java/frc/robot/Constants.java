@@ -77,7 +77,7 @@ public class Constants {
         // Network table names for each Limelight (must match what's configured in the Limelight web interface)
         public static final String kLimelightLeftName = "limelight-left"; //left and two
         public static final String kLimelightRightName = "limelight-right"; // everytihn called back actually right
-        public static final String kLimelightGamepieceName = "limelight-gp";
+        public static final String kLimelightBackeName = "limelight-back";
 
         // ==================== CAMERA POSITIONS ====================
         // Camera positions relative to robot center (meters)
@@ -145,6 +145,12 @@ public class Constants {
         
         // Multi-tag standard deviations (more accurate with MegaTag2)
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
+
+        // Back Limelight standard deviations (less accurate)
+        public static final Matrix<N3, N1> kBackSingleTagStdDevs = VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(60));
+        public static final Matrix<N3, N1> kBackMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(15));
+        
+        public static final boolean kUseBackLimelightForPose = true;
 
         // ==================== FILTERING THRESHOLDS ====================
         // Maximum distance to accept AprilTag readings (meters)
@@ -387,11 +393,11 @@ public class Constants {
         public static final double kDefaultFlywheelSpeed = 1.0; // Default speed in RPS
         
         // Flywheel PID Constants
-        public static final double kFlywheelKP = 0.24;
+        public static final double kFlywheelKP = 0.28;
         public static final double kFlywheelKI = 0;
         public static final double kFlywheelKD = 0;
         public static final double kFlywheelKS = 0.12;
-        public static final double kFlywheelKV = 0.255;
+        public static final double kFlywheelKV = 0.268;
         public static final double kFlywheelKA = 2.32;
         
         // Flywheel Current Limits
@@ -479,7 +485,7 @@ public class Constants {
     }
 
     public static class BallCounter {
-        public static final int kCanId = 17; // CAN ID (dimensionless)
+        public static final int kCanId = 20; // CAN ID (dimensionless)
         public static final String kCanBus = "rio"; // CAN Bus
         
 

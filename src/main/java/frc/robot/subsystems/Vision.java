@@ -64,10 +64,12 @@ public class Vision extends SubsystemBase {
     // Estimated poses from each Limelight (for AdvantageScope)
     private final StructPublisher<Pose2d> leftPosePublisher;
     private final StructPublisher<Pose2d> rightPosePublisher;
+    private final StructPublisher<Pose2d> backPosePublisher;
     
     // Detected AprilTag positions (for AdvantageScope)
     private final StructArrayPublisher<Pose3d> leftTagsPublisher;
     private final StructArrayPublisher<Pose3d> rightTagsPublisher;
+    private final StructArrayPublisher<Pose3d> backTagsPublisher;
 
     // Detected ball positions relative to robot, published as flat [x0,y0, x1,y1, ...] array
     private final DoubleArrayPublisher ballPositionsPublisher;
@@ -75,6 +77,7 @@ public class Vision extends SubsystemBase {
     // ==================== LATEST ESTIMATES ====================
     private PoseEstimate latestLeftEstimate = null;
     private PoseEstimate latestRightEstimate = null;
+    private PoseEstimate latestBackEstimate = null;
 
     // ==================== LATEST BALL DATA ====================
     /** Latest ball positions in robot-relative space (updated every periodic). */
@@ -109,9 +112,11 @@ public class Vision extends SubsystemBase {
         
         leftPosePublisher = visionTable.getStructTopic("LeftEstimatedPose", Pose2d.struct).publish();
         rightPosePublisher = visionTable.getStructTopic("RightEstimatedPose", Pose2d.struct).publish();
+        backPosePublisher = visionTable.getStructTopic("BackEstimatedPose", Pose2d.struct).publish();
         
         leftTagsPublisher = visionTable.getStructArrayTopic("LeftDetectedTags", Pose3d.struct).publish();
         rightTagsPublisher = visionTable.getStructArrayTopic("RightDetectedTags", Pose3d.struct).publish();
+        backTagsPublisher = visionTable.getStructArrayTopic("BackDetectedTags", Pose3d.struct).publish();
         ballPositionsPublisher = visionTable.getDoubleArrayTopic("BallPositions").publish();
 
         // Load AprilTag field map from .fmap file
@@ -210,18 +215,19 @@ public class Vision extends SubsystemBase {
         LimelightHelpers.setPipelineIndex(Constants.Vision.kLimelightRightName, 0);
         
         // Set gamepiece Limelight to neural network pipeline
-        LimelightHelpers.setPipelineIndex(Constants.Vision.kLimelightGamepieceName, 0);
+        LimelightHelpers.setPipelineIndex(Constants.Vision.kLimelightBackeName, 0);
         
         // Turn off LEDs for AprilTag cameras (they don't need them)
         LimelightHelpers.setLEDMode_ForceOff(Constants.Vision.kLimelightLeftName);
         LimelightHelpers.setLEDMode_ForceOff(Constants.Vision.kLimelightRightName);
+        LimelightHelpers.setLEDMode_ForceOff(Constants.Vision.kLimelightBackeName);
         
         // Configure camera positions relative to robot center using Transform3d constants
         // These override the web GUI values - comment out to use GUI values instead
         if (Constants.Vision.kSetCameraPosesFromCode) {
             setCameraPoseFromTransform(Constants.Vision.kLimelightLeftName, Constants.Vision.kLimelightLeftPosition);
             setCameraPoseFromTransform(Constants.Vision.kLimelightRightName, Constants.Vision.kLimelightRightPosition);
-            setCameraPoseFromTransform(Constants.Vision.kLimelightGamepieceName, Constants.Vision.kLimelightGamepiecePosition);
+            setCameraPoseFromTransform(Constants.Vision.kLimelightBackeName, Constants.Vision.kLimelightGamepiecePosition);
         }
     }
 
@@ -249,8 +255,12 @@ public class Vision extends SubsystemBase {
         updateRobotOrientation();
         
         // Process AprilTag vision from both cameras
-        processAprilTagVision(Constants.Vision.kLimelightLeftName, true);
-        processAprilTagVision(Constants.Vision.kLimelightRightName, false);
+        processAprilTagVision(Constants.Vision.kLimelightLeftName, "left");
+        processAprilTagVision(Constants.Vision.kLimelightRightName, "right");
+        
+        if (Constants.Vision.kUseBackLimelightForPose) {
+            processAprilTagVision(Constants.Vision.kLimelightBackeName, "back");
+        }
         
         // Log detected AprilTags to NetworkTables
         logDetectedTags();
@@ -267,7 +277,7 @@ public class Vision extends SubsystemBase {
         Rotation2d heading = headingSupplier.get();
         double yawDegrees = heading.getDegrees();
         
-        // Set robot orientation for MegaTag2 on both AprilTag cameras
+        // Set robot orientation for MegaTag2 on AprilTag cameras
         LimelightHelpers.SetRobotOrientation(
             Constants.Vision.kLimelightLeftName,
             yawDegrees, 0, 0, 0, 0, 0
@@ -276,15 +286,21 @@ public class Vision extends SubsystemBase {
             Constants.Vision.kLimelightRightName,
             yawDegrees, 0, 0, 0, 0, 0
         );
+        if (Constants.Vision.kUseBackLimelightForPose) {
+            LimelightHelpers.SetRobotOrientation(
+                Constants.Vision.kLimelightBackeName,
+                yawDegrees, 0, 0, 0, 0, 0
+            );
+        }
     }
 
     /**
      * Processes AprilTag vision data from a single Limelight and feeds it to the pose estimator.
      * 
      * @param limelightName The NetworkTables name of the Limelight
-     * @param isLeft Whether this is the left camera (for logging purposes)
+     * @param cameraPosition The position of the camera ("left", "right", or "back")
      */
-    private void processAprilTagVision(String limelightName, boolean isLeft) {
+    private void processAprilTagVision(String limelightName, String cameraPosition) {
         // Get pose estimate based on configuration
         PoseEstimate estimate;
         if (Constants.Vision.kUseMegaTag2) {
@@ -294,10 +310,12 @@ public class Vision extends SubsystemBase {
         }
 
         // Store for logging
-        if (isLeft) {
+        if (cameraPosition.equals("left")) {
             latestLeftEstimate = estimate;
-        } else {
+        } else if (cameraPosition.equals("right")) {
             latestRightEstimate = estimate;
+        } else {
+            latestBackEstimate = estimate;
         }
 
         // Validate the estimate
@@ -306,14 +324,16 @@ public class Vision extends SubsystemBase {
         }
 
         // Log the estimated pose to NetworkTables
-        if (isLeft) {
+        if (cameraPosition.equals("left")) {
             leftPosePublisher.set(estimate.pose);
-        } else {
+        } else if (cameraPosition.equals("right")) {
             rightPosePublisher.set(estimate.pose);
+        } else {
+            backPosePublisher.set(estimate.pose);
         }
 
         // Calculate standard deviations based on number of tags
-        Matrix<N3, N1> stdDevs = calculateStdDevs(estimate);
+        Matrix<N3, N1> stdDevs = calculateStdDevs(estimate, cameraPosition.equals("back"));
 
         // Feed the vision measurement to the drivetrain
         visionConsumer.accept(estimate.pose, estimate.timestampSeconds, stdDevs);
@@ -371,16 +391,18 @@ public class Vision extends SubsystemBase {
      * Calculates standard deviations for a pose estimate based on the number and quality of tags.
      * 
      * @param estimate The pose estimate
+     * @param isBackCamera Whether this is from the back camera (higher variance)
      * @return Standard deviation matrix for the pose estimator
      */
-    private Matrix<N3, N1> calculateStdDevs(PoseEstimate estimate) {
+    private Matrix<N3, N1> calculateStdDevs(PoseEstimate estimate, boolean isBackCamera) {
         if (estimate.tagCount >= 2) {
             // Multi-tag: more accurate
-            return Constants.Vision.kMultiTagStdDevs;
+            return isBackCamera ? Constants.Vision.kBackMultiTagStdDevs : Constants.Vision.kMultiTagStdDevs;
         } else {
             // Single tag: less accurate, scale by distance
             double distanceScale = Math.max(1.0, estimate.avgTagDist / 2.0);
-            return Constants.Vision.kSingleTagStdDevs.times(distanceScale);
+            Matrix<N3, N1> baseStdevs = isBackCamera ? Constants.Vision.kBackSingleTagStdDevs : Constants.Vision.kSingleTagStdDevs;
+            return baseStdevs.times(distanceScale);
         }
     }
 
@@ -395,6 +417,12 @@ public class Vision extends SubsystemBase {
         // Log right camera tags
         List<Pose3d> rightTags = getDetectedTagPoses(Constants.Vision.kLimelightRightName);
         rightTagsPublisher.set(rightTags.toArray(new Pose3d[0]));
+        
+        // Log back camera tags if enabled
+        if (Constants.Vision.kUseBackLimelightForPose) {
+            List<Pose3d> backTags = getDetectedTagPoses(Constants.Vision.kLimelightBackeName);
+            backTagsPublisher.set(backTags.toArray(new Pose3d[0]));
+        }
     }
 
     /**
@@ -460,13 +488,22 @@ public class Vision extends SubsystemBase {
     }
 
     /**
+     * Gets the latest pose estimate from the back camera.
+     * @return The latest PoseEstimate, or null if none available
+     */
+    public PoseEstimate getLatestBackEstimate() {
+        return latestBackEstimate;
+    }
+
+    /**
      * Checks if any camera currently sees AprilTags.
      * @return true if at least one tag is visible
      */
     public boolean hasAprilTagTarget() {
         boolean leftHasTarget = latestLeftEstimate != null && latestLeftEstimate.tagCount > 0;
         boolean rightHasTarget = latestRightEstimate != null && latestRightEstimate.tagCount > 0;
-        return leftHasTarget || rightHasTarget;
+        boolean backHasTarget = Constants.Vision.kUseBackLimelightForPose && latestBackEstimate != null && latestBackEstimate.tagCount > 0;
+        return leftHasTarget || rightHasTarget || backHasTarget;
     }
 
     /**
@@ -477,6 +514,7 @@ public class Vision extends SubsystemBase {
         int count = 0;
         if (latestLeftEstimate != null) count += latestLeftEstimate.tagCount;
         if (latestRightEstimate != null) count += latestRightEstimate.tagCount;
+        if (Constants.Vision.kUseBackLimelightForPose && latestBackEstimate != null) count += latestBackEstimate.tagCount;
         return count;
     }
 
@@ -506,7 +544,7 @@ public class Vision extends SubsystemBase {
         List<Translation2d> balls = new ArrayList<>();
 
         LimelightHelpers.RawDetection[] detections =
-            LimelightHelpers.getRawDetections(Constants.Vision.kLimelightGamepieceName);
+            LimelightHelpers.getRawDetections(Constants.Vision.kLimelightBackeName);
 
         for (LimelightHelpers.RawDetection det : detections) {
             // Filter: must be the correct class and large enough to be reliable

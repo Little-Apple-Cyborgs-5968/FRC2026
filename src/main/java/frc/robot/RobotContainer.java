@@ -139,7 +139,7 @@ public class RobotContainer {
 
   // Shooter Subsystem
   private final Shooter shooter = new Shooter();
-  //private final ShooterSim shooterSim = new ShooterSim(shooter);
+  private final ShooterSim shooterSim = new ShooterSim(shooter);
 
   //Climber subsystem 
   private final Climber climber = new Climber();
@@ -542,13 +542,13 @@ public class RobotContainer {
         shooter.runFlywheelsAtSpeedCommand(0)
     );
     testJoystick.b().and(testJoystick.pov(90)).whileTrue(
-        shooter.runFlywheelsAtSpeedCommand(1)
+        shooter.runFlywheelsAtSpeedCommand(5)
     );
     testJoystick.b().and(testJoystick.pov(180)).whileTrue(
-        shooter.runFlywheelsAtSpeedCommand(2.5)
+        shooter.runFlywheelsAtSpeedCommand(10)
     );
     testJoystick.b().and(testJoystick.pov(270)).whileTrue(
-        shooter.runFlywheelsAtSpeedCommand(5)
+        shooter.runFlywheelsAtSpeedCommand(12)
     );
 
     testJoystick.leftBumper().onTrue(turret.TurretTunableCommand(dashboard));
