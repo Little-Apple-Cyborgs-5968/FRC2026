@@ -276,7 +276,11 @@ public class RobotContainer {
 
     // Both bumpers together: stow intake
     joystick.rightBumper().and(joystick.leftBumper()).onTrue(
-      intake.StowCommand()
+      intake.StowCommand().alongWith(
+        Commands.runOnce(() -> {
+          isShootOnMoveActive = false;
+        })
+      )
     );
 
     // Left bumper only (not right): stop spinner
@@ -492,8 +496,16 @@ public class RobotContainer {
     //===============================================================================================================
 
     operatorJoystick.pov(0).onTrue(intake.DeployCommand());
-    operatorJoystick.pov(90).onTrue(intake.StowCommand());
-    operatorJoystick.pov(180).onTrue(intake.UltraStowCommand());
+    operatorJoystick.pov(90).onTrue(intake.StowCommand().alongWith(
+        Commands.runOnce(() -> {
+          isShootOnMoveActive = false;
+        })
+    ));
+    operatorJoystick.pov(180).onTrue(intake.UltraStowCommand().alongWith(
+        Commands.runOnce(() -> {
+          isShootOnMoveActive = false;
+        })
+    ));
     operatorJoystick.pov(270).onTrue(intake.SpinnerStopCommand());
 
     operatorJoystick.b().whileTrue(spindexer.runCommand().alongWith(feeder.runCommand()));
