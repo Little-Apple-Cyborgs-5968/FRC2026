@@ -27,7 +27,8 @@ import frc.robot.commands.DrivetrainShootOnMoveCommand;
 import frc.robot.commands.IntakeJiggleCommand;
 import frc.robot.commands.PathFindCommands;
 import frc.robot.commands.SYOMDriveCommand;
-// import frc.robot.commands.WhiskerPickupCommand;
+import frc.robot.utils.FieldZoneUtil.FieldZones;
+
 import frc.robot.driverIO.ControllerRumble;
 import frc.robot.driverIO.DashboardPublisher;
 import frc.robot.subsystems.Climber;
@@ -722,8 +723,8 @@ public class RobotContainer {
    * "Pass" → whichever pass target (left/right) is nearest to the robot's current pose
    */
   private TurretUtil.TargetType getShootTargetType() {
-    frc.robot.utils.FieldZoneUtil.FieldZones.ZoneType currentZone = dashboard.getCurrentZone();
-    if (currentZone == frc.robot.utils.FieldZoneUtil.FieldZones.ZoneType.NEUTRAL) {
+    FieldZones.ZoneType currentZone = dashboard.getCurrentZone();
+    if (currentZone == FieldZones.ZoneType.NEUTRAL) {
       return TurretUtil.getNearestPassTargetType(drivetrain.getState().Pose);
     }
     return TurretUtil.TargetType.HUB;
