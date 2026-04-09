@@ -310,11 +310,11 @@ public class Spindexer extends SubsystemBase {
    * @return A sequence of commands that loop
    */
   public Command chillJiggleCommand() {
-    return run(() -> setVelocity(Constants.Spindexer.kChillJiggleForwardSpeed))
-        .withTimeout(Constants.Spindexer.kChillJiggleForwardTime)
+    return run(() -> setVelocity(Constants.Spindexer.kChillJiggleReverseSpeed))
+        .withTimeout(Constants.Spindexer.kChillJiggleReverseTime)
         .andThen(
-            run(() -> setVelocity(Constants.Spindexer.kChillJiggleReverseSpeed))
-            .withTimeout(Constants.Spindexer.kChillJiggleReverseTime)
+            run(() -> setVelocity(Constants.Spindexer.kChillJiggleForwardSpeed))
+            .withTimeout(Constants.Spindexer.kChillJiggleForwardTime)
         )
         .repeatedly();
   }
