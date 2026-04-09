@@ -119,11 +119,11 @@ public class RobotContainer {
 
   // Turret subsystem
   private final Turret turret = new Turret();
-  private final TurretSim turretSim = new TurretSim(turret);
+  //private final TurretSim turretSim = new TurretSim(turret);
 
   // Intake Subsystem
   private final Intake intake = new Intake();
-  private final IntakeSim intakeSim = new IntakeSim(intake);
+  //private final IntakeSim intakeSim = new IntakeSim(intake);
 
   // Spindexer Subsystem
   private final Spindexer spindexer = new Spindexer();
@@ -138,7 +138,7 @@ public class RobotContainer {
 
   // Shooter Subsystem
   private final Shooter shooter = new Shooter();
-  private final ShooterSim shooterSim = new ShooterSim(shooter);
+  //private final ShooterSim shooterSim = new ShooterSim(shooter);
 
   //Climber subsystem 
   private final Climber climber = new Climber();
@@ -510,33 +510,33 @@ public class RobotContainer {
 
     // testJoystick.leftBumper().onTrue(shooter.hoodTunableCommand(dashboard));
 
-    // testJoystick.a().and(testJoystick.pov(0)).whileTrue(
-    //     shooter.setHoodAngleCommand(80)
-    // );
-    // testJoystick.a().and(testJoystick.pov(90)).whileTrue(
-    //     shooter.setHoodAngleCommand(65)
-    // );
-    // testJoystick.a().and(testJoystick.pov(180)).whileTrue(
-    //     shooter.setHoodAngleCommand(55)
-    // );
-    // testJoystick.a().and(testJoystick.pov(270)).whileTrue(
-    //     shooter.setHoodAngleCommand(45)
-    // );
+    testJoystick.a().and(testJoystick.pov(0)).whileTrue(
+        shooter.setHoodAngleCommand(80)
+    );
+    testJoystick.a().and(testJoystick.pov(90)).whileTrue(
+        shooter.setHoodAngleCommand(65)
+    );
+    testJoystick.a().and(testJoystick.pov(180)).whileTrue(
+        shooter.setHoodAngleCommand(55)
+    );
+    testJoystick.a().and(testJoystick.pov(270)).whileTrue(
+        shooter.setHoodAngleCommand(45)
+    );
 
     // testJoystick.leftBumper().onTrue(shooter.flywheelTunableCommand(dashboard));
 
-    // testJoystick.b().and(testJoystick.pov(0)).whileTrue(
-    //     shooter.runFlywheelsAtSpeedCommand(0)
-    // );
-    // testJoystick.b().and(testJoystick.pov(90)).whileTrue(
-    //     shooter.runFlywheelsAtSpeedCommand(1)
-    // );
-    // testJoystick.b().and(testJoystick.pov(180)).whileTrue(
-    //     shooter.runFlywheelsAtSpeedCommand(2.5)
-    // );
-    // testJoystick.b().and(testJoystick.pov(270)).whileTrue(
-    //     shooter.runFlywheelsAtSpeedCommand(5)
-    // );
+    testJoystick.b().and(testJoystick.pov(0)).whileTrue(
+        shooter.runFlywheelsAtSpeedCommand(0)
+    );
+    testJoystick.b().and(testJoystick.pov(90)).whileTrue(
+        shooter.runFlywheelsAtSpeedCommand(1)
+    );
+    testJoystick.b().and(testJoystick.pov(180)).whileTrue(
+        shooter.runFlywheelsAtSpeedCommand(2.5)
+    );
+    testJoystick.b().and(testJoystick.pov(270)).whileTrue(
+        shooter.runFlywheelsAtSpeedCommand(5)
+    );
 
     testJoystick.leftBumper().onTrue(turret.TurretTunableCommand(dashboard));
 
@@ -555,66 +555,66 @@ public class RobotContainer {
 
     // //testJoystick.leftBumper().onTrue(feeder.tunableCommand(dashboard));
 
-    // testJoystick.x().and(testJoystick.pov(0)).whileTrue(
-    //     feeder.runAtVelocityCommand(0)
-    // );
-    // testJoystick.x().and(testJoystick.pov(90)).whileTrue(
-    //     feeder.runAtVelocityCommand(-10)
-    // );
-    // testJoystick.x().and(testJoystick.pov(180)).whileTrue(
-    //     feeder.runAtVelocityCommand(-20)
-    // );
-    // testJoystick.x().and(testJoystick.pov(270)).whileTrue(
-    //     feeder.runAtVelocityCommand(-30)
-    // );
+    testJoystick.x().and(testJoystick.pov(0)).whileTrue(
+        feeder.runAtVelocityCommand(0)
+    );
+    testJoystick.x().and(testJoystick.pov(90)).whileTrue(
+        feeder.runAtVelocityCommand(-10)
+    );
+    testJoystick.x().and(testJoystick.pov(180)).whileTrue(
+        feeder.runAtVelocityCommand(-20)
+    );
+    testJoystick.x().and(testJoystick.pov(270)).whileTrue(
+        feeder.runAtVelocityCommand(-30)
+    );
 
     // //testJoystick.leftBumper().onTrue(spindexer.tunableCommand(dashboard));
 
-    // testJoystick.y().and(testJoystick.pov(0)).whileTrue(
-    //     spindexer.runAtVelocityCommand(0)
-    // );
-    // testJoystick.y().and(testJoystick.pov(90)).whileTrue(
-    //     spindexer.runAtVelocityCommand(1)
-    // );
-    // testJoystick.y().and(testJoystick.pov(180)).whileTrue(
-    //     spindexer.runAtVelocityCommand(2)
-    // );
-    // testJoystick.y().and(testJoystick.pov(270)).whileTrue(
-    //     spindexer.runAtVelocityCommand(3)
-    // );
+    testJoystick.y().and(testJoystick.pov(0)).whileTrue(
+        spindexer.runAtVelocityCommand(0)
+    );
+    testJoystick.y().and(testJoystick.pov(90)).whileTrue(
+        spindexer.runAtVelocityCommand(1)
+    );
+    testJoystick.y().and(testJoystick.pov(180)).whileTrue(
+        spindexer.runAtVelocityCommand(2)
+    );
+    testJoystick.y().and(testJoystick.pov(270)).whileTrue(
+        spindexer.runAtVelocityCommand(3)
+    );
 
  
 
     // testJoystick.leftBumper().onTrue(intake.PivotTunableCommand(dashboard));
 
-    // testJoystick.leftTrigger().and(testJoystick.pov(0)).whileTrue(
-    //     intake.PivotSetAngleCommand(0
-    //     )
-    // );
-    // testJoystick.leftTrigger().and(testJoystick.pov(90)).whileTrue(
-    //     intake.PivotSetAngleCommand(45)
-    // );
-    // testJoystick.leftTrigger().and(testJoystick.pov(180)).whileTrue(
-    //     intake.PivotSetAngleCommand(90)
-    // );
-    // testJoystick.leftTrigger().and(testJoystick.pov(270)).whileTrue(
-    //     intake.PivotSetAngleCommand(135)
-    // );
+    testJoystick.leftTrigger().and(testJoystick.pov(0)).whileTrue(
+        intake.PivotSetAngleCommand(0
+        )
+    );
+    testJoystick.leftTrigger().and(testJoystick.pov(90)).whileTrue(
+        intake.PivotSetAngleCommand(45)
+    );
+    testJoystick.leftTrigger().and(testJoystick.pov(180)).whileTrue(
+        intake.PivotSetAngleCommand(90)
+    );
+    testJoystick.leftTrigger().and(testJoystick.pov(270)).whileTrue(
+        intake.PivotSetAngleCommand(135)
+    );
 
     // //testJoystick.leftBumper().onTrue(intake.SpinnerTunableCommand(dashboard));
 
-    // testJoystick.rightTrigger().and(testJoystick.pov(0)).whileTrue(
-    //     intake.SpinnerMoveAtVelocityCommand(0)
-    // );
-    // testJoystick.rightTrigger().and(testJoystick.pov(90)).whileTrue(
-    //     intake.SpinnerMoveAtVelocityCommand(-10)
-    // );
-    // testJoystick.rightTrigger().and(testJoystick.pov(180)).whileTrue(
-    //     intake.SpinnerMoveAtVelocityCommand(-20)
-    // );
-    // testJoystick.rightTrigger().and(testJoystick.pov(270)).whileTrue(
-    //     intake.SpinnerMoveAtVelocityCommand(-30)
-    // );
+    testJoystick.rightTrigger().and(testJoystick.pov(0)).whileTrue(
+        intake.SpinnerMoveAtVelocityCommand(0)
+    );
+    testJoystick.rightTrigger().and(testJoystick.pov(90)).whileTrue(
+        intake.SpinnerMoveAtVelocityCommand(-10)
+    );
+    testJoystick.rightTrigger().and(testJoystick.pov(180)).whileTrue(
+        intake.SpinnerMoveAtVelocityCommand(-20)
+    );
+    testJoystick.rightTrigger().and(testJoystick.pov(270)).whileTrue(
+        intake.SpinnerMoveAtVelocityCommand(-30)
+    );
 
     // //testJoystick.leftBumper().onTrue(climber.tunableCommand(dashboard));
 
