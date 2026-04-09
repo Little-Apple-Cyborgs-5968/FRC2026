@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.driverIO.DashboardPublisher;
@@ -675,11 +676,14 @@ public class Intake extends SubsystemBase {
   }
 
   private void deploy(){
+    // Move intake to deployed angle. Spinner will start after a short delay
     PivotSetAngle(intakeAngleDeployed);
-    SpinnerSetVelocity(spinnerSpeed);
   }
   public Command DeployCommand() {
-    return runOnce(() -> deploy());
+    // Sequence: deploy pivot, wait 0.5s, then start spinner
+    return runOnce(() -> deploy())
+      .andThen(new WaitCommand(0.5))
+      .andThen(runOnce(() -> SpinnerSetVelocity(spinnerSpeed)));
   }
 
   /**

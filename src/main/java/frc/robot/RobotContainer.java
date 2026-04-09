@@ -509,6 +509,8 @@ public class RobotContainer {
     ));
     operatorJoystick.pov(270).onTrue(intake.SpinnerStopCommand());
 
+    operatorJoystick.rightBumper().whileTrue(intake.SpinnerMoveAtVelocityCommand(-9));
+
     operatorJoystick.b().whileTrue(spindexer.runCommand().alongWith(feeder.runCommand()));
     operatorJoystick.x().whileTrue(spindexer.reverseCommand().alongWith(feeder.reverseCommand()));
 

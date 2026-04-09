@@ -341,7 +341,7 @@ public class Constants {
 
         // Turret mechanical limits (degrees, relative to robot forward)
         public static final double kMinAngleDegrees = -297.0;
-        public static final double kMaxAngleDegrees = 75.0;
+        public static final double kMaxAngleDegrees = 89.0;
 
         // Shooting range limits (meters)
         public static final double kMinShootingDistance = 0.2;
@@ -397,7 +397,7 @@ public class Constants {
         public static final double kFlywheelKI = 0;
         public static final double kFlywheelKD = 0;
         public static final double kFlywheelKS = 0.12;
-        public static final double kFlywheelKV = 0.268;
+        public static final double kFlywheelKV = 0.241;
         public static final double kFlywheelKA = 2.32;
         
         // Flywheel Current Limits
