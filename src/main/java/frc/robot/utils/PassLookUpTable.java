@@ -38,17 +38,16 @@ public class PassLookUpTable {
         // Distance (m), Shooter Speed (RPS), Trajectory Angle (°), Time of Flight (s)
         // KrakenX60 shooting 226g ball - optimized for constant RPS ~75
         // Trajectory angles: 90° = straight up, 45° = maximum distance
-         addEntry(1.1134,  -11.0, 89.0, 1.32);  // Close shot - nearly straight up
-        addEntry(1.55,  -12, 75.0, 1.28);
-        addEntry(2.0,  -12, 70.0, 1.2);
-        addEntry(2.5,  -12.2, 65.0, 1.27);
-        addEntry(-3.0, -12.4, 60, 1.29);
-        addEntry(3.5,  -12.9, 56.0, 1.2);
-        addEntry(4.05,  -13.2, 54.0, 1.28);
-        addEntry(4.55,  -14.35, 48.0, 1.4);
-        addEntry(5.0,  -14.35, 48.0, 1.4);
-        //bs entry
-        addEntry(10, -20, 45, 2.4);
+        addEntry(0.84,10.5,79,0.94);  // Close shot - nearly straight up
+        addEntry(1.04,10.8,68,0.84);
+        addEntry(2.37,11.95,65.5,1.02);
+        addEntry(2.86,12.1,65,1.0);
+        addEntry(3.6,12.9,56,1.04);
+        addEntry(4.45,13.7,55,1.14);
+        addEntry(4.93,14.85,51,1.22);
+        addEntry(5.8,15,51,1.05);
+        addEntry(8,15.5,45,1.05);
+
     }
     
     /** Add an entry to the lookup table */

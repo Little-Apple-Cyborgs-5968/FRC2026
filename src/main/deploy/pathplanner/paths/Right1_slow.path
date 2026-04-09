@@ -160,11 +160,22 @@
     {
       "name": "INTAKE_DEPLOY",
       "waypointRelativePos": 0.1,
-      "endWaypointRelativePos": null,
+      "endWaypointRelativePos": 2.6758241758241734,
       "command": {
         "type": "named",
         "data": {
           "name": "INTAKE_DEPLOY"
+        }
+      }
+    },
+    {
+      "name": "SPIN_INTAKE",
+      "waypointRelativePos": 0.35714285714286004,
+      "endWaypointRelativePos": 3.6428571428571326,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SPIN_INTAKE"
         }
       }
     },

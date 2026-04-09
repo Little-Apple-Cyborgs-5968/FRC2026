@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "right1"
+            "pathName": "Right1_slow"
           }
         },
         {
@@ -29,7 +29,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.8
+                  "waitTime": 4.0
                 }
               }
             ]
@@ -38,29 +38,29 @@
         {
           "type": "path",
           "data": {
-            "pathName": "right2"
+            "pathName": "Right2"
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "right_climb"
-          }
-        },
-        {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "CLIMBER_RETRACT"
+                  "name": "SHOOT_ON_MOVE"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "INTAKE_STOW"
+                  "name": "INTAKE_JIGGLE"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 100.0
                 }
               }
             ]

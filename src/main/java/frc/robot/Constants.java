@@ -150,7 +150,7 @@ public class Constants {
         public static final Matrix<N3, N1> kBackSingleTagStdDevs = VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(60));
         public static final Matrix<N3, N1> kBackMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(15));
         
-        public static final boolean kUseBackLimelightForPose = true;
+        public static final boolean kUseBackLimelightForPose = false;
 
         // ==================== FILTERING THRESHOLDS ====================
         // Maximum distance to accept AprilTag readings (meters)
@@ -220,7 +220,7 @@ public class Constants {
 
     public static class Intake {
         // Operational constants
-        public static final double kSpinnerSpeed = -33; //   Target spinner speed in rotations per second (RPS)
+        public static final double kSpinnerSpeed = -30; //   Target spinner speed in rotations per second (RPS)
         public static final double kIntakeAngleDeployed = 105; // Deployed angle in degrees /110 really
         public static final double kIntakeAngleStowed = 0; // Stowed angle in degrees
         public static final double kIntakeAngleUltraStowed = 0; // Ultra-stowed angle in degrees (for tight spaces)

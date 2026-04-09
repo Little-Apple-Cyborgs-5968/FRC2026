@@ -682,7 +682,7 @@ public class Intake extends SubsystemBase {
   public Command DeployCommand() {
     // Sequence: deploy pivot, wait 0.5s, then start spinner
     return runOnce(() -> deploy())
-      .andThen(new WaitCommand(0.5))
+      .andThen(new WaitCommand(0.2))
       .andThen(runOnce(() -> SpinnerSetVelocity(spinnerSpeed)));
   }
 
