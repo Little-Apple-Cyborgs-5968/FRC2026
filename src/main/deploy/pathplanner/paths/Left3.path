@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6746406388642416,
+        "x": 3.9878410438908665,
         "y": 7.435244010647738
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.000674356699202,
+        "x": 2.3138747617258266,
         "y": 6.356823425022183
       },
       "isLocked": false,
@@ -81,6 +81,17 @@
         "type": "named",
         "data": {
           "name": "SHOOT_ON_MOVE"
+        }
+      }
+    },
+    {
+      "name": "SPIN_INTAKE",
+      "waypointRelativePos": 0.5560439560439557,
+      "endWaypointRelativePos": 2.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SPIN_INTAKE"
         }
       }
     }

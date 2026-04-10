@@ -84,23 +84,23 @@
         "y": 7.065039929015083
       },
       "prevControl": {
-        "x": 7.191579414374446,
-        "y": 5.99466725820763
+        "x": 7.082344647802737,
+        "y": 5.898602472015382
       },
       "nextControl": {
-        "x": 5.541955944638735,
-        "y": 7.695441843283982
+        "x": 5.437522976561521,
+        "y": 7.963933612350974
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.6746406388642416,
+        "x": 3.9878410438908665,
         "y": 7.435244010647738
       },
       "prevControl": {
-        "x": 3.949940430010937,
+        "x": 4.263140835037562,
         "y": 7.369602804139614
       },
       "nextControl": null,
@@ -169,6 +169,28 @@
       }
     },
     {
+      "name": "SPIN_INTAKE",
+      "waypointRelativePos": 0.7978021978021856,
+      "endWaypointRelativePos": 5.294505494505494,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SPIN_INTAKE"
+        }
+      }
+    },
+    {
+      "name": "SHOOTER_WARMUP",
+      "waypointRelativePos": 4.621978021978017,
+      "endWaypointRelativePos": 6.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOTER_WARMUP"
+        }
+      }
+    },
+    {
       "name": "HOOD_TRENCH",
       "waypointRelativePos": 5.196261682242989,
       "endWaypointRelativePos": 5.41,
@@ -176,17 +198,6 @@
         "type": "named",
         "data": {
           "name": "HOOD_TRENCH"
-        }
-      }
-    },
-    {
-      "name": "SHOOTER_WARMUP",
-      "waypointRelativePos": 5.411214953271024,
-      "endWaypointRelativePos": 6.0,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "SHOOTER_WARMUP"
         }
       }
     }

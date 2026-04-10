@@ -44,6 +44,17 @@
       }
     },
     {
+      "name": "INTAKE_DEPLOY",
+      "waypointRelativePos": 0.034065934065934576,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "INTAKE_DEPLOY"
+        }
+      }
+    },
+    {
       "name": "SHOOT_ON_MOVE",
       "waypointRelativePos": 0.15,
       "endWaypointRelativePos": 1.0,
@@ -51,6 +62,17 @@
         "type": "named",
         "data": {
           "name": "SHOOT_ON_MOVE"
+        }
+      }
+    },
+    {
+      "name": "SPIN_INTAKE",
+      "waypointRelativePos": 0.4824175824175803,
+      "endWaypointRelativePos": 1.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SPIN_INTAKE"
         }
       }
     }

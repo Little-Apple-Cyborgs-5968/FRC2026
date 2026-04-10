@@ -161,6 +161,17 @@
       }
     },
     {
+      "name": "SPIN_INTAKE",
+      "waypointRelativePos": 0.302197802197808,
+      "endWaypointRelativePos": 4.357142857142874,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SPIN_INTAKE"
+        }
+      }
+    },
+    {
       "name": "HOOD_TRENCH",
       "waypointRelativePos": 4.066358024691371,
       "endWaypointRelativePos": 4.65,

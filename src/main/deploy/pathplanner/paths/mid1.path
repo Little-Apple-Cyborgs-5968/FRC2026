@@ -3,54 +3,49 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9878410438908665,
-        "y": 7.435244010647738
+        "x": 3.5941614906832298,
+        "y": 5.99466725820763
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.909234122861585,
-        "y": 7.419148181011535
+        "x": 2.570725353205419,
+        "y": 5.9736267984175395
       },
       "isLocked": false,
-      "linkedName": "after_left1"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.811268855368235,
-        "y": 6.179769299023957
+        "x": 1.2683141082519958,
+        "y": 5.99466725820763
       },
       "prevControl": {
-        "x": 7.9078438331854475,
-        "y": 7.225998225377107
+        "x": 1.6912469239713852,
+        "y": 6.003950352154799
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "predepot"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.22875000000000087,
-      "rotationDegrees": 179.2587515727626
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "HOOD_TRENCH",
-      "waypointRelativePos": 0.02024922118380062,
-      "endWaypointRelativePos": 0.1573208722741433,
+      "name": "SHOOTER_FULL_WARMUP",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": 0.15,
       "command": {
         "type": "named",
         "data": {
-          "name": "HOOD_TRENCH"
+          "name": "SHOOTER_WARMUP"
         }
       }
     },
     {
       "name": "INTAKE_DEPLOY",
-      "waypointRelativePos": 0.14641744548286603,
+      "waypointRelativePos": 0.034065934065934576,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -60,9 +55,20 @@
       }
     },
     {
+      "name": "SHOOT_ON_MOVE",
+      "waypointRelativePos": 0.15,
+      "endWaypointRelativePos": 1.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOT_ON_MOVE"
+        }
+      }
+    },
+    {
       "name": "SPIN_INTAKE",
-      "waypointRelativePos": 0.3197802197802173,
-      "endWaypointRelativePos": 0.996703296703296,
+      "waypointRelativePos": 0.4824175824175803,
+      "endWaypointRelativePos": 1.0,
       "command": {
         "type": "named",
         "data": {
@@ -72,7 +78,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 0.75,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -81,13 +87,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.84593194968748
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "left",
+  "folder": "mid",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

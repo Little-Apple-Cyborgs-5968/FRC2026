@@ -7,38 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right1_slow"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "SHOOT_ON_MOVE"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "INTAKE_JIGGLE"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
-                }
-              }
-            ]
+            "pathName": "mid1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Right2"
+            "pathName": "mid2"
           }
         },
         {
@@ -60,7 +35,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 100.0
+                  "waitTime": 10.0
                 }
               }
             ]

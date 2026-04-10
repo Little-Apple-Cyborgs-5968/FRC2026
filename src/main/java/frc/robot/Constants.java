@@ -17,8 +17,8 @@ public class Constants {
         public static final double kRobotLengthMeters = 0.83;
         public static final double kRobotWidthMeters = 0.83;
 
-        public static final double driverRumbleTime1 = 3; // Time in seconds for rumble before end of each shift 
-        public static final double driverRumbleTime2 = 0; // Time in seconds for rumble before end of each shift 
+        public static final double driverRumbleTime1 = 5; // Time in seconds for rumble before end of each shift 
+        public static final double driverRumbleTime2 = 1;// Time in seconds for rumble before end of each shift 
 
         public static final double operatorRumbleTime1 = 10; // Time in seconds for rumble before end of each shift (operators get an extra 4 seconds to prepare)
         public static final double operatorRumbleTime2 = 5; // Time in seconds for rumble before end of each shift (operators get an extra 4 seconds to prepare)
