@@ -19,6 +19,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -153,6 +154,7 @@ public class DashboardPublisher {
         // Display Current Zone
         FieldZones.ZoneType currentZone = m_zoneResolver.getZone(m_drivetrain.getState().Pose);
         SmartDashboard.putString("DASHBOARD/Current Zone", currentZone.name());
+        SmartDashboard.putNumber("DASHBOARD/Battery Voltage", RobotController.getBatteryVoltage());
 
         edu.wpi.first.wpilibj.smartdashboard.SmartDashboard.updateValues();
     }
