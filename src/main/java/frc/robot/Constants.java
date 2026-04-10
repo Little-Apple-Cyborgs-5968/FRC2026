@@ -242,7 +242,7 @@ public class Constants {
         public static final double kPivotMaxVelocity = 1; // Maximum velocity for Motion Magic (rotations/s, mechanism-side)
         public static final double kPivotMaxAcceleration = 2; // Maximum acceleration for Motion Magic (rotations/s², mechanism-side)
         public static final boolean kPivotBrakeEnabled = true; // Brake mode enabled (boolean)
-        public static final double kPivotForwardSoftLimit = 100; // Maximum angle (degrees)
+        public static final double kPivotForwardSoftLimit = 150;// Maximum angle (degrees)
         public static final double kPivotReverseSoftLimit = -100; // Minimum angle (degrees)
         public static final boolean kPivotStatorLimitEnabled = true; // Stator current limit enabled (boolean)
         public static final double kPivotStatorCurrentLimit = 100; // Stator current limit (amperes)

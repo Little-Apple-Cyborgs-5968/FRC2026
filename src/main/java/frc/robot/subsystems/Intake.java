@@ -30,6 +30,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -48,7 +49,7 @@ public class Intake extends SubsystemBase {
 
   //Constants
   private final double spinnerSpeed = Constants.Intake.kSpinnerSpeed;
-  private final double intakeAngleDeployed = Constants.Intake.kIntakeAngleDeployed;
+  private double intakeAngleDeployed = Constants.Intake.kIntakeAngleDeployed;
   private final double intakeAngleStowed = Constants.Intake.kIntakeAngleStowed;
   private final double intakeAngleUltraStowed = Constants.Intake.kIntakeAngleUltraStowed;
 
@@ -265,6 +266,8 @@ public class Intake extends SubsystemBase {
       spinnerGearRatio
     );
     spinnerSim = new FlywheelSim(spinnerPlant, DCMotor.getKrakenX60(1));
+
+    SmartDashboard.setDefaultNumber("Intake Deploy Angle", intakeAngleDeployed);
   }
 
   /**
@@ -676,6 +679,7 @@ public class Intake extends SubsystemBase {
   }
 
   private void deploy(){
+    intakeAngleDeployed = SmartDashboard.getNumber("Intake Deploy Angle", intakeAngleDeployed);
     // Move intake to deployed angle. Spinner will start after a short delay
     PivotSetAngle(intakeAngleDeployed);
   }
