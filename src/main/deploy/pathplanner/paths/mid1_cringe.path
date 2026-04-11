@@ -1,0 +1,104 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.589750889679717,
+        "y": 6.568790035587188
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.9328351126927656,
+        "y": 6.170699881376038
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.3518386714116257,
+        "y": 5.299205219454329
+      },
+      "prevControl": {
+        "x": 1.7349487179487189,
+        "y": 5.151307692307693
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "predepot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.24203273040482687,
+      "rotationDegrees": 145.98349268811734
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "SHOOTER_FULL_WARMUP",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": 0.3,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOTER_WARMUP"
+        }
+      }
+    },
+    {
+      "name": "INTAKE_DEPLOY",
+      "waypointRelativePos": 0.034065934065934576,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "INTAKE_DEPLOY"
+        }
+      }
+    },
+    {
+      "name": "SHOOT_ON_MOVE",
+      "waypointRelativePos": 0.31,
+      "endWaypointRelativePos": 1.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SHOOT_ON_MOVE"
+        }
+      }
+    },
+    {
+      "name": "SPIN_INTAKE",
+      "waypointRelativePos": 0.4824175824175803,
+      "endWaypointRelativePos": 1.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SPIN_INTAKE"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 0.75,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 155.0
+  },
+  "reversed": false,
+  "folder": "mid",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": false
+}
