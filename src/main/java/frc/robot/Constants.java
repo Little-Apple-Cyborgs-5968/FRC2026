@@ -224,9 +224,9 @@ public class Constants {
         public static final double kIntakeAngleDeployed = 125; // Deployed angle in degrees /110 really
         public static final double kIntakeAngleStowed = 0; // Stowed angle in degrees
         public static final double kIntakeAngleUltraStowed = 0; // Ultra-stowed angle in degrees (for tight spaces)
-        public static final double kIntakeAngleJiggle1 = 20; // First jiggle angle in degrees
-        public static final double kIntakeAngleJiggle2 = 80; // Second jiggle angle in degrees
-        public static final double kJiggleInterval = 0.35; // Swap direction every this many seconds
+        public static final double kIntakeAngleJiggle1 = 60; // First jiggle angle in degrees
+        public static final double kIntakeAngleJiggle2 = 100; // Second jiggle angle in degrees
+        public static final double kJiggleInterval = 0.6; // Swap direction every this many seconds
         public static final double kPivotRezeroAngleDegrees = 0.0; // Rezero position in degrees
         
         // Pivot Constants
@@ -287,7 +287,7 @@ public class Constants {
         public static final double kChillJiggleForwardSpeed = 0.3; // Slow forward speed for chill jiggle (RPS)
         public static final double kChillJiggleReverseSpeed = -0.3; // Slow backward speed for chill jiggle (RPS)
         public static final double kChillJiggleForwardTime = 0.4; // Time to spin forward (seconds)
-        public static final double kChillJiggleReverseTime = 0.4; // Time to spin backward (seconds)
+        public static final double kChillJiggleReverseTime = 0.7; // Time to spin backward (seconds)
         
         // Motor Constants
         public static final int kMotorCanID = 11; // CAN ID (dimensionless)

@@ -162,6 +162,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("INTAKE_STOW", intake.StowCommand().withTimeout(0.01)); // Add a short timeout to ensure the stow command finishes before any subsequent commands that might rely on the intake being stowed
     NamedCommands.registerCommand("INTAKE_STOP_SPINNER", intake.SpinnerStopCommand());
     NamedCommands.registerCommand("INTAKE_JIGGLE", new IntakeJiggleCommand(intake));
+    NamedCommands.registerCommand("SPINDEXER_CHILL_JIGGLE", spindexer.chillJiggleCommand());
     NamedCommands.registerCommand("SPIN_INTAKE", intake.SpinnerMoveAtVelocityCommand(Constants.Intake.kSpinnerSpeed));
 
     NamedCommands.registerCommand("SPINDEXER_RUN", spindexer.runCommand());

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2683141082519958,
-        "y": 5.99466725820763
+        "x": 1.3518386714116257,
+        "y": 5.299205219454329
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.8891933570581265,
-        "y": 5.826405693950178
+        "x": 0.6632502965599059,
+        "y": 5.374519572953736
       },
       "isLocked": false,
       "linkedName": "predepot"
@@ -25,13 +25,13 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "hitler aids"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.08456843940714985,
-      "rotationDegrees": 175.0
+      "waypointRelativePos": 0.1700087183958136,
+      "rotationDegrees": 160.0
     }
   ],
   "constraintZones": [],
@@ -49,30 +49,8 @@
       }
     },
     {
-      "name": "SHOOTER_WARMUP",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": 0.4,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "SHOOTER_WARMUP"
-        }
-      }
-    },
-    {
-      "name": "INTAKE_DEPLOY",
-      "waypointRelativePos": 0.01,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "INTAKE_DEPLOY"
-        }
-      }
-    },
-    {
       "name": "SHOOT_ON_MOVE",
-      "waypointRelativePos": 0.4,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": 1.0,
       "command": {
         "type": "named",
@@ -98,7 +76,7 @@
   "folder": "mid",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 155.0
   },
   "useDefaultConstraints": false
 }
