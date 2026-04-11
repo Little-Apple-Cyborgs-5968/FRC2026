@@ -135,17 +135,17 @@ public class RobotContainer {
   //private final FeederSim feederSim = new FeederSim(feeder);
 
   // Ball Counter Subsystem
-  //private final BallCounter ballCounter = new BallCounter();
+  private final BallCounter ballCounter = new BallCounter();
 
   // Shooter Subsystem
   private final Shooter shooter = new Shooter();
   private final ShooterSim shooterSim = new ShooterSim(shooter);
 
   //Climber subsystem 
-  private final Climber climber = new Climber();
+  private final Climber climberBS = new Climber();
   //private final ClimberSim climberSim = new ClimberSim(climber);
 
-  private final Visualizer visualizer = new Visualizer(turret, shooter, climber, spindexer, feeder, drivetrain, intake);
+  private final Visualizer visualizer = new Visualizer(turret, shooter, climberBS, spindexer, feeder, drivetrain, intake);
 
   // SYOMDrive command instance — toggled on/off with the X button
   private final SYOMDriveCommand syomDriveCommand = new SYOMDriveCommand(
@@ -232,9 +232,6 @@ public class RobotContainer {
         feeder.runIfCommand(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees)
       ).withName("ShootOnMove-Firing")
     );
-
-    NamedCommands.registerCommand("CLIMBER_EXTEND", climber.extendCommand());
-    NamedCommands.registerCommand("CLIMBER_RETRACT", climber.retractCommand());
     // Initialize Vision subsystem with drivetrain integration
     vision = new Vision(
       // Pose supplier - gets current robot pose from drivetrain

@@ -186,13 +186,6 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    BaseStatusSignal.refreshAll(
-      positionSignal,
-      velocitySignal,
-      voltageSignal,
-      statorCurrentSignal,
-      temperatureSignal
-    );
   }
 
   //------------------- Basic getters -----------------//
@@ -233,118 +226,9 @@ public class Climber extends SubsystemBase {
 
   //------------------- Motor Setters -----------------//
 
-  /**
-   * Sets the velocity of the climber.
-   * @param velocityRotSec The target velocity in rotations per second
-   */
-  private void setVelocity(double velocityRotSec) {
-    motor.setControl(velocityRequest.withVelocity(velocityRotSec));
-  }
 
-  /**
-   * Sets the position of the climber using Motion Magic.
-   * @param positionRotations Target position in mechanism rotations.
-   */
-  private void setPosition(double positionRotations) {
-    // Track target for telemetry
-    this.targetPositionRotations = positionRotations;
 
-    // We already use GravityType.Elevator_Static in Slot0 configs, 
-    // so we don't need to manually pass feedforward unless desired.
-    // double ffVolts = feedforward.calculate(getVelocity(), 0);
-    motor.setControl(positionRequest.withPosition(positionRotations));
-  }
 
   //------------------- Commands ----------------------//
 
-  /**
-   * Stops the climber motor.
-   */
-  public Command stopCommand() {
-    return run(() -> motor.stopMotor());
-  }
-
-  /**
-   * Manually drives the climber up.
-   */
-  public Command upCommand() {
-    return run(() -> setVelocity(Constants.Climber.kManualUpSpeed));
-  }
-
-  /**
-   * Manually drives the climber down.
-   */
-  public Command downCommand() {
-    return run(() -> setVelocity(Constants.Climber.kManualDownSpeed));
-  }
-
-  /**
-   * Command to extend the climber to the configured setpoint.
-   */
-  public Command extendCommand() {
-    return runOnce(() -> {
-      setPosition(Constants.Climber.kExtendSetpointRotations);
-    });
-  }
-
-  /**
-   * Command to retract the climber to the configured setpoint.
-   */
-  public Command retractCommand() {
-    return runOnce(() -> {
-      setPosition(Constants.Climber.kRetractSetpointRotations);
-    });
-  }
-
-  /**
-   * Resets the encoder position to zero.
-   */
-  public Command zeroEncoderCommand() {
-    return runOnce(() -> motor.setPosition(0));
-  }
-
-  //------------------------ Tuning -----------------------//
-
-  /**
-   * Sets motor position using tunable PID values and setpoint from dashboard.
-   * Updates PID gains in real-time and uses Setpoint1 for target position.
-   */
-  private void runTunable(DashboardPublisher dashboard) {
-    if (dashboard == null) {
-      System.err.println("Dashboard is null");
-      return;
-    }
-
-    // Get tunable PID values
-    double tunableKP = dashboard.getTunableKP();
-    double tunableKI = dashboard.getTunableKI();
-    double tunableKD = dashboard.getTunableKD();
-    double tunableKV = dashboard.getTunableKV();
-    double tunableKA = dashboard.getTunableKA();
-    double setpoint = dashboard.getTunableSetpoint1();
-
-    // Update PID gains in slot 0
-    Slot0Configs slot0 = new Slot0Configs();
-    slot0.kP = tunableKP;
-    slot0.kI = tunableKI;
-    slot0.kD = tunableKD;
-    slot0.kV = tunableKV;
-    slot0.kA = tunableKA;
-    slot0.kS = Constants.Climber.kS; // Keep original kS
-    slot0.kG = Constants.Climber.kG; // Keep original kG
-    slot0.GravityType = com.ctre.phoenix6.signals.GravityTypeValue.Elevator_Static;
-    
-    motor.getConfigurator().apply(slot0);
-
-    // Set position using tunable setpoint
-    setPosition(setpoint);
-  }
-
-  /**
-   * Command to tune climber using dashboard values.
-   * Continuously updates PID and setpoint from dashboard.
-   */
-  public Command tunableCommand(DashboardPublisher dashboard) {
-    return run(() -> runTunable(dashboard));
-  }
 }
