@@ -80,11 +80,11 @@
     },
     {
       "anchor": {
-        "x": 3.6331587837837835,
+        "x": 3.8479715302491115,
         "y": 0.6669476486246664
       },
       "prevControl": {
-        "x": 4.140177417324156,
+        "x": 4.354990163789484,
         "y": 0.642803904170363
       },
       "nextControl": null,
@@ -129,8 +129,8 @@
   "eventMarkers": [
     {
       "name": "HOOD_TRENCH",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": 0.13888888888888823,
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": 0.390109890109882,
       "command": {
         "type": "named",
         "data": {

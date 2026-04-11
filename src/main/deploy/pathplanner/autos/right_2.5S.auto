@@ -17,19 +17,19 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SHOOT_ON_MOVE"
+                  "name": "INTAKE_JIGGLE"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "INTAKE_JIGGLE"
+                  "name": "SHOOT_ON_MOVE"
                 }
               },
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.0
+                  "waitTime": 6.0
                 }
               }
             ]

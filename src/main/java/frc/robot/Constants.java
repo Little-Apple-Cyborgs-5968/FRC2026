@@ -286,8 +286,8 @@ public class Constants {
         public static final double kSpinnerSpeed = 1.5; // Target spinner speed in rotations per second (RPS)
         public static final double kChillJiggleForwardSpeed = 0.3; // Slow forward speed for chill jiggle (RPS)
         public static final double kChillJiggleReverseSpeed = -0.3; // Slow backward speed for chill jiggle (RPS)
-        public static final double kChillJiggleForwardTime = 0.4; // Time to spin forward (seconds)
-        public static final double kChillJiggleReverseTime = 0.7; // Time to spin backward (seconds)
+        public static final double kChillJiggleForwardTime = 0.7; // Time to spin forward (seconds)
+        public static final double kChillJiggleReverseTime = 0.23; // Time to spin backward (seconds)
         
         // Motor Constants
         public static final int kMotorCanID = 11; // CAN ID (dimensionless)
