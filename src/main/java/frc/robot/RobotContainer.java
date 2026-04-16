@@ -522,7 +522,7 @@ public class RobotContainer {
     // Test controls 
     //===============================================================================================================
 
-    // testJoystick.leftBumper().onTrue(shooter.hoodTunableCommand(dashboard));
+
 
     testJoystick.a().and(testJoystick.pov(0)).whileTrue(
         shooter.setHoodAngleCommand(80)
@@ -538,6 +538,12 @@ public class RobotContainer {
     );
 
     // testJoystick.leftBumper().onTrue(shooter.flywheelTunableCommand(dashboard));
+    testJoystick.leftBumper().whileTrue(
+        shooter.shotTunableCommand(
+            dashboard::getTunableSetpoint1,
+            dashboard::getTunableSetpoint2
+        )
+    );
 
     testJoystick.b().and(testJoystick.pov(0)).whileTrue(
         shooter.runFlywheelsAtSpeedCommand(0)
@@ -552,7 +558,7 @@ public class RobotContainer {
         shooter.runFlywheelsAtSpeedCommand(12)
     );
 
-    testJoystick.leftBumper().onTrue(turret.TurretTunableCommand(dashboard));
+    //testJoystick.leftBumper().onTrue(turret.TurretTunableCommand(dashboard));
 
     testJoystick.rightBumper().and(testJoystick.pov(0)).whileTrue(
         turret.setAngleCommand(0)
@@ -649,7 +655,8 @@ public class RobotContainer {
     testJoystick.start().whileTrue(spindexer.chillJiggleCommand());
 
     testJoystick.back().whileTrue(feeder.runAtVelocityCommand(-20));
-    testJoystick.back().whileTrue(shooter.runFlywheelsAtSpeedCommand(4.5));
+    //
+    //testJoystick.back().whileTrue(shooter.runFlywheelsAtSpeedCommand(4.5));
     testJoystick.back().whileTrue(spindexer.runAtVelocityCommand(1.2));
 
     
