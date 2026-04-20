@@ -180,6 +180,7 @@ public class Shooter extends SubsystemBase {
 
     // Configure hood - using simplified API
     SparkMaxConfig hoodConfig = new SparkMaxConfig();
+    hoodConfig.inverted(Constants.Shooter.kHoodInverted);
     hoodConfig.idleMode(Constants.Shooter.kHoodBrakeMode ? IdleMode.kBrake : IdleMode.kCoast);
     hoodConfig.smartCurrentLimit(Constants.Shooter.kHoodCurrentLimit);
     

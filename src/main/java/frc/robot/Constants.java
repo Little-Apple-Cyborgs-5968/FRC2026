@@ -410,7 +410,9 @@ public class Constants {
         
         // Hood Constants
         public static final int kHoodCanID = 1; // CAN ID for hood SparkMax
-        public static final double kHoodGearRatio =14.914; // experimentall determined gear ratio (motor rotations per hood rotation)
+        public static final boolean kHoodInverted = true; // Invert hood motor direction
+
+        public static final double kHoodGearRatio =247.1003; // experimentall determined gear ratio (motor rotations per hood rotation)
         public static final double kHoodMinAngleDegrees = 45.0; // Minimum hood angle
         public static final double kHoodMaxAngleDegrees = 80.0; // Maximum hood angle (shooting straight up)
         public static final double kHoodStartAngleDegrees = 80.0; // Starting position
