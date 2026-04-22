@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "right_bump_forward"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "bump_to_bump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left_bump_backward"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "depot1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "depot2"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

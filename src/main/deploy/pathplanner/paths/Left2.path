@@ -131,6 +131,17 @@
       }
     },
     {
+      "name": "SPIN_INTAKE",
+      "waypointRelativePos": 0.21183800623052956,
+      "endWaypointRelativePos": 3.4329670329670448,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SPIN_INTAKE"
+        }
+      }
+    },
+    {
       "name": "INTAKE_DEPLOY",
       "waypointRelativePos": 0.4938271604938269,
       "endWaypointRelativePos": null,
@@ -138,17 +149,6 @@
         "type": "named",
         "data": {
           "name": "INTAKE_DEPLOY"
-        }
-      }
-    },
-    {
-      "name": "SPIN_INTAKE",
-      "waypointRelativePos": 0.5054945054945088,
-      "endWaypointRelativePos": 3.4329670329670448,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "SPIN_INTAKE"
         }
       }
     },

@@ -159,7 +159,7 @@
     },
     {
       "name": "SPIN_INTAKE",
-      "waypointRelativePos": 0.5659340659340519,
+      "waypointRelativePos": 0.3426791277258567,
       "endWaypointRelativePos": 3.719780219780231,
       "command": {
         "type": "named",
