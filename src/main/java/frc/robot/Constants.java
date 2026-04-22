@@ -419,7 +419,7 @@ public class Constants {
         
         // Hood Constants
         public static final int kHoodCanID = 1; // CAN ID for hood SparkMax
-        public static final boolean kHoodInverted = true; // Invert hood motor direction
+        public static final boolean kHoodInverted = false; // Invert hood motor direction
 
         public static final double kHoodGearRatio =247.1003; // experimentall determined gear ratio (motor rotations per hood rotation)
         public static final double kHoodMinAngleDegrees = 45.0; // Minimum hood angle
@@ -429,10 +429,10 @@ public class Constants {
         public static final double kHoodTrenchAngleDegrees = 80.0; // Trench position in degrees
         
         // Hood PID Constants
-        public static final double kHoodKP =  1;
-        public static final double kHoodKI = 0.01;
-        public static final double kHoodKD = 0;
-        public static final double kHoodKS = 0;
+        public static final double kHoodKP =  0.5;
+        public static final double kHoodKI = 0;
+        public static final double kHoodKD = 0.05;
+        public static final double kHoodKS = 0.1;
         public static final double kHoodKV = 0;
         public static final double kHoodKA = 0;
 
@@ -440,8 +440,8 @@ public class Constants {
         public static final double kFlywheelAtSpeedToleranceRPS = 1.0; // ±1 RPS triggers "at speed" rumble
 
         // Hood MAXMotion (motion profiling) constraints
-        public static final double kHoodMaxVelocity = 300.0;      // Maximum hood velocity (degrees/s)
-        public static final double kHoodMaxAcceleration = 300.0; // Maximum hood acceleration (degrees/s²)
+        public static final double kHoodMaxVelocity = 500.0;      // Maximum hood velocity (degrees/s)
+        public static final double kHoodMaxAcceleration = 600.0; // Maximum hood acceleration (degrees/s²)
 
         // Hood Current Limits
         public static final int kHoodCurrentLimit = 40; // Amps for NEO 550
