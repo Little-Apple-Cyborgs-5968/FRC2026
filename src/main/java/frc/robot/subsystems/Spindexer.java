@@ -219,8 +219,8 @@ public class Spindexer extends SubsystemBase {
    * Get the current motor current.
    * @return Motor current in amps
    */
-  @Logged(name = "Current/Amps")
-  public double getCurrent() {
+  @Logged(name = "Stator Current/Amps")
+  public double getStatorCurrent() {
     return statorCurrentSignal.getValueAsDouble();
   }
 
@@ -237,7 +237,7 @@ public class Spindexer extends SubsystemBase {
    * Set motor angular velocity.
    * @param velocityRotSec The target velocity in rotations per second
    */
-  private void setVelocity(double velocityRotSec) {
+  public void setVelocity(double velocityRotSec) {
     setVelocity(velocityRotSec, 0);
   }
 
@@ -246,7 +246,7 @@ public class Spindexer extends SubsystemBase {
    * @param velocityRotSec The target velocity in rotations per second
    * @param acceleration The acceleration in rotations per second squared
    */
-  private void setVelocity(double velocityRotSec, double acceleration) {
+  public void setVelocity(double velocityRotSec, double acceleration) {
     double ffVolts = feedforward.calculate(velocityRotSec, acceleration);
     motor.setControl(velocityRequest.withVelocity(velocityRotSec));
   }

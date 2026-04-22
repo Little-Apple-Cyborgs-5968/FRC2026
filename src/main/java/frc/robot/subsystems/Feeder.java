@@ -234,7 +234,7 @@ public class Feeder extends SubsystemBase {
    * Set motor angular velocity.
    * @param velocityRotSec The target velocity in rotations per second
    */
-  private void setVelocity(double velocityRotSec) {
+  public void setVelocity(double velocityRotSec) {
     setVelocity(velocityRotSec, 0);
   }
 
@@ -243,7 +243,7 @@ public class Feeder extends SubsystemBase {
    * @param velocityRotSec The target velocity in rotations per second
    * @param acceleration The acceleration in rotations per second squared
    */
-  private void setVelocity(double velocityRotSec, double acceleration) {
+  public void setVelocity(double velocityRotSec, double acceleration) {
     motor.setControl(velocityRequest.withVelocity(velocityRotSec));
   }
 

@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.generated.TunerConstants;
+import frc.robot.commands.AutoUnjamCommand;
 import frc.robot.commands.DefaultShootCommand;
 import frc.robot.commands.DrivetrainShootOnMoveCommand;
 import frc.robot.commands.IntakeJiggleCommand;
@@ -128,7 +129,7 @@ public class RobotContainer {
 
   // Spindexer Subsystem
   private final Spindexer spindexer = new Spindexer();
-  //private final SpindexerSim spindexerSim = new SpindexerSim(spindexer);
+  private final SpindexerSim spindexerSim = new SpindexerSim(spindexer);
 
   // Feeder Subsystem 
   private final Feeder feeder = new Feeder();
@@ -652,7 +653,7 @@ public class RobotContainer {
     //     climber.retractCommand()
     // );
 
-    testJoystick.start().whileTrue(spindexer.chillJiggleCommand());
+    testJoystick.start().whileTrue(new AutoUnjamCommand(spindexer, feeder));
 
     testJoystick.back().whileTrue(feeder.runAtVelocityCommand(-20));
     //

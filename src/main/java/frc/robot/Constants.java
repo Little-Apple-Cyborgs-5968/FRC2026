@@ -289,6 +289,13 @@ public class Constants {
         public static final double kChillJiggleForwardTime = 0.7; // Time to spin forward (seconds)
         public static final double kChillJiggleReverseTime = 0.23; // Time to spin backward (seconds)
         
+        // Auto Unjam Constants
+        public static final double kJamCurrentThresholdAmps = 40.0;
+        public static final double kJamVelocityThresholdRPS = 0.7; // RPS (must be below this to be considered stalled)
+        public static final double kJamDebounceTimeSeconds = 0.1; // Seconds (how long stall condition must persist)
+        public static final double kUnjamDurationSeconds = 0.5;
+        public static final double kUnjamSpindexerReverseSpeed = -kSpinnerSpeed;
+        
         // Motor Constants
         public static final int kMotorCanID = 11; // CAN ID (dimensionless)
         public static final double kGearRatio = 15; // Gear ratio (dimensionless)
@@ -310,6 +317,8 @@ public class Constants {
     public static class Feeder {
         // Operational constants
         public static final double kSpinnerSpeed = -25; // Target spinner speed in rotations per second (RPS)
+        public static final double kUnjamFeederReverseSpeed = -kSpinnerSpeed;
+        
         
         // Motor Constants
         public static final int kMotorCanID = 12; // CAN ID (dimensionless)

@@ -137,7 +137,7 @@ public class SpindexerSim extends SubsystemBase {
     SmartDashboard.putNumber("SPINDEXER/Velocity (RPS)", velocity);
     SmartDashboard.putNumber("SPINDEXER/Target Velocity (RPS)", spindexer.getTargetVelocity());
     SmartDashboard.putNumber("SPINDEXER/Voltage (V)", spindexer.getVoltage());
-    SmartDashboard.putNumber("SPINDEXER/Current (A)", spindexer.getCurrent());
+    SmartDashboard.putNumber("SPINDEXER/Stator Current (A)", spindexer.getStatorCurrent());
     SmartDashboard.putNumber("SPINDEXER/Temperature (C)", spindexer.getTemperature());
     SmartDashboard.putNumber(
       "SPINDEXER/Sim Current Draw (A)",
