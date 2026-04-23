@@ -125,8 +125,8 @@ public class DashboardPublisher {
         tunableKX.setDouble(0.0);
         tunableSetpoint1.setDouble(0.0);
         tunableSetpoint2.setDouble(0.0);
-        tunableTurretCorrection.setDouble(0.0);
-        tunableFlywheelCorrection.setDouble(0.0);
+        tunableTurretCorrection.setDouble(frc.robot.Constants.Turret.kDefaultTurretCorrectionDegrees);
+        tunableFlywheelCorrection.setDouble(frc.robot.Constants.Shooter.kDefaultFlywheelCorrectionRPS);
 
         // Put data in the "DASHBOARD" subfolder on the dashboard (NetworkTables keys support '/')
         SmartDashboard.putData("DASHBOARD/Robot Field", m_field);
@@ -193,11 +193,11 @@ public class DashboardPublisher {
     }
 
     public double getTunableTurretCorrection() {
-        return tunableTurretCorrection.getDouble(0.0);
+        return tunableTurretCorrection.getDouble(frc.robot.Constants.Turret.kDefaultTurretCorrectionDegrees);
     }
 
     public double getTunableFlywheelCorrection() {
-        return tunableFlywheelCorrection.getDouble(0.0);
+        return tunableFlywheelCorrection.getDouble(frc.robot.Constants.Shooter.kDefaultFlywheelCorrectionRPS);
     }
 
     public FieldZones.ZoneType getCurrentZone() {

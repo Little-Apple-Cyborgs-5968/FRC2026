@@ -340,6 +340,8 @@ public class Constants {
 
     public static class Turret {
 
+        public static final double kDefaultTurretCorrectionDegrees = 2.5;
+
         public static final int kTurretCanID = 13; // CAN ID (dimensionless) - Changed to 13 since shooter uses 14-15
 
         public static final double kTurretOffsetX  = -0.2; // X offset (forward +X, backward -X) from robot center to turret (meters) 
@@ -396,6 +398,8 @@ public class Constants {
     }
 
      public static class Shooter {
+        public static final double kDefaultFlywheelCorrectionRPS = 0.0;
+
         // Flywheel Constants
         public static final int kLeftFlywheelCanID = 14; // CAN ID for left flywheel
         public static final int kRightFlywheelCanID = 15; // CAN ID for right flywheel
