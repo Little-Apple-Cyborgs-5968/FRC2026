@@ -17,6 +17,7 @@ public class AutoUnjamCommand extends Command {
   private final Feeder feeder;
   private final Timer unjamTimer = new Timer();
   private final Timer stallTimer = new Timer();
+  private final Timer startupTimer = new Timer();
 
   private boolean isUnjamming = false;
 
@@ -33,6 +34,8 @@ public class AutoUnjamCommand extends Command {
     unjamTimer.reset();
     stallTimer.start();
     stallTimer.reset();
+    startupTimer.start();
+    startupTimer.reset();
   }
 
   @Override
@@ -42,18 +45,24 @@ public class AutoUnjamCommand extends Command {
       spindexer.setVelocity(Constants.Spindexer.kSpinnerSpeed);
       feeder.setVelocity(Constants.Feeder.kSpinnerSpeed);
 
-      // Check for stall conditions: high current AND low velocity
-      boolean isStalled = spindexer.getStatorCurrent() > Constants.Spindexer.kJamCurrentThresholdAmps
-          && Math.abs(spindexer.getVelocity()) < Constants.Spindexer.kJamVelocityThresholdRPS;
+      // Ignore stall conditions during the initial startup period (0.5s) to allow motors to spin up
+      if (startupTimer.hasElapsed(0.5)) {
+        // Check for stall conditions: high current AND low velocity
+        boolean isStalled = Math.abs(spindexer.getStatorCurrent()) > Constants.Spindexer.kJamCurrentThresholdAmps
+            && Math.abs(spindexer.getVelocity()) < Constants.Spindexer.kJamVelocityThresholdRPS;
 
-      if (isStalled) {
-        // If it has been stalled for the full debounce time, trigger unjam
-        if (stallTimer.hasElapsed(Constants.Spindexer.kJamDebounceTimeSeconds)) {
-          isUnjamming = true;
-          unjamTimer.restart(); // start the unjam timer
+        if (isStalled) {
+          // If it has been stalled for the full debounce time, trigger unjam
+          if (stallTimer.hasElapsed(Constants.Spindexer.kJamDebounceTimeSeconds)) {
+            isUnjamming = true;
+            unjamTimer.restart(); // start the unjam timer
+          }
+        } else {
+          // Reset the stall timer if we recover before the debounce completes
+          stallTimer.reset();
         }
       } else {
-        // Reset the stall timer if we recover before the debounce completes
+        // Still starting up, keep reset
         stallTimer.reset();
       }
     } else {
@@ -66,6 +75,8 @@ public class AutoUnjamCommand extends Command {
         isUnjamming = false;
         unjamTimer.stop();
         unjamTimer.reset();
+        stallTimer.reset(); // Reset stall timer so it doesn't instantly jam again
+        startupTimer.restart(); // Restart the startup timer to ignore the new inrush current of reversing back to forward
       }
     }
   }
