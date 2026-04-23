@@ -625,7 +625,7 @@ public class RobotContainer {
     // //testJoystick.leftBumper().onTrue(intake.SpinnerTunableCommand(dashboard));
 
     testJoystick.rightTrigger().and(testJoystick.pov(0)).whileTrue(
-        intake.SpinnerMoveAtVelocityCommand(0)
+        intake.SpinnerStopCommand()
     );
     testJoystick.rightTrigger().and(testJoystick.pov(90)).whileTrue(
         intake.SpinnerMoveAtVelocityCommand(-10)
@@ -657,7 +657,7 @@ public class RobotContainer {
 
     testJoystick.back().whileTrue(feeder.runAtVelocityCommand(-20));
     //
-    //testJoystick.back().whileTrue(shooter.runFlywheelsAtSpeedCommand(4.5));
+    testJoystick.back().whileTrue(shooter.runFlywheelsAtSpeedCommand(4.5));
     testJoystick.back().whileTrue(spindexer.runAtVelocityCommand(1.2));
 
     
