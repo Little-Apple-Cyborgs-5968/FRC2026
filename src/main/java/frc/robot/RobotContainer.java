@@ -121,7 +121,10 @@ public class RobotContainer {
 
   // Turret subsystem
   private final Turret turret = new Turret();
-  //private final TurretSim turretSim = new TurretSim(turret);
+  
+  
+  
+  private final TurretSim turretSim = new TurretSim(turret);
 
   // Intake Subsystem
   private final Intake intake = new Intake();
@@ -658,7 +661,8 @@ public class RobotContainer {
     testJoystick.back().whileTrue(shooter.runFlywheelsAtSpeedCommand(4.5));
 
     testJoystick.start().whileTrue(feeder.runCommand());
-    testJoystick.start().whileTrue(spin    
+    testJoystick.start().whileTrue(spindexer.runCommand());
+    
 
     
 

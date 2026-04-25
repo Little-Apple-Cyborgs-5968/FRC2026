@@ -319,6 +319,9 @@ public class Constants {
         public static final double kSpinnerSpeed = -25; // Target spinner speed in rotations per second (RPS)
         public static final double kUnjamFeederReverseSpeed = -kSpinnerSpeed;
         
+        // Jam Detection Constants
+        public static final double kJamCurrentThresholdAmps = 40.0;
+        public static final double kJamVelocityThresholdRPS = 1.0;
         
         // Motor Constants
         public static final int kMotorCanID = 12; // CAN ID (dimensionless)
@@ -327,7 +330,7 @@ public class Constants {
         public static final double kKI = 0; // Integral gain (dimensionless)
         public static final double kKD = 0; // Derivative gain (dimensionless)
         public static final double kKS = 0; // Static friction feedforward (volts)
-        public static final double kKV = 1; // Velocity feedforward (volt-seconds per radian)
+        public static final double kKV = 2; // Velocity feedforward (volt-seconds per radian)
         public static final double kKA = 1; // Acceleration feedforward (volt-seconds² per radian)
         public static final double kMaxVelocity = 60; // Maximum velocity (rotations/s)
         public static final double kMaxAcceleration = 120; // Maximum acceleration (rotations/s²)
@@ -410,8 +413,12 @@ public class Constants {
         public static final double kFlywheelKP = 0.28;
         public static final double kFlywheelKI = 0;
         public static final double kFlywheelKD = 0;
-        public static final double kFlywheelKS = 0.14;
-        public static final double kFlywheelKV = 0.243;
+        public static final double kFlywheelKS = 0;
+        public static final double kFlywheelKV = 0.239
+
+
+
+        ;
         public static final double kFlywheelKA = 2.32;
         
         // Flywheel Current Limits

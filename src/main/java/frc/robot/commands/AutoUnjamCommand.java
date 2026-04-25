@@ -48,8 +48,13 @@ public class AutoUnjamCommand extends Command {
       // Ignore stall conditions during the initial startup period (0.5s) to allow motors to spin up
       if (startupTimer.hasElapsed(0.5)) {
         // Check for stall conditions: high current AND low velocity
-        boolean isStalled = Math.abs(spindexer.getStatorCurrent()) > Constants.Spindexer.kJamCurrentThresholdAmps
+        boolean isSpindexerStalled = Math.abs(spindexer.getStatorCurrent()) > Constants.Spindexer.kJamCurrentThresholdAmps
             && Math.abs(spindexer.getVelocity()) < Constants.Spindexer.kJamVelocityThresholdRPS;
+
+        boolean isFeederStalled = Math.abs(feeder.getCurrent()) > Constants.Feeder.kJamCurrentThresholdAmps
+            && Math.abs(feeder.getVelocity()) < Constants.Feeder.kJamVelocityThresholdRPS;
+
+        boolean isStalled = isSpindexerStalled || isFeederStalled;
 
         if (isStalled) {
           // If it has been stalled for the full debounce time, trigger unjam
