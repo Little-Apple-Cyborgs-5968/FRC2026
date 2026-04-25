@@ -233,8 +233,7 @@ public class RobotContainer {
             drivetrain.getState().Pose.getRotation()),
           () -> TurretUtil.TargetType.HUB
         ),
-        spindexer.runIfCommand(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees),
-        feeder.runIfCommand(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees)
+        new AutoUnjamCommand(spindexer, feeder).onlyIf(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees)
       ).withName("ShootOnMove-Firing")
     );
     // Initialize Vision subsystem with drivetrain integration
@@ -371,8 +370,7 @@ public class RobotContainer {
             drivetrain.getState().Pose.getRotation()),
           this::getShootTargetType
         ),
-        spindexer.runIfCommand(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees),
-        feeder.runIfCommand(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees)
+        new AutoUnjamCommand(spindexer, feeder).onlyIf(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees)
       ).withName("ShootOnMove-Firing")
     );
 
