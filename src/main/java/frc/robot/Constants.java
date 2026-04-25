@@ -359,7 +359,7 @@ public class Constants {
 
         // Shooting range limits (meters)
         public static final double kMinShootingDistance = 0.2;
-        public static final double kMaxShootingDistance = 10.0;
+        public static final double kMaxShootingDistance = 20.0;
         public static final double kShootingToleranceDegrees = 30.0;
 
         // Motor and control constants

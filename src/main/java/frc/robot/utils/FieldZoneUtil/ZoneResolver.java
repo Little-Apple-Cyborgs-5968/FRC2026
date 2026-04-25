@@ -3,6 +3,8 @@ package frc.robot.utils.FieldZoneUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.utils.FieldConstants;
+import frc.robot.utils.TurretUtil;
+
 import java.util.List;
 
 public class ZoneResolver {
@@ -21,6 +23,7 @@ public class ZoneResolver {
 
     public FieldZones.ZoneType getZone(Pose2d robotPose) {
         Pose2d bluePose = FieldConstants.flipIfRed(robotPose);
+        Pose2d TurretPose = TurretUtil.getTurretPose(bluePose);
 
         Translation2d[] footprint = ZoneGeometry.robotFootprint(
             bluePose,
@@ -29,8 +32,16 @@ public class ZoneResolver {
         );
 
         for (FieldZones.FieldZone zone : orderedZones) {
-            if (zone.shape().overlaps(footprint)) {
-                return zone.type();
+            if (zone.trackingType() == FieldZones.TrackingType.TURRET) {
+                // Turret Pose2d determined - check if center point is in zone
+                if (zone.shape().containsPoint(TurretPose.getTranslation())) {
+                    return zone.type();
+                }
+            } else {
+                // Bumper determined - check if any part of robot overlap with zone
+                if (zone.shape().overlaps(footprint)) {
+                    return zone.type();
+                }
             }
         }
 

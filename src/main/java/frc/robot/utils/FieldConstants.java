@@ -16,7 +16,7 @@ public class FieldConstants {
     // SHOOT 3D targets (Blue alliance origin)
     private static final Pose3d hubTargetBlue       = new Pose3d(4.620, 4.040, 3.057144, new Rotation3d());
     private static final Pose3d leftPassTargetBlue  = new Pose3d(2.50, 6.0, 0, new Rotation3d());
-    private static final Pose3d rightPassTargetBlue = new Pose3d(2.50, 1.960, 0, new Rotation3d());
+    private static final Pose3d rightPassTargetBlue = new Pose3d(2.50, 1.8, 0, new Rotation3d());
 
     // PATHFIND Pose 2D (Blue alliance origin)
     private static final Pose2d leftTrenchBlue  = new Pose2d(3.650, 7.411, new Rotation2d(Math.PI));
