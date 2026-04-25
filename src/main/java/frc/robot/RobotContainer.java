@@ -653,12 +653,12 @@ public class RobotContainer {
     //     climber.retractCommand()
     // );
 
-    testJoystick.start().whileTrue(new AutoUnjamCommand(spindexer, feeder));
-
-    testJoystick.back().whileTrue(feeder.runAtVelocityCommand(-20));
-    //
+    testJoystick.back().whileTrue(feeder.runCommand());
+    testJoystick.back().whileTrue(spindexer.runCommand());
     testJoystick.back().whileTrue(shooter.runFlywheelsAtSpeedCommand(4.5));
-    testJoystick.back().whileTrue(spindexer.runAtVelocityCommand(1.2));
+
+    testJoystick.start().whileTrue(feeder.runCommand());
+    testJoystick.start().whileTrue(spin    
 
     
 

@@ -221,7 +221,7 @@ public class Constants {
     public static class Intake {
         // Operational constants
         public static final double kSpinnerSpeed = -30; //   Target spinner speed in rotations per second (RPS)
-        public static final double kIntakeAngleDeployed = 95; // Deployed angle in degrees /110 really
+        public static final double kIntakeAngleDeployed = 115   ; // Deployed angle in degrees /110 really
         public static final double kIntakeAngleStowed = 0; // Stowed angle in degrees
         public static final double kIntakeAngleUltraStowed = 0; // Ultra-stowed angle in degrees (for tight spaces)
         public static final double kIntakeAngleJiggle1 = 60; // First jiggle angle in degrees
@@ -410,8 +410,8 @@ public class Constants {
         public static final double kFlywheelKP = 0.28;
         public static final double kFlywheelKI = 0;
         public static final double kFlywheelKD = 0;
-        public static final double kFlywheelKS = 0.12;
-        public static final double kFlywheelKV = 0.241;
+        public static final double kFlywheelKS = 0.14;
+        public static final double kFlywheelKV = 0.243;
         public static final double kFlywheelKA = 2.32;
         
         // Flywheel Current Limits
