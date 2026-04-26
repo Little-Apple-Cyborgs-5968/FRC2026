@@ -185,14 +185,14 @@ public class RobotContainer {
         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
           drivetrain.getState().Speeds,
           drivetrain.getState().Pose.getRotation()),
-        () -> TurretUtil.TargetType.HUB
+        this::getShootTargetType
       ).alongWith(
         shooter.shootOnMoveFlywheelOnlyCommand(
           () -> drivetrain.getState().Pose,
           () -> ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds,
             drivetrain.getState().Pose.getRotation()),
-          () -> TurretUtil.TargetType.HUB
+          this::getShootTargetType
         )
       ).withName("ShootOnMove-WarmUp")
     );
@@ -205,14 +205,14 @@ public class RobotContainer {
         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
           drivetrain.getState().Speeds,
           drivetrain.getState().Pose.getRotation()),
-        () -> TurretUtil.TargetType.HUB
+        this::getShootTargetType
       ).alongWith(
         shooter.shootOnMoveCommandShooter(
           () -> drivetrain.getState().Pose,
           () -> ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds,
             drivetrain.getState().Pose.getRotation()),
-          () -> TurretUtil.TargetType.HUB
+          this::getShootTargetType
         )
       ).withName("ShootOnMove-WarmUp-WithHood")
     );
@@ -224,16 +224,17 @@ public class RobotContainer {
         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
           drivetrain.getState().Speeds,
           drivetrain.getState().Pose.getRotation()),
-        () -> TurretUtil.TargetType.HUB
+        this::getShootTargetType
       ).alongWith(
         shooter.shootOnMoveCommandShooter(
           () -> drivetrain.getState().Pose,
           () -> ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds,
             drivetrain.getState().Pose.getRotation()),
-          () -> TurretUtil.TargetType.HUB
+          this::getShootTargetType
         ),
-        new AutoUnjamCommand(spindexer, feeder).onlyIf(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees)
+        Commands.waitUntil(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees)
+          .andThen(new AutoUnjamCommand(spindexer, feeder))
       ).withName("ShootOnMove-Firing")
     );
     // Initialize Vision subsystem with drivetrain integration
@@ -330,8 +331,10 @@ public class RobotContainer {
     // Derive Trigger objects from the flag — the scheduler reacts to these every loop
     Trigger shootOnMoveOn = new Trigger(() -> isShootOnMoveActive);
     Trigger triggerHeld = joystick.rightTrigger();
-    Trigger warmUpActive = shootOnMoveOn.and(triggerHeld); // ON + held  → warm up
-    Trigger firingActive = shootOnMoveOn.and(triggerHeld.negate()); // ON + released → fire
+    Trigger inBlockedZone = new Trigger(() -> dashboard.getCurrentZone() == FieldZones.ZoneType.BLOCKED);
+    
+    Trigger warmUpActive = shootOnMoveOn.and(triggerHeld.or(inBlockedZone)); // ON + (held OR blocked)  → warm up
+    Trigger firingActive = shootOnMoveOn.and(triggerHeld.negate().and(inBlockedZone.negate())); // ON + released + not blocked → fire
 
     // Warm-up phase: turret + flywheel only, both lead-compensated
     // Target type is resolved dynamically
@@ -370,7 +373,8 @@ public class RobotContainer {
             drivetrain.getState().Pose.getRotation()),
           this::getShootTargetType
         ),
-        new AutoUnjamCommand(spindexer, feeder).onlyIf(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees)
+        Commands.waitUntil(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees)
+          .andThen(new AutoUnjamCommand(spindexer, feeder))
       ).withName("ShootOnMove-Firing")
     );
 
@@ -737,6 +741,8 @@ public class RobotContainer {
     FieldZones.ZoneType currentZone = dashboard.getCurrentZone();
     if (currentZone == FieldZones.ZoneType.NEUTRAL) {
       return TurretUtil.getNearestPassTargetType(drivetrain.getState().Pose);
+    } else if (currentZone == FieldZones.ZoneType.OPP) {
+      return TurretUtil.getNearestLongPassTargetType(drivetrain.getState().Pose);
     }
     return TurretUtil.TargetType.HUB;
   }

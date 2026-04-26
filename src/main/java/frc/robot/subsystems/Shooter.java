@@ -237,12 +237,13 @@ public class Shooter extends SubsystemBase {
     );
 
     // PID controller for hood simulation (matches SparkMax PID settings)
-    // Note: WPILib PID works in units, not rotations, so we need to scale
-    // The hood position is in degrees, so PID needs to be scaled accordingly
+    // The SparkMax PID operates on motor rotations and outputs duty cycle (-1 to 1).
+    // We scale the gains to convert Error(degrees) -> Error(motor rotations).
+    double scaleFactor = hoodGearRatio / 360.0;
     hoodSimPID = new PIDController(
-      hoodKP / hoodGearRatio, //* 360.0, // Scale from rotations to degrees
-      hoodKI / hoodGearRatio, //* 360.0,
-      hoodKD / hoodGearRatio //* 360.0
+      hoodKP * scaleFactor,
+      hoodKI * scaleFactor,
+      hoodKD * scaleFactor
     );
   }
 
@@ -287,7 +288,10 @@ public class Shooter extends SubsystemBase {
     // Clamp output to -12V to +12V
     double batteryVoltage = RoboRioSim.getVInVoltage();
     if (batteryVoltage < 6.0) batteryVoltage = 12.0; // Default if not set
-    double hoodVoltage = Math.max(-batteryVoltage, Math.min(batteryVoltage, pidOutput));
+    
+    // SparkMax PID output is duty cycle, convert to voltage
+    double targetVoltage = pidOutput * batteryVoltage;
+    double hoodVoltage = Math.max(-batteryVoltage, Math.min(batteryVoltage, targetVoltage));
     
     hoodSim.setInput(hoodVoltage);
     hoodSim.update(0.020);

@@ -49,8 +49,8 @@ public class HubLookUpTable {
         addEntry(3.6,13.25,56,1.04 * TIME_OF_FLIGHT_MULTIPLIER);
         addEntry(4.45,14.56,55,1.14 * TIME_OF_FLIGHT_MULTIPLIER);
         addEntry(4.93,16.01,51,1.22 * TIME_OF_FLIGHT_MULTIPLIER);
-        addEntry(5.8,16.5,51,1.05 * TIME_OF_FLIGHT_MULTIPLIER);
-        addEntry(8,17.0,45,1.05 * TIME_OF_FLIGHT_MULTIPLIER);
+        addEntry(5.8,16.5,51,1.22 * TIME_OF_FLIGHT_MULTIPLIER);
+        addEntry(8,17.0,45,1.22 * TIME_OF_FLIGHT_MULTIPLIER);
         // Max distance - lowest angle
     }
     

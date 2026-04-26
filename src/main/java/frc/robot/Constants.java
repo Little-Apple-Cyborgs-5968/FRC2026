@@ -460,7 +460,7 @@ public class Constants {
         
         // Simulation Constants
         public static final double kSimFlywheelMomentOfInertia = 0.005; // kg·m² — realistic for shooter flywheels
-        public static final double kSimHoodMomentOfInertia = 0.004; // kg·m²
+        public static final double kSimHoodMomentOfInertia = 0.6; // kg·m²
         public static final double kSimHoodLength = 0.3; // meters
     }
 

@@ -15,8 +15,11 @@ public class FieldConstants {
 
     // SHOOT 3D targets (Blue alliance origin)
     private static final Pose3d hubTargetBlue       = new Pose3d(4.620, 4.040, 3.057144, new Rotation3d());
-    private static final Pose3d leftPassTargetBlue  = new Pose3d(2.50, 6.0, 0, new Rotation3d());
-    private static final Pose3d rightPassTargetBlue = new Pose3d(2.50, 1.8, 0, new Rotation3d());
+    private static final Pose3d leftShortPassTargetBlue  = new Pose3d(2.50, 6.0, 0, new Rotation3d());
+    private static final Pose3d rightShortPassTargetBlue = new Pose3d(2.50, 1.8, 0, new Rotation3d());
+
+    private static final Pose3d leftLongPassTargetBlue  = new Pose3d(2.8, 2.3, 0, new Rotation3d());
+    private static final Pose3d rightLongPassTargetBlue = new Pose3d(2.8, 6.18, 0, new Rotation3d());
 
     // PATHFIND Pose 2D (Blue alliance origin)
     private static final Pose2d leftTrenchBlue  = new Pose2d(3.650, 7.411, new Rotation2d(Math.PI));
@@ -101,12 +104,22 @@ public class FieldConstants {
 
     /** Left pass 3D target pose, automatically flipped for red alliance. */
     public static Pose3d getLeftPassTarget() {
-        return flipIfRed(leftPassTargetBlue);
+        return flipIfRed(leftShortPassTargetBlue);
     }
 
     /** Right pass 3D target pose, automatically flipped for red alliance. */
     public static Pose3d getRightPassTarget() {
-        return flipIfRed(rightPassTargetBlue);
+        return flipIfRed(rightShortPassTargetBlue);
+    }
+
+    /** Left long pass 3D target pose, automatically flipped for red alliance. */
+    public static Pose3d getLeftLongPassTarget() {
+        return flipIfRed(leftLongPassTargetBlue);
+    }
+
+    /** Right long pass 3D target pose, automatically flipped for red alliance. */
+    public static Pose3d getRightLongPassTarget() {
+        return flipIfRed(rightLongPassTargetBlue);
     }
 
     /** Left trench shoot pose, automatically flipped for red alliance. */

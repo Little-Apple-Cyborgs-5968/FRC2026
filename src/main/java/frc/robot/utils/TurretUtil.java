@@ -21,7 +21,9 @@ public class TurretUtil {
     public enum TargetType {
         HUB,
         LEFT_PASS,
-        RIGHT_PASS
+        RIGHT_PASS,
+        LEFT_LONG_PASS,
+        RIGHT_LONG_PASS
     }
 
     // =========================
@@ -85,6 +87,8 @@ public class TurretUtil {
             case HUB:        return FieldConstants.getHubTarget().toPose2d();
             case LEFT_PASS:  return FieldConstants.getLeftPassTarget().toPose2d();
             case RIGHT_PASS: return FieldConstants.getRightPassTarget().toPose2d();
+            case LEFT_LONG_PASS: return FieldConstants.getLeftLongPassTarget().toPose2d();
+            case RIGHT_LONG_PASS: return FieldConstants.getRightLongPassTarget().toPose2d();
             default:         return FieldConstants.getHubTarget().toPose2d();
         }
     }
@@ -98,6 +102,17 @@ public class TurretUtil {
         double distLeft  = turret.getDistance(FieldConstants.getLeftPassTarget().toPose2d().getTranslation());
         double distRight = turret.getDistance(FieldConstants.getRightPassTarget().toPose2d().getTranslation());
         return distLeft <= distRight ? TargetType.LEFT_PASS : TargetType.RIGHT_PASS;
+    }
+
+    /**
+     * Returns whichever long pass target (LEFT_LONG_PASS or RIGHT_LONG_PASS) is closer to the robot's
+     * current turret position.
+     */
+    public static TargetType getNearestLongPassTargetType(Pose2d robotPose) {
+        Translation2d turret = getTurretPose(robotPose).getTranslation();
+        double distLeft  = turret.getDistance(FieldConstants.getLeftLongPassTarget().toPose2d().getTranslation());
+        double distRight = turret.getDistance(FieldConstants.getRightLongPassTarget().toPose2d().getTranslation());
+        return distLeft <= distRight ? TargetType.LEFT_LONG_PASS : TargetType.RIGHT_LONG_PASS;
     }
 
     // =========================
@@ -308,6 +323,8 @@ public class TurretUtil {
                 return hubTable.getParameters(distanceMeters);
             case LEFT_PASS:
             case RIGHT_PASS:
+            case LEFT_LONG_PASS:
+            case RIGHT_LONG_PASS:
                 // PassLookUpTable has the same ShootingParameters shape; bridge here
                 PassLookUpTable.ShootingParameters p = passTable.getParameters(distanceMeters);
                 return new HubLookUpTable.ShootingParameters(p.shooterSpeed, p.trajectoryAngle, p.timeOfFlight);
