@@ -393,7 +393,7 @@ public class Constants {
         public static final double kFlywheelSpeedRPS    = 12.0;
 
         /** Hood angle for the default shot (degrees). */
-        public static final double kHoodAngleDegrees    = 75.0;
+        public static final double kHoodAngleDegrees    = 79.0;
 
         /** Turret must be within this many degrees of the target before considered "at target". */
         public static final double kTurretToleranceDegrees = 2.0;
