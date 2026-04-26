@@ -28,6 +28,7 @@ import frc.robot.commands.DrivetrainShootOnMoveCommand;
 import frc.robot.commands.IntakeJiggleCommand;
 import frc.robot.commands.PathFindCommands;
 import frc.robot.commands.SYOMDriveCommand;
+import frc.robot.commands.DefenseDriveCommand;
 import frc.robot.utils.FieldZoneUtil.FieldZones;
 
 import frc.robot.driverIO.ControllerRumble;
@@ -151,11 +152,14 @@ public class RobotContainer {
 
   private final Visualizer visualizer = new Visualizer(turret, shooter, climberBS, spindexer, feeder, drivetrain, intake);
 
-  // SYOMDrive command instance — toggled on/off with the X button
-  private final SYOMDriveCommand syomDriveCommand = new SYOMDriveCommand(
+  // Defense Drive command instance — toggled on/off with the right stick button
+  private final DefenseDriveCommand defenseDriveCommand = new DefenseDriveCommand(
     drivetrain,
+    intake,
+    turret,
     () -> -joystick.getLeftY() * MaxSpeed,
     () -> -joystick.getLeftX() * MaxSpeed,
+    () -> -joystick.getRightX() * MaxAngularRate,
     MaxSpeed,
     MaxAngularRate);
 
@@ -325,6 +329,9 @@ public class RobotContainer {
       Commands.runOnce(() -> {
         isShootOnMoveActive = !isShootOnMoveActive;
         SmartDashboard.putBoolean("DASHBOARD/Shoot On Move Active", isShootOnMoveActive);
+        if (isShootOnMoveActive && defenseDriveCommand.isScheduled()) {
+            defenseDriveCommand.cancel();
+        }
       })
     );
 
@@ -388,8 +395,8 @@ public class RobotContainer {
       Commands.runOnce(() -> {
         isShootOnMoveActive = false;
         SmartDashboard.putBoolean("DASHBOARD/Shoot On Move Active", isShootOnMoveActive);
-        if (syomDriveCommand.isScheduled()) {
-            syomDriveCommand.cancel();
+        if (defenseDriveCommand.isScheduled()) {
+            defenseDriveCommand.cancel();
         }
       })
     );
@@ -421,10 +428,13 @@ public class RobotContainer {
     // ── X BUTTON: Brake (lock wheels in X pattern while held) ───────────────
     joystick.x().whileTrue(drivetrain.applyRequest(() -> brake));
 
-    // ── right stick BUTTON: Toggle SYOMDrive (Synchronized Yaw-Optimized Motion Drive) ─
-    // Press once → robot auto-rotates to face travel direction.
-    // Press again → returns to normal field-centric drive with manual rotation.
-    joystick.rightStick().toggleOnTrue(syomDriveCommand);
+    // ── right stick BUTTON: Toggle Defense Drive ─
+    joystick.rightStick().toggleOnTrue(defenseDriveCommand);
+    Trigger defenseModeActive = new Trigger(defenseDriveCommand::isScheduled);
+    defenseModeActive.onTrue(Commands.runOnce(() -> {
+      isShootOnMoveActive = false;
+      SmartDashboard.putBoolean("DASHBOARD/Shoot On Move Active", isShootOnMoveActive);
+    }));
 
     // Pathfind to nearest postion in selected zone while A+Y held, cancel on joystick move
 
@@ -774,7 +784,7 @@ public class RobotContainer {
   public void updateDashboard() {
     dashboard.update();
     // Update SYOMDrive status on SmartDashboard
-    SmartDashboard.putBoolean("DASHBOARD/SYOMDrive Enabled", syomDriveCommand.isScheduled());
+    SmartDashboard.putBoolean("DASHBOARD/Defense Drive Enabled", defenseDriveCommand.isScheduled());
     // Update shoot-on-the-move mode toggle status on SmartDashboard
     SmartDashboard.putBoolean("DASHBOARD/Shoot On Move Active", isShootOnMoveActive);
     // Update swerve shoot-on-the-move mode toggle status on SmartDashboard

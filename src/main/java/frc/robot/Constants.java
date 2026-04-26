@@ -32,6 +32,8 @@ public class Constants {
         public static final double kSYOMDriveRotationKp = 7.0; // Proportional gain for rotation to travel direction
         public static final double kSYOMDriveMaxRotationalVelocity = Units.degreesToRadians(210); // Max rotational velocity (rad/s)
 
+        public static final boolean kDefenseDriveXWheels = true; // Turn on/off X wheels when stationary in defense drive
+
         // Motion-profile constraints for SYOM rotation (TrapezoidProfile)
         public static final double kSYOMDriveMaxRotAccel = Units.degreesToRadians(360); // Max rotational accel (rad/s²)
         // Velocity slew: rotational output approaches target at this rate (rad/s per loop)
