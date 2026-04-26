@@ -29,7 +29,7 @@ public class FieldConstants {
     private static final Pose2d rightNeutralBlue = new Pose2d(8.2, 0.8, new Rotation2d(Math.PI / 2));
 
     private static final Pose2d leftOppBlue = new Pose2d(13.4, 7.4, new Rotation2d(0));
-    private static final Pose2d rightOppBlue = new Pose2d(13.4, 0.627, new Rotation2d(Math.PI));
+    private static final Pose2d rightOppBlue = new Pose2d(13.4, 0.627, new Rotation2d(0));
     // -------------------------------------------------------------------------
     // Pose2d flip helpers
     // -------------------------------------------------------------------------
