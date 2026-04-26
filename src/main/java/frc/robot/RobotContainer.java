@@ -390,6 +390,11 @@ public class RobotContainer {
       shooter.setHoodToTrenchCommand()
     );
 
+    // When shoot-on-the-move mode is toggled ON, intelligently deploy the intake
+    shootOnMoveOn.onTrue(
+      intake.ShootOnMoveDeployCommand()
+    );
+
     // ── LEFT TRIGGER: Disable shoot on move, jiggle spindexer + intake ────────
     joystick.leftTrigger().onTrue(
       Commands.runOnce(() -> {

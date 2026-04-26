@@ -690,6 +690,23 @@ public class Intake extends SubsystemBase {
       .andThen(runOnce(() -> SpinnerSetVelocity(spinnerSpeed)));
   }
 
+  public Command ShootOnMoveDeployCommand() {
+    return edu.wpi.first.wpilibj2.command.Commands.defer(() -> {
+      // If the intake is near the stowed or ultra-stowed angles, we deploy and spin.
+      boolean isStowed = Math.abs(targetPivotAngleDegrees - intakeAngleStowed) < 10 
+                      || Math.abs(targetPivotAngleDegrees - intakeAngleUltraStowed) < 10;
+      
+      if (isStowed) {
+        return DeployCommand();
+      } else {
+        // If it's already deployed, we do nothing. 
+        // This implies if it was spinning, it continues spinning.
+        // If it was not spinning, it continues to not spin.
+        return edu.wpi.first.wpilibj2.command.Commands.none();
+      }
+    }, java.util.Set.of());
+  }
+
   /**
    * Rezero the intake pivot encoder to 0 degrees.
    */
