@@ -531,7 +531,7 @@ public class Intake extends SubsystemBase {
    * Set spinner angular velocity.
    * @param velocityRotSec The target velocity in rotations per second
    */
-  private void SpinnerSetVelocity(double velocityRotSec) {
+  public void SpinnerSetVelocity(double velocityRotSec) {
     SpinnerSetVelocity(velocityRotSec, 0);
   }
 
@@ -541,7 +541,7 @@ public class Intake extends SubsystemBase {
    * @param velocityRotSec The target velocity in rotations per second
    * @param acceleration The acceleration in rotations per second squared
    */
-  private void SpinnerSetVelocity(double velocityRotSec, double acceleration) {
+  public void SpinnerSetVelocity(double velocityRotSec, double acceleration) {
     double ffVolts = spinnerFeedforward.calculate(GetSpinnerVelocity(), acceleration);
     SpinnerMotor.setControl(spinnerVelocityRequest.withVelocity(velocityRotSec));
   }

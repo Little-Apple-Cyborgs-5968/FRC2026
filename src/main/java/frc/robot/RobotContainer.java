@@ -407,7 +407,7 @@ public class RobotContainer {
     );
     
     joystick.leftTrigger().whileTrue(
-      spindexer.chillJiggleCommand().alongWith(new IntakeJiggleCommand(intake))
+      spindexer.chillJiggleCommand().alongWith(new IntakeJiggleCommand(intake, -Constants.Intake.kSpinnerSpeed/3))
     );
 
     joystick.leftTrigger().onFalse(
