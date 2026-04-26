@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.utils.FieldZoneUtil.FieldZones;
 import frc.robot.utils.FieldZoneUtil.ZoneResolver;
+import frc.robot.utils.PrematchConfigManager;
 
 /**
  * Handles all SmartDashboard/Shuffleboard visualizations.
@@ -147,6 +148,8 @@ public class DashboardPublisher {
 
     /** * Call periodically to update dashboard visualizations */
     public void update() {
+        PrematchConfigManager.getInstance().periodic();
+
         updateRobotField();
         updateAutoPreviewField();
         updateGameState();

@@ -18,8 +18,8 @@ public class FieldConstants {
     private static final Pose3d leftShortPassTargetBlue  = new Pose3d(2.50, 6.0, 0, new Rotation3d());
     private static final Pose3d rightShortPassTargetBlue = new Pose3d(2.50, 1.8, 0, new Rotation3d());
 
-    private static final Pose3d leftLongPassTargetBlue  = new Pose3d(2.8, 2.3, 0, new Rotation3d());
-    private static final Pose3d rightLongPassTargetBlue = new Pose3d(2.8, 6.18, 0, new Rotation3d());
+    private static final Pose3d leftLongPassTargetBlue  = new Pose3d(2.8, 6.18, 0, new Rotation3d());
+    private static final Pose3d rightLongPassTargetBlue = new Pose3d(2.8, 2.3, 0, new Rotation3d());
 
     // PATHFIND Pose 2D (Blue alliance origin)
     private static final Pose2d leftTrenchBlue  = new Pose2d(3.650, 7.411, new Rotation2d(Math.PI));
@@ -104,21 +104,33 @@ public class FieldConstants {
 
     /** Left pass 3D target pose, automatically flipped for red alliance. */
     public static Pose3d getLeftPassTarget() {
+        if (PrematchConfigManager.getInstance().isParsedSuccessfully()) {
+            return flipIfRed(PrematchConfigManager.getInstance().getLeftShortPassTarget());
+        }
         return flipIfRed(leftShortPassTargetBlue);
     }
 
     /** Right pass 3D target pose, automatically flipped for red alliance. */
     public static Pose3d getRightPassTarget() {
+        if (PrematchConfigManager.getInstance().isParsedSuccessfully()) {
+            return flipIfRed(PrematchConfigManager.getInstance().getRightShortPassTarget());
+        }
         return flipIfRed(rightShortPassTargetBlue);
     }
 
     /** Left long pass 3D target pose, automatically flipped for red alliance. */
     public static Pose3d getLeftLongPassTarget() {
+        if (PrematchConfigManager.getInstance().isParsedSuccessfully()) {
+            return flipIfRed(PrematchConfigManager.getInstance().getLeftLongPassTarget());
+        }
         return flipIfRed(leftLongPassTargetBlue);
     }
 
     /** Right long pass 3D target pose, automatically flipped for red alliance. */
     public static Pose3d getRightLongPassTarget() {
+        if (PrematchConfigManager.getInstance().isParsedSuccessfully()) {
+            return flipIfRed(PrematchConfigManager.getInstance().getRightLongPassTarget());
+        }
         return flipIfRed(rightLongPassTargetBlue);
     }
 
@@ -144,11 +156,17 @@ public class FieldConstants {
 
     /** Left opponent-zone pose, automatically flipped for red alliance. */
     public static Pose2d getLeftOpp() {
+        if (PrematchConfigManager.getInstance().isParsedSuccessfully()) {
+            return flipIfRed(PrematchConfigManager.getInstance().getLeftPathfindTarget());
+        }
         return flipIfRed(leftOppBlue);
     }
 
     /** Right opponent-zone pose, automatically flipped for red alliance. */
     public static Pose2d getRightOpp() {
+        if (PrematchConfigManager.getInstance().isParsedSuccessfully()) {
+            return flipIfRed(PrematchConfigManager.getInstance().getRightPathfindTarget());
+        }
         return flipIfRed(rightOppBlue);
     }
 }

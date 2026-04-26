@@ -189,14 +189,14 @@ public class RobotContainer {
         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
           drivetrain.getState().Speeds,
           drivetrain.getState().Pose.getRotation()),
-        this::getShootTargetType
+        () -> TurretUtil.TargetType.HUB
       ).alongWith(
         shooter.shootOnMoveFlywheelOnlyCommand(
           () -> drivetrain.getState().Pose,
           () -> ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds,
             drivetrain.getState().Pose.getRotation()),
-          this::getShootTargetType
+          () -> TurretUtil.TargetType.HUB
         )
       ).withName("ShootOnMove-WarmUp")
     );
@@ -209,14 +209,14 @@ public class RobotContainer {
         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
           drivetrain.getState().Speeds,
           drivetrain.getState().Pose.getRotation()),
-        this::getShootTargetType
+        () -> TurretUtil.TargetType.HUB
       ).alongWith(
         shooter.shootOnMoveCommandShooter(
           () -> drivetrain.getState().Pose,
           () -> ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds,
             drivetrain.getState().Pose.getRotation()),
-          this::getShootTargetType
+          () -> TurretUtil.TargetType.HUB
         )
       ).withName("ShootOnMove-WarmUp-WithHood")
     );
@@ -228,14 +228,14 @@ public class RobotContainer {
         () -> ChassisSpeeds.fromRobotRelativeSpeeds(
           drivetrain.getState().Speeds,
           drivetrain.getState().Pose.getRotation()),
-        this::getShootTargetType
+        () -> TurretUtil.TargetType.HUB
       ).alongWith(
         shooter.shootOnMoveCommandShooter(
           () -> drivetrain.getState().Pose,
           () -> ChassisSpeeds.fromRobotRelativeSpeeds(
             drivetrain.getState().Speeds,
             drivetrain.getState().Pose.getRotation()),
-          this::getShootTargetType
+          () -> TurretUtil.TargetType.HUB
         ),
         Commands.waitUntil(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees)
           .andThen(new AutoUnjamCommand(spindexer, feeder))

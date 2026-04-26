@@ -94,25 +94,29 @@ public class TurretUtil {
     }
 
     /**
-     * Returns whichever pass target (LEFT_PASS or RIGHT_PASS) is closer to the robot's
-     * current turret position.
+     * Returns the pass target based on which side of the field the robot is on.
+     * Passes to the left target if on the left side, and right target if on the right side.
      */
     public static TargetType getNearestPassTargetType(Pose2d robotPose) {
-        Translation2d turret = getTurretPose(robotPose).getTranslation();
-        double distLeft  = turret.getDistance(FieldConstants.getLeftPassTarget().toPose2d().getTranslation());
-        double distRight = turret.getDistance(FieldConstants.getRightPassTarget().toPose2d().getTranslation());
-        return distLeft <= distRight ? TargetType.LEFT_PASS : TargetType.RIGHT_PASS;
+        double fieldCenterY = com.pathplanner.lib.util.FlippingUtil.fieldSizeY / 2.0;
+        boolean isLeft = FieldConstants.isRedAlliance() 
+            ? robotPose.getY() < fieldCenterY 
+            : robotPose.getY() > fieldCenterY;
+        
+        return isLeft ? TargetType.LEFT_PASS : TargetType.RIGHT_PASS;
     }
 
     /**
-     * Returns whichever long pass target (LEFT_LONG_PASS or RIGHT_LONG_PASS) is closer to the robot's
-     * current turret position.
+     * Returns the long pass target based on which side of the field the robot is on.
+     * Passes to the left target if on the left side, and right target if on the right side.
      */
     public static TargetType getNearestLongPassTargetType(Pose2d robotPose) {
-        Translation2d turret = getTurretPose(robotPose).getTranslation();
-        double distLeft  = turret.getDistance(FieldConstants.getLeftLongPassTarget().toPose2d().getTranslation());
-        double distRight = turret.getDistance(FieldConstants.getRightLongPassTarget().toPose2d().getTranslation());
-        return distLeft <= distRight ? TargetType.LEFT_LONG_PASS : TargetType.RIGHT_LONG_PASS;
+        double fieldCenterY = com.pathplanner.lib.util.FlippingUtil.fieldSizeY / 2.0;
+        boolean isLeft = FieldConstants.isRedAlliance() 
+            ? robotPose.getY() < fieldCenterY 
+            : robotPose.getY() > fieldCenterY;
+        
+        return isLeft ? TargetType.LEFT_LONG_PASS : TargetType.RIGHT_LONG_PASS;
     }
 
     // =========================
