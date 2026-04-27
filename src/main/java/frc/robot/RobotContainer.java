@@ -445,7 +445,7 @@ public class RobotContainer {
     joystick.a().and(joystick.b()).onTrue(
       PathFindCommands.pathfindToNearestPose(
         () -> drivetrain.getState().Pose,
-        List.of(FieldConstants.getLeftOpp(), FieldConstants.getRightOpp())
+        () -> List.of(FieldConstants.getLeftOpp(), FieldConstants.getRightOpp())
       ).until(joystick.leftStick().or(joystick.rightStick()))
     );
 

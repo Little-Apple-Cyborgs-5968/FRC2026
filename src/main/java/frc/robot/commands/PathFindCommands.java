@@ -91,6 +91,34 @@ public class PathFindCommands {
 
   /**
    * Pathfind to the nearest pose from a list with custom constraints.
+   * The robot pose supplier and candidate poses are evaluated when the command is scheduled,
+   * not when this method is called.
+   */
+  public static Command pathfindToNearestPose(Supplier<Pose2d> robotPoseSupplier, Supplier<List<Pose2d>> candidatePosesSupplier, PathConstraints constraints) {
+      return Commands.defer(() -> {
+          List<Pose2d> candidatePoses = candidatePosesSupplier.get();
+          if (candidatePoses == null || candidatePoses.isEmpty()) {
+              return Commands.print("No candidate poses provided");
+          }
+          Pose2d robotPose = robotPoseSupplier.get();
+          Pose2d nearest = candidatePoses.stream()
+              .min(Comparator.comparingDouble(p -> p.getTranslation().getDistance(robotPose.getTranslation())))
+              .get();
+          return pathfindToPose(nearest, constraints);
+      }, java.util.Set.of());
+  }
+
+  /**
+   * Pathfind to the nearest pose from a list with default constraints.
+   * The robot pose supplier and candidate poses are evaluated when the command is scheduled,
+   * not when this method is called.
+   */
+  public static Command pathfindToNearestPose(Supplier<Pose2d> robotPoseSupplier, Supplier<List<Pose2d>> candidatePosesSupplier) {
+      return pathfindToNearestPose(robotPoseSupplier, candidatePosesSupplier, DEFAULT_CONSTRAINTS);
+  }
+
+  /**
+   * Pathfind to the nearest pose from a list with custom constraints.
    * The robot pose supplier is evaluated when the command is scheduled,
    * not when this method is called.
    */
