@@ -12,13 +12,14 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class FieldConstants {
     /** Full length of the FRC field in meters (2026 season) */
     public static final double kFieldLength = 16.5405;
+    public static final double kFieldHeight= 8.069326;
 
     // SHOOT 3D targets (Blue alliance origin)
     private static final Pose3d hubTargetBlue       = new Pose3d(4.620, 4.040, 3.057144, new Rotation3d());
-    private static final Pose3d leftShortPassTargetBlue  = new Pose3d(2.50, 6.0, 0, new Rotation3d());
+    private static final Pose3d leftShortPassTargetBlue  = new Pose3d(2.50, 8.069326-1.8, 0, new Rotation3d());
     private static final Pose3d rightShortPassTargetBlue = new Pose3d(2.50, 1.8, 0, new Rotation3d());
 
-    private static final Pose3d leftLongPassTargetBlue  = new Pose3d(2.8, 6.18, 0, new Rotation3d());
+    private static final Pose3d leftLongPassTargetBlue  = new Pose3d(2.8, 8.069326-2.3, 0, new Rotation3d());
     private static final Pose3d rightLongPassTargetBlue = new Pose3d(2.8, 2.3, 0, new Rotation3d());
 
     private static final Pose3d AutoPassTargetBlue = new Pose3d(0,0,0, new Rotation3d());
