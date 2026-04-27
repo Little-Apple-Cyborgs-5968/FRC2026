@@ -241,6 +241,27 @@ public class RobotContainer {
           .andThen(new AutoUnjamCommand(spindexer, feeder))
       ).withName("ShootOnMove-Firing")
     );
+
+    // Shoot-on-the-move to Auto Target (Pass)
+    NamedCommands.registerCommand("SHOOT_ON_MOVE_PASS",
+      turret.shootOnMoveCommandTurret(
+        () -> drivetrain.getState().Pose,
+        () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+          drivetrain.getState().Speeds,
+          drivetrain.getState().Pose.getRotation()),
+        () -> TurretUtil.TargetType.AUTO_PASS
+      ).alongWith(
+        shooter.shootOnMoveCommandShooter(
+          () -> drivetrain.getState().Pose,
+          () -> ChassisSpeeds.fromRobotRelativeSpeeds(
+            drivetrain.getState().Speeds,
+            drivetrain.getState().Pose.getRotation()),
+          () -> TurretUtil.TargetType.AUTO_PASS
+        ),
+        Commands.waitUntil(() -> Math.abs(turret.getErrorDegrees()) <= Constants.Turret.kShootingToleranceDegrees)
+          .andThen(new AutoUnjamCommand(spindexer, feeder))
+      ).withName("ShootOnMove-AutoTarget")
+    );
     // Initialize Vision subsystem with drivetrain integration
     vision = new Vision(
       // Pose supplier - gets current robot pose from drivetrain

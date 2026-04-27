@@ -21,6 +21,8 @@ public class FieldConstants {
     private static final Pose3d leftLongPassTargetBlue  = new Pose3d(2.8, 6.18, 0, new Rotation3d());
     private static final Pose3d rightLongPassTargetBlue = new Pose3d(2.8, 2.3, 0, new Rotation3d());
 
+    private static final Pose3d AutoPassTargetBlue = new Pose3d(0,0,0, new Rotation3d());
+
     // PATHFIND Pose 2D (Blue alliance origin)
     private static final Pose2d leftTrenchBlue  = new Pose2d(3.650, 7.411, new Rotation2d(Math.PI));
     private static final Pose2d rightTrenchBlue = new Pose2d(3.650, 0.635, new Rotation2d(0));
@@ -132,6 +134,14 @@ public class FieldConstants {
             return flipIfRed(PrematchConfigManager.getInstance().getRightLongPassTarget());
         }
         return flipIfRed(rightLongPassTargetBlue);
+    }
+
+    /** Auto target 3D pose, automatically flipped for red alliance. */
+    public static Pose3d getAutoPassTarget() {
+        if (PrematchConfigManager.getInstance().isParsedSuccessfully()) {
+            return flipIfRed(PrematchConfigManager.getInstance().getAutoTarget());
+        }
+        return flipIfRed(AutoPassTargetBlue);
     }
 
     /** Left trench shoot pose, automatically flipped for red alliance. */

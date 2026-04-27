@@ -23,7 +23,8 @@ public class TurretUtil {
         LEFT_PASS,
         RIGHT_PASS,
         LEFT_LONG_PASS,
-        RIGHT_LONG_PASS
+        RIGHT_LONG_PASS,
+        AUTO_PASS
     }
 
     // =========================
@@ -89,6 +90,7 @@ public class TurretUtil {
             case RIGHT_PASS: return FieldConstants.getRightPassTarget().toPose2d();
             case LEFT_LONG_PASS: return FieldConstants.getLeftLongPassTarget().toPose2d();
             case RIGHT_LONG_PASS: return FieldConstants.getRightLongPassTarget().toPose2d();
+            case AUTO_PASS:  return FieldConstants.getAutoPassTarget().toPose2d();
             default:         return FieldConstants.getHubTarget().toPose2d();
         }
     }
@@ -329,6 +331,7 @@ public class TurretUtil {
             case RIGHT_PASS:
             case LEFT_LONG_PASS:
             case RIGHT_LONG_PASS:
+            case AUTO_PASS:
                 // PassLookUpTable has the same ShootingParameters shape; bridge here
                 PassLookUpTable.ShootingParameters p = passTable.getParameters(distanceMeters);
                 return new HubLookUpTable.ShootingParameters(p.shooterSpeed, p.trajectoryAngle, p.timeOfFlight);

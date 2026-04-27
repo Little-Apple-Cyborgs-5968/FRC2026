@@ -34,6 +34,7 @@ public class PrematchConfigManager {
     private Pose3d rightLongPassTarget;
     private Pose2d leftPathfindTarget;
     private Pose2d rightPathfindTarget;
+    private Pose3d autoTarget;
 
     private final ObjectMapper mapper = new ObjectMapper();
     private String lastJson = "";
@@ -78,8 +79,8 @@ public class PrematchConfigManager {
             JsonNode root = mapper.readTree(jsonString);
 
             // Validate format and version
-            if (!root.has("version") || root.get("version").asInt() != 1) throw new Exception("Invalid version");
-            if (!root.has("format") || !root.get("format").asText().equals("FRC26v1")) throw new Exception("Invalid format");
+            if (!root.has("version") || root.get("version").asInt() != 2) throw new Exception("Invalid version");
+            if (!root.has("format") || !root.get("format").asText().equals("FRC26v2")) throw new Exception("Invalid format");
             
             String code = root.has("verificationCode") ? root.get("verificationCode").asText() : "N/A";
 
@@ -87,10 +88,12 @@ public class PrematchConfigManager {
             JsonNode cpArr = root.get("closePassPoses");
             JsonNode lpArr = root.get("longPassPoses");
             JsonNode pfArr = root.get("pathfindPoses");
+            JsonNode atNode = root.get("autoTarget");
 
             if (cpArr == null || cpArr.size() != 2) throw new Exception("Invalid closePassPoses");
             if (lpArr == null || lpArr.size() != 2) throw new Exception("Invalid longPassPoses");
             if (pfArr == null || pfArr.size() != 2) throw new Exception("Invalid pathfindPoses");
+            if (atNode == null) throw new Exception("Invalid autoTarget");
 
             leftShortPassTarget = parsePose3d(getNodeById(cpArr, "closePassLeft"));
             rightShortPassTarget = parsePose3d(getNodeById(cpArr, "closePassRight"));
@@ -101,6 +104,8 @@ public class PrematchConfigManager {
             leftPathfindTarget = parsePose2d(getNodeById(pfArr, "PF1"));
             rightPathfindTarget = parsePose2d(getNodeById(pfArr, "PF2"));
 
+            autoTarget = parsePose3d(atNode);
+
             parsedSuccessfully = true;
             statusEntry.setString("parsed");
             verificationCodeEntry.setString(code);
@@ -109,6 +114,7 @@ public class PrematchConfigManager {
             prematchField.getObject("ClosePass").setPoses(leftShortPassTarget.toPose2d(), rightShortPassTarget.toPose2d());
             prematchField.getObject("LongPass").setPoses(leftLongPassTarget.toPose2d(), rightLongPassTarget.toPose2d());
             prematchField.getObject("Pathfind").setPoses(leftPathfindTarget, rightPathfindTarget);
+            prematchField.getObject("AutoTarget").setPose(autoTarget.toPose2d());
 
         } catch (Exception e) {
             System.err.println("Failed to parse prematch config: " + e.getMessage());
@@ -120,6 +126,7 @@ public class PrematchConfigManager {
             prematchField.getObject("ClosePass").setPoses();
             prematchField.getObject("LongPass").setPoses();
             prematchField.getObject("Pathfind").setPoses();
+            prematchField.getObject("AutoTarget").setPoses();
         }
     }
 
@@ -160,4 +167,5 @@ public class PrematchConfigManager {
     public Pose3d getRightLongPassTarget() { return rightLongPassTarget; }
     public Pose2d getLeftPathfindTarget() { return leftPathfindTarget; }
     public Pose2d getRightPathfindTarget() { return rightPathfindTarget; }
+    public Pose3d getAutoTarget() { return autoTarget; }
 }       
