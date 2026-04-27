@@ -31,8 +31,8 @@ public class FieldConstants {
     private static final Pose2d leftNeutralBlue = new Pose2d(8.2, 7.2, new Rotation2d(-Math.PI / 2));
     private static final Pose2d rightNeutralBlue = new Pose2d(8.2, 0.8, new Rotation2d(Math.PI / 2));
 
-    private static final Pose2d leftOppBlue = new Pose2d(13.4, 7.4, new Rotation2d(0));
-    private static final Pose2d rightOppBlue = new Pose2d(13.4, 0.627, new Rotation2d(0));
+    private static final Pose2d leftPathfind = new Pose2d(13.045, 8.069326-1.555, new Rotation2d(0));
+    private static final Pose2d rightPathfind = new Pose2d(13.045, 1.555, new Rotation2d(0));
     // -------------------------------------------------------------------------
     // Pose2d flip helpers
     // -------------------------------------------------------------------------
@@ -170,7 +170,7 @@ public class FieldConstants {
         if (PrematchConfigManager.getInstance().isParsedSuccessfully()) {
             return flipIfRed(PrematchConfigManager.getInstance().getLeftPathfindTarget());
         }
-        return flipIfRed(leftOppBlue);
+        return flipIfRed(leftPathfind);
     }
 
     /** Right opponent-zone pose, automatically flipped for red alliance. */
@@ -178,7 +178,7 @@ public class FieldConstants {
         if (PrematchConfigManager.getInstance().isParsedSuccessfully()) {
             return flipIfRed(PrematchConfigManager.getInstance().getRightPathfindTarget());
         }
-        return flipIfRed(rightOppBlue);
+        return flipIfRed(rightPathfind);
     }
 }
 
