@@ -462,6 +462,13 @@ public class RobotContainer {
       drivetrain.applyRequest(() -> idle).ignoringDisable(true)
     );
 
+    RobotModeTriggers.disabled().onTrue(
+      Commands.runOnce(() -> {
+        isShootOnMoveActive = false;
+        SmartDashboard.putBoolean("DASHBOARD/Shoot On Move Active", isShootOnMoveActive);
+      }).ignoringDisable(true)
+    );
+
     RobotModeTriggers.teleop().onTrue(
       shooter.setHoodToTrenchCommand()
     );
