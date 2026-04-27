@@ -13,7 +13,7 @@ import java.util.TreeMap;
 public class PassLookUpTable {
     
     /** Multiplier applied to all time of flight values because our time of flight measures is a bum aids monkey */
-    private static final double TIME_OF_FLIGHT_MULTIPLIER = 0.3;
+    private static final double TIME_OF_FLIGHT_MULTIPLIER = 0.35;
     
     /** Data structure to hold shooting parameters */
     public static class ShootingParameters {
